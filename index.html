@@ -3333,7 +3333,7 @@
                 text += `  *Total Payable  :  ₹${invoice.grandTotal.toFixed(2)}*\n`;
                 text += LINE;
 
-                text += `📌 Ref: _${POSState.orderId}_\n\n`;
+                text += `📌 Ref: ${POSState.orderId}\n\n`;
                 text += isRecurring
                     ? `Kindly set up this subscription at your earliest convenience.\n`
                     : `Kindly confirm my order at the earliest.\n`;
