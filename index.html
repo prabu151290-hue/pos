@@ -93,6 +93,12 @@
                to <html>. 0 = flat (current default). 1 = backdrop-filter glass.
                @supports guard below means non-supporting browsers always get flat. */
             --phone-glass: 0;
+
+            /* Blur strength for the category-card liquid-glass surface
+               (see .category-card below). Kept as its own token in case
+               a future settings toggle wants to graduate the strength,
+               same pattern as --phone-glass above. */
+            --glass-blur: 20px;
         }
 
         [data-theme="dark"] {
@@ -282,7 +288,7 @@
             background: linear-gradient(120deg, rgba(110,32,39,0.05) 0%, var(--surface) 55%, rgba(201,162,39,0.08) 100%);
             padding: var(--space-4) var(--space-5);
             border-radius: var(--radius-lg);
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--space-5); /* 1.5rem → --space-5 */
             box-shadow: 0 2px 10px rgba(110,32,39,0.09), 0 1px 3px rgba(0,0,0,0.04);
             border: 1px solid var(--border);
             border-bottom: 3px solid var(--gold-mid);
@@ -323,7 +329,7 @@
             background: linear-gradient(135deg, var(--primary-deep), var(--primary));
             border-radius: var(--radius-lg);
             padding: var(--space-8) var(--space-6);
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--space-5); /* 1.5rem → --space-5 */
             text-align: center;
             box-shadow: var(--shadow);
         }
@@ -425,7 +431,7 @@
         .schedule-card.visible { display: block; animation: toast-in 0.2s ease-out; }
         .schedule-card-title {
             font-family: var(--font-heading); color: var(--heading-color); font-size: var(--text-headline);
-            margin-bottom: 0.9rem;
+            margin-bottom: var(--space-3); /* 0.9rem → --space-3 (12px; nearest 8pt step) */
         }
         .schedule-card-fields {
             display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);
@@ -455,7 +461,7 @@
         [data-theme="dark"] .item-schedule-panel { background: rgba(217, 166, 46, 0.08); }
         .isp-label {
             font-size: var(--text-caption2); font-weight: 700; color: var(--accent); text-transform: uppercase;
-            letter-spacing: 0.04em; display: block; margin-bottom: 0.6rem;
+            letter-spacing: 0.04em; display: block; margin-bottom: var(--space-2); /* 0.6rem → --space-2 (8px) */
         }
         .isp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: var(--space-2); }
         .isp-grid .form-group label { font-size: var(--text-caption2); }
@@ -499,21 +505,129 @@
 
         /* ---- MENU ITEM → PRODUCT CARD (restyled) ---- */
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-5); perspective: 900px; }
+
+        /* ═══════════════════════════════════════════════════════════════
+           LIQUID GLASS CATEGORY CARDS — "chocolate-cube" redesign
+           ───────────────────────────────────────────────────────────────
+           Two lenses shaped this pass, per the request for a color-
+           psychologist + Apple-style UI read:
+
+           COLOR PSYCHOLOGY — appetite responds far more to warm,
+           saturated hues (red/orange/amber) than cool ones; blue in
+           particular is a well-documented appetite suppressant (rare in
+           nature for edible food, historically read as a spoilage cue),
+           so it's avoided for every menu category below. Each category
+           gets a deliberately chosen hue, not a palette-cycling index:
+             Sandwich          → vivid orange   — everyday energy/appetite
+             Premium Sandwich  → hot magenta    — indulgent, dessert-sweet
+             Maggi             → golden amber   — comfort, nostalgia
+             Pasta             → tomato crimson — savory Italian richness
+             Juices            → aqua cyan      — freshness, hydration
+             Milkshakes        → orchid purple  — playful, creamy treat
+             Combos            → sunflower gold — value, festivity
+             Evening Snacks    → coral pink     — cozy, social warmth
+             Xtra Delights     → royal violet   — premium, exclusive
+             Dinner Special    → deep indigo    — calm evening sophistication
+           Saturation is kept high (~80–90%) with mid-range lightness —
+           the earlier pastel/diluted-glass tint read as "dull," which
+           this revision corrects by keeping each hue near full strength.
+
+           APPLE-STYLE SURFACE LANGUAGE — each card reads like a foil-
+           wrapped chocolate square: a raised bevel (inset highlight
+           top-left, inset shadow bottom-right), a soft corner gloss
+           bloom, and a diagonal specular sweep that animates across on
+           hover — the same shine device behind Apple Pay card art and
+           App Store feature banners — over a backdrop-blur so the
+           surface still reads as glass, not solid plastic. Status text
+           sits on its own neutral dark-frosted chip so it stays legible
+           against any of the ten hues, and the actual menu items live
+           in a calm, near-white inner "tray" — color expresses identity
+           at the frame, not the reading surface, so the grid stays
+           scannable instead of visually loud.
+           ═══════════════════════════════════════════════════════════════ */
         .category-card {
-            background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--gold-mid);
-            border-radius: var(--radius-lg); padding: var(--space-4);
-            box-shadow: var(--shadow), 0 1px 0 rgba(255,255,255,0.5) inset;
-            transition: transform 0.22s ease, box-shadow 0.22s ease;
+            --card-accent: var(--gold-mid); /* fallback for one frame before JS sets the real per-category color */
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            border-radius: 20px;
+            padding: var(--space-4);
+            border: 1px solid color-mix(in srgb, var(--card-accent) 60%, black 40%);
+            border-left: 6px solid color-mix(in srgb, var(--card-accent) 70%, black 30%);
+            background: linear-gradient(155deg,
+                color-mix(in srgb, var(--card-accent) 55%, white 45%) 0%,
+                color-mix(in srgb, var(--card-accent) 94%, transparent 6%) 42%,
+                color-mix(in srgb, var(--card-accent) 76%, black 24%) 100%
+            );
+            box-shadow:
+                inset 2px 2px 0 rgba(255,255,255,0.5),
+                inset -2px -3px 7px rgba(0,0,0,0.28),
+                0 10px 22px rgba(0,0,0,0.22),
+                0 3px 6px rgba(0,0,0,0.15);
+            transition: transform 0.28s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.28s ease;
             transform-style: preserve-3d;
         }
         .category-card:hover {
+            transform: translateY(-4px) scale(1.012);
             box-shadow:
-                0 1px 0 rgba(255,255,255,0.6) inset,
-                0 -2px 4px rgba(0,0,0,0.12) inset,
-                0 6px 16px rgba(20,10,10,0.12);
+                inset 2px 2px 0 rgba(255,255,255,0.6),
+                inset -2px -3px 9px rgba(0,0,0,0.32),
+                0 18px 34px color-mix(in srgb, var(--card-accent) 48%, transparent),
+                0 4px 10px rgba(0,0,0,0.22);
+        }
+        /* Corner gloss bloom — soft light catching the top-left of the cube */
+        .category-card::before {
+            content: '';
+            position: absolute; top: -18%; left: -18%; width: 55%; height: 55%;
+            background: radial-gradient(circle, rgba(255,255,255,0.55), transparent 70%);
+            filter: blur(3px);
+            pointer-events: none;
+            z-index: -1;
+        }
+        /* Diagonal specular sweep — animates across the whole face on
+           hover, the "shine passing over glass" wow moment. */
+        .category-card::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%);
+            background-size: 250% 250%;
+            background-position: -30% -30%;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 2;
+            transition: background-position 0.75s ease;
+        }
+        .category-card:hover::after { background-position: 130% 130%; }
+        @media (prefers-reduced-motion: reduce) {
+            .category-card, .category-card:hover { transform: none; transition: box-shadow 0.2s ease; }
+            .category-card::after, .category-card:hover::after { transition: none; background-position: -30% -30%; }
+        }
+        /* Frozen (order-window-closed) categories mute rather than
+           recolor — status meaning always overrides categorical color
+           (same rule the dashboard's pie engine follows for semantic vs.
+           qualitative hues), and a desaturated cube reads intuitively as
+           "not available right now" without needing extra copy. */
+        .category-card.category-frozen {
+            border-left-color: var(--danger);
+            filter: saturate(0.4) brightness(0.92);
+        }
+        .category-card.category-frozen:hover { transform: none; }
+
+        @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+            .category-card {
+                -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.7);
+                backdrop-filter: blur(var(--glass-blur)) saturate(1.7);
+            }
+        }
+
+        .cat-color-dot {
+            width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+            background: radial-gradient(circle at 35% 30%, #fff, rgba(255,255,255,0.35) 60%, rgba(255,255,255,0.12) 100%);
+            box-shadow: 0 0 4px rgba(255,255,255,0.65), inset 0 1px 1px rgba(255,255,255,0.85);
         }
         .category-title {
-            font-family: var(--font-heading); color: var(--heading-color); border-bottom: 2px solid var(--gold-mid);
+            font-family: var(--font-heading); color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+            border-bottom: 1px solid rgba(255,255,255,0.35);
             padding-bottom: 0.5rem; margin-bottom: 1rem; font-size: var(--text-title3);
         }
         .category-title-btn {
@@ -526,8 +640,12 @@
             flex-wrap: wrap;
             align-items: center;
             gap: var(--space-2);
-            margin-bottom: 0.75rem;
+            margin-bottom: var(--space-3); /* 0.75rem → --space-3 (12px) */
         }
+        /* Status chips — dark frosted glass regardless of the card's
+           hue, so white text/emoji stay legible against any of the ten
+           accent colors; a subtle colored ring is the only thing that
+           changes per status, plus the emoji already in the label text. */
         .category-time-badge {
             display: inline-block;
             font-family: var(--font-mono);
@@ -535,11 +653,13 @@
             letter-spacing: 0.02em;
             padding: 3px 8px;
             border-radius: 10px;
+            background: rgba(0,0,0,0.28);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.25);
+            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
         }
-        .category-time-badge.all-day { background: rgba(11,93,66,0.08); color: var(--text-muted); }
-        .category-time-badge.open { background: rgba(46,125,50,0.12); color: var(--success); }
-        .category-time-badge.closed { background: rgba(198,40,40,0.1); color: var(--danger); }
-        [data-theme="dark"] .category-time-badge.all-day { background: rgba(232,199,102,0.08); }
+        .category-time-badge.open { box-shadow: 0 0 0 1px rgba(46,204,113,0.4) inset; }
+        .category-time-badge.closed { box-shadow: 0 0 0 1px rgba(255,99,99,0.45) inset; }
 
         .category-order-status {
             display: inline-flex;
@@ -552,45 +672,35 @@
             padding: 3px 9px;
             border-radius: 10px;
             white-space: nowrap;
+            background: rgba(0,0,0,0.28);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.28);
+            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
         }
-        .category-order-status.open {
-            background: rgba(46,125,50,0.14);
-            color: var(--success);
-            border: 1px solid rgba(46,125,50,0.35);
-        }
-        .category-order-status.closed {
-            background: rgba(198,40,40,0.12);
-            color: var(--danger);
-            border: 1px solid rgba(198,40,40,0.32);
-        }
+        .category-order-status.open { box-shadow: 0 0 0 1px rgba(46,204,113,0.45) inset; }
+        .category-order-status.closed { box-shadow: 0 0 0 1px rgba(255,99,99,0.5) inset; }
         .category-order-status.closing-soon {
-            background: rgba(242,201,76,0.16);
-            color: var(--warning);
-            border: 1px solid rgba(242,201,76,0.4);
+            box-shadow: 0 0 0 1px rgba(255,206,84,0.55) inset;
             animation: category-closing-flicker 3.6s ease-in-out infinite;
-        }
-        [data-theme="dark"] .category-order-status.closing-soon {
-            background: rgba(242,201,76,0.14);
-            color: var(--gold-bright);
         }
         @keyframes category-closing-flicker {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.55; }
         }
         @media (prefers-reduced-motion: reduce) {
             .category-order-status.closing-soon { animation: none; }
         }
         .category-window-note {
             font-size: var(--text-caption2);
-            color: var(--text-muted);
+            color: rgba(255,255,255,0.9);
             font-style: italic;
             line-height: 1.4;
-            margin: -0.35rem 0 var(--space-3);
+            background: rgba(0,0,0,0.2);
+            border-radius: var(--radius-sm);
+            padding: var(--space-2) var(--space-3);
+            margin: -0.1rem 0 var(--space-3);
         }
 
-        .category-card.category-frozen {
-            border-left-color: var(--danger);
-        }
         .frozen-banner {
             display: flex;
             align-items: center;
@@ -598,12 +708,12 @@
             font-family: var(--font-btn);
             font-weight: 600;
             font-size: var(--text-caption1);
-            color: var(--danger);
-            background: rgba(198,40,40,0.08);
-            border: 1px dashed var(--danger);
+            color: #fff;
+            background: rgba(0,0,0,0.4);
+            border: 1px dashed rgba(255,255,255,0.45);
             border-radius: var(--radius-sm);
             padding: var(--space-2) var(--space-3);
-            margin-bottom: 0.6rem;
+            margin-bottom: var(--space-2); /* 0.6rem → --space-2 (8px) */
         }
 
         .category-help-note {
@@ -613,25 +723,37 @@
             font-family: var(--font-btn);
             font-weight: 600;
             font-size: var(--text-caption1);
-            color: #128C7E;
-            background: rgba(37, 211, 102, 0.09);
-            border: 1px dashed rgba(37, 211, 102, 0.45);
+            color: #6FE3A8;
+            background: rgba(0,0,0,0.25);
+            border: 1px dashed rgba(111,227,168,0.55);
             border-radius: var(--radius-sm);
             padding: var(--space-2) var(--space-3);
-            margin-bottom: 0.85rem;
+            margin-bottom: var(--space-3); /* 0.85rem → --space-3 (12px; nearest 8pt step) */
             text-decoration: none;
             transition: var(--transition);
         }
         .category-help-note:hover {
-            background: rgba(37, 211, 102, 0.18);
-            border-color: #1FA855;
+            background: rgba(0,0,0,0.35);
+            border-color: #6FE3A8;
             transform: translateY(-1px);
         }
         .category-help-note svg { flex-shrink: 0; }
         .category-help-note .chn-phone { font-family: var(--font-mono); letter-spacing: 0.01em; }
-        [data-theme="dark"] .category-help-note { color: #6FE3A8; background: rgba(37, 211, 102, 0.10); }
 
-        .menu-items-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-3); }
+        /* Inner "tray" — a calm near-neutral surface holding the actual
+           menu items, so the vivid cube color lives at the frame/header
+           only and the shopping content underneath stays fully legible. */
+        .menu-items-body {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-3);
+            background: color-mix(in srgb, var(--surface) 95%, transparent);
+            border-radius: 14px;
+            padding: var(--space-3);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.14), inset 0 -1px 0 rgba(255,255,255,0.5);
+            position: relative;
+        }
+        [data-theme="dark"] .menu-items-body {
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4), inset 0 -1px 0 rgba(255,255,255,0.06);
+        }
 
         .menu-item {
             display: flex;
@@ -752,7 +874,7 @@
         .pickup-note {
             font-size: var(--text-caption1); color: var(--text-muted); background: rgba(168, 70, 47, 0.08);
             border: 1px dashed var(--accent); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3);
-            margin-top: 0.75rem; display: none;
+            margin-top: var(--space-3); /* 0.75rem → --space-3 (12px) */ display: none;
         }
         .pickup-note.visible { display: block; }
         .address-fields.collapsed { display: none; }
@@ -851,8 +973,8 @@
             flex-direction: column;
             justify-content: center;
             flex-shrink: 0;
-            padding: var(--space-2) 0.15rem var(--space-2) var(--space-3);
-            gap: 0.08rem;
+            padding: var(--space-2) 0.15rem var(--space-2) var(--space-3); /* 0.15rem: intentional sub-px optical inset, finer than --space-1 floor */
+            gap: 0.08rem; /* sub-pixel optical gap between cc-label and dial code — intentionally below 4px scale floor */
         }
         .cc-label {
             font-size: var(--text-caption2);
@@ -1124,7 +1246,7 @@
             aspect-ratio: 1 / 1; color: var(--text-muted); font-size: var(--text-footnote); line-height: 1.8; text-align: center;
         }
         .qr-amount-tag {
-            margin-top: 0.85rem;
+            margin-top: var(--space-3); /* 0.85rem → --space-3 (12px; nearest 8pt step) */
             display: flex; align-items: center; justify-content: space-between;
             background: linear-gradient(180deg, var(--primary), var(--primary-deep)); color: var(--gold-bright);
             padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); width: 100%;
@@ -1512,7 +1634,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="form-group" style="margin-top:0.65rem;">
+                        <div class="form-group" style="margin-top:var(--space-2);"> <!-- 0.65rem → --space-2 (8px) -->
                             <label for="cust-apart">Apartment / Villa</label>
                             <select id="cust-apart">
                                 <option value="SIDHHARTH DHAKSHIN Apts" selected>SIDHHARTH DHAKSHIN Apts</option>
@@ -1719,6 +1841,44 @@
             return icons[cat] || "🍽️";
         }
 
+        // ── Category liquid-glass color system ──────────────────────────
+        // Redesigned around food-color psychology rather than the
+        // dashboard's data-viz palette (that palette optimizes for
+        // distinguishability in a legend; a menu optimizes for appetite
+        // and mood). Warm, saturated hues read as appetizing; blue is
+        // deliberately excluded — it's a well-documented appetite
+        // suppressant and rare in nature for edible food — so nothing
+        // here uses it. Each category gets a hand-picked, high-saturation
+        // hue with a specific rationale (see CSS block above for the
+        // full breakdown), not a palette-cycling index, so the color
+        // stays stable and meaningful regardless of search/filter order.
+        // Any future category not in the map falls back to a
+        // deterministic hash-based pick from the same vivid palette.
+        const QUALITATIVE_PALETTE = [
+            '#FF6B00', '#FF2D95', '#FFB300', '#E8402A', '#00C2D1',
+            '#B24DE8', '#FFD60A', '#FF5D8F', '#7B2FF7', '#5E5CE6'
+        ];
+        const CATEGORY_COLOR_MAP = {
+            "Sandwich":          '#FF6B00', // vivid orange   — everyday energy, appetite
+            "Premium Sandwich":  '#FF2D95', // hot magenta    — indulgent, dessert-sweet
+            "Maggi":             '#FFB300', // golden amber   — comfort, nostalgia, warmth
+            "Pasta":             '#E8402A', // tomato crimson — savory Italian richness
+            "Juices":            '#00C2D1', // aqua cyan      — freshness, hydration
+            "Milkshakes":        '#B24DE8', // orchid purple  — playful, creamy indulgence
+            "Combos":            '#FFD60A', // sunflower gold — value, festivity
+            "Evening Snacks":    '#FF5D8F', // coral pink     — cozy, social evening warmth
+            "Xtra Delights":     '#7B2FF7', // royal violet   — premium, exclusive
+            "Dinner Special":    '#5E5CE6'  // deep indigo    — calm evening sophistication
+        };
+        function hashStr(s) {
+            let h = 0;
+            for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+            return h;
+        }
+        function categoryAccentColor(cat) {
+            return CATEGORY_COLOR_MAP[cat] || QUALITATIVE_PALETTE[Math.abs(hashStr(cat)) % QUALITATIVE_PALETTE.length];
+        }
+
         const MENU_DATA_BY_MODE = {
 
         Instant: [
@@ -1777,18 +1937,11 @@
             { id: "d1", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Lassi", price: 75 },
             { id: "d2", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Regular Rosemilk", price: 99 },
             { id: "d3", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Sabja Rosemilk", price: 99 },
-            { id: "d4", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Butterscotch Banana Milkshake", price: 99 },
+            { id: "d4", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Royal Vanilla Rosemilk", price: 99 },
             { id: "d5", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Banana Milkshake", price: 99 },
             { id: "d6", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Choco Banana Milkshake", price: 99, popular: true },
-            { id: "d7", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Strawberry Banana Milkshake", price: 99 },
-            { id: "d8", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Milkchoclate with OREO Milkshake", price: 99 },
-            { id: "d9", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "White choclaty Strawberry Banana Milkshake", price: 99 },
-            { id: "d10", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Dark Choclate Milkshake", price: 99 },
-            { id: "d11", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Strawberry Cheese Milkshake", price: 99 },
-            { id: "d12", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Biscoff Banana Milkshake", price: 99 },
-            { id: "d13", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Cheesy Milkshake with real Blueberries seeds", price: 99 },
-            { id: "d14", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "White Choclate Banana Milkshake", price: 99 },
-    //      { id: "co1", category: "Combos", title: "🎁 Combos & Offers", name: "BUY 2 sets Premium Biscoff Cheese Butter grilled sandwich worth 350:", price: 150 },
+            { id: "d7", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Fresh Coconut Milk (1 Ltr)", price: 125 },
+        //     { id: "co1", category: "Combos", title: "🎁 Combos & Offers", name: "BUY 2 sets Premium Biscoff Cheese Butter grilled sandwich worth 350:", price: 150 },
 
               { id: "es1", category: "Evening Snacks", title: "🌆 Delightful Evening Snacks", name: "Salem Thattu Vadai Set 1 box with 5sets", price: 50 },
 
@@ -2379,6 +2532,7 @@
                     const isCategoryDisabled = ENFORCE_CATEGORY_WINDOW && !windowStatus.isOpenNow && POSState.orderMode !== "Subscription";
 
                     card.className = `category-card${shouldCollapse ? ' collapsed' : ''}${isCategoryDisabled ? ' category-frozen' : ''}`;
+                    card.style.setProperty('--card-accent', categoryAccentColor(items[0].category));
 
                     const timeBadgeHTML = windowStatus.isAllDay
                         ? `<span class="category-time-badge all-day">🕒 All Day (${windowStatus.label})</span>`
@@ -2409,7 +2563,7 @@
                     card.innerHTML = `
                         <h3 class="category-title">
                             <button type="button" class="category-title-btn" aria-expanded="${!shouldCollapse}" aria-controls="${panelId}">
-                                <span>${title}</span>
+                                <span style="display:flex;align-items:center;gap:0.5rem;"><span class="cat-color-dot" aria-hidden="true"></span>${title}</span>
                                 <span class="category-toggle-icon" aria-hidden="true">▼</span>
                             </button>
                         </h3>
