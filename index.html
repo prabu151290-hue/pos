@@ -1,6 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="white-chocolate" data-theme-mode="light">
 <head>
+    <script>
+        /* Applied synchronously, before first paint, to avoid a flash of the
+           wrong flavor on reload. Kept minimal and framework-free; the full
+           THEME_REGISTRY (names, descriptions, mode) lives further down with
+           the rest of the theme picker UI. */
+        (function () {
+            try {
+                var saved = localStorage.getItem("adTheme");
+                var validThemes = ["white-chocolate", "dark-chocolate", "creamy-cookie", "matcha-cream", "berry-mousse"];
+                var darkThemes = ["dark-chocolate", "berry-mousse"];
+                if (saved === "dark" || saved === "light") { saved = null; } // legacy toggle value — ignore, fall through to system pref
+                if (!saved || validThemes.indexOf(saved) === -1) {
+                    var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+                    saved = prefersDark ? "dark-chocolate" : "white-chocolate";
+                }
+                document.documentElement.setAttribute("data-theme", saved);
+                document.documentElement.setAttribute("data-theme-mode", darkThemes.indexOf(saved) !== -1 ? "dark" : "light");
+            } catch (e) { /* localStorage unavailable — default flavor already set in markup */ }
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AMRUTHADHAARANAM — Order Terminal</title>
@@ -17,6 +37,24 @@
 
     <style>
         :root {
+            /* ═══════════════════════════════════════════════════════════════
+               THEME SYSTEM — "Flavor Palette" (5 selectable themes)
+               ───────────────────────────────────────────────────────────────
+               :root holds the WHITE CHOCOLATE theme — the default flavor —
+               plus every non-color structural token (spacing, radius, type
+               scale, fonts) that all five flavors share unmodified. Each
+               other flavor overrides only the color tokens below, scoped
+               under [data-theme="<flavor-id>"]. A companion attribute,
+               data-theme-mode="light|dark", is set alongside data-theme so
+               the handful of mode-specific structural rules (glass fills,
+               watermark ink, body texture) apply correctly regardless of
+               which flavor is active — see THEME_REGISTRY in the JS below.
+
+               Color-psychology brief per flavor (why each palette was
+               chosen) sits above its own token block further down.
+               ═══════════════════════════════════════════════════════════════ */
+
+            /* ---- White Chocolate (default) — purity, comfort, appetite ---- */
             --primary: #0B5D42;
             --primary-deep: #062F22;
             /* Naming unified with sales-dashboard's --gold-* convention (Phase 5,
@@ -101,29 +139,115 @@
             --glass-blur: 20px;
         }
 
-        [data-theme="dark"] {
-            --primary: #1E9C6F;
-            --primary-deep: #0B5D42;
-            --gold-mid: #E8C766;
-            --gold-bright: #F5DFA0;
-            --gold-deep: #A5811E;
-            --background: #0A130F;
-            --surface: #14231C;
-            --accent: #D9A62E;
-            --text-main: #F0EBD8;
-            --text-muted: #9CB0A2;
-            --border: #274438;
-            --shadow: 0 4px 14px rgba(0,0,0,0.35);
-            --shadow-lift: 0 16px 38px rgba(0,0,0,0.5);
+        /* ── Dark Chocolate — dark mode. Color psychology: deep cocoa +
+           warm caramel gold reads as premium, indulgent, grounding; the
+           near-black espresso base makes every accent glow rather than
+           shout, the classic "expensive restaurant at night" feeling. ── */
+        [data-theme="dark-chocolate"] {
+            --primary: #6E4425;
+            --primary-deep: #2B190E;
+            --gold-mid: #D9A44E;
+            --gold-bright: #F2C879;
+            --gold-deep: #9C6B24;
+            --background: #140D09;
+            --surface: #201510;
+            --accent: #C77D3D;
+            --success: #4CAF6D;
+            --danger: #E2574C;
+            --warning: #D9A62E;
+            --text-main: #F3E6D8;
+            --text-muted: #B79A83;
+            --border: #3A2A1E;
+            --shadow: 0 4px 14px rgba(0,0,0,0.45);
+            --shadow-lift: 0 16px 38px rgba(0,0,0,0.6);
             --heading-color: var(--gold-mid);
-            --emboss-raised: 0 2px 8px rgba(0,0,0,0.25);
-            --emboss-pressed: 0 1px 3px rgba(0,0,0,0.35) inset;
-            --focus-glow: rgba(30, 156, 111, 0.22);
-            /* dark surfaces need a denser translucency to read the same visual
-               weight as light — 0.55 vs 0.45 below */
-            --phone-glass-fill: rgba(20, 35, 28, 0.55);
+            --emboss-raised: 0 2px 8px rgba(0,0,0,0.3);
+            --emboss-pressed: 0 1px 3px rgba(0,0,0,0.4) inset;
+            --focus-glow: rgba(217, 164, 78, 0.25);
+            --phone-glass-fill: rgba(32, 21, 16, 0.6);
         }
-        [data-theme="dark"] body {
+
+        /* ── Creamy Cookie — light mode. Color psychology: toasted-biscuit
+           browns on a warm butter-cream base read as cozy, nostalgic,
+           homely — softer and more casual than White Chocolate. ── */
+        [data-theme="creamy-cookie"] {
+            --primary: #8B5E34;
+            --primary-deep: #5A3A1E;
+            --gold-mid: #D3A63E;
+            --gold-bright: #F2D48A;
+            --gold-deep: #9C7420;
+            --background: #F5E9D6;
+            --surface: #FFF8EC;
+            --accent: #C08A3E;
+            --success: #4B8A3E;
+            --danger: #C1502E;
+            --warning: #9C6B14;
+            --text-main: #3E2C18;
+            --text-muted: #8C7256;
+            --border: #E3CBA0;
+            --shadow: 0 4px 14px rgba(80,50,20,0.12);
+            --shadow-lift: 0 14px 34px rgba(80,50,20,0.22);
+            --heading-color: var(--primary);
+            --emboss-raised: 0 2px 8px rgba(60,35,10,0.10);
+            --emboss-pressed: 0 1px 3px rgba(60,35,10,0.14) inset;
+            --focus-glow: rgba(192, 138, 62, 0.18);
+        }
+
+        /* ── Matcha Cream — light mode. Color psychology: sage green +
+           soft cream reads as fresh, natural, calming — and doubles as a
+           gentle nod to the menu's 100%-vegetarian identity. ── */
+        [data-theme="matcha-cream"] {
+            --primary: #4C7A4B;
+            --primary-deep: #2E4F30;
+            --gold-mid: #CBA945;
+            --gold-bright: #EBD98C;
+            --gold-deep: #8F7420;
+            --background: #F1F6EC;
+            --surface: #FBFDF7;
+            --accent: #6E9A5C;
+            --success: #3E8A4A;
+            --danger: #B5482E;
+            --warning: #8F7420;
+            --text-main: #223522;
+            --text-muted: #6B7F63;
+            --border: #D6E3CB;
+            --shadow: 0 4px 14px rgba(30,50,20,0.10);
+            --shadow-lift: 0 14px 34px rgba(30,50,20,0.20);
+            --heading-color: var(--primary);
+            --emboss-raised: 0 2px 8px rgba(20,40,15,0.09);
+            --emboss-pressed: 0 1px 3px rgba(20,40,15,0.13) inset;
+            --focus-glow: rgba(76, 122, 75, 0.16);
+        }
+
+        /* ── Berry Mousse — dark mode. Color psychology: deep plum/berry
+           with rose-gold accents reads as playful, indulgent, a little
+           daring — the "dessert menu at night" energy, distinct in mood
+           from Dark Chocolate's cocoa warmth. ── */
+        [data-theme="berry-mousse"] {
+            --primary: #7A2E4D;
+            --primary-deep: #3D1626;
+            --gold-mid: #E0A65E;
+            --gold-bright: #F2CC94;
+            --gold-deep: #A5732E;
+            --background: #170A11;
+            --surface: #241019;
+            --accent: #C25C82;
+            --success: #4CAF7A;
+            --danger: #E2574C;
+            --warning: #E0A65E;
+            --text-main: #F5E6EC;
+            --text-muted: #B58C9C;
+            --border: #3E1E2C;
+            --shadow: 0 4px 14px rgba(0,0,0,0.42);
+            --shadow-lift: 0 16px 38px rgba(0,0,0,0.55);
+            --heading-color: var(--gold-mid);
+            --emboss-raised: 0 2px 8px rgba(0,0,0,0.28);
+            --emboss-pressed: 0 1px 3px rgba(0,0,0,0.38) inset;
+            --focus-glow: rgba(194, 92, 130, 0.24);
+            --phone-glass-fill: rgba(36, 16, 25, 0.6);
+        }
+
+        [data-theme-mode="dark"] body {
             background-image:
                 radial-gradient(circle at 12% 8%, rgba(232,199,102,0.04) 0, transparent 40%),
                 radial-gradient(circle at 88% 92%, rgba(232,199,102,0.04) 0, transparent 40%),
@@ -294,7 +418,7 @@
             border-bottom: 3px solid var(--gold-mid);
             gap: var(--space-4);
         }
-        [data-theme="dark"] .pos-header {
+        [data-theme-mode="dark"] .pos-header {
             background: linear-gradient(120deg, rgba(177,75,82,0.12) 0%, var(--surface) 55%, rgba(232,199,102,0.06) 100%);
         }
         .header-left { display: flex; align-items: center; justify-content: center; }
@@ -321,7 +445,7 @@
             letter-spacing: 1.5px; transition: color 0.3s ease;
             text-shadow: 0 1px 0 rgba(255,255,255,0.35);
         }
-        [data-theme="dark"] .header-center h1 { text-shadow: 0 1px 6px rgba(232,199,102,0.25); }
+        [data-theme-mode="dark"] .header-center h1 { text-shadow: 0 1px 6px rgba(232,199,102,0.25); }
         .header-center p { font-size: var(--text-footnote); color: var(--text-muted); margin-top: 0.3rem; letter-spacing: 0.03em; }
 
         /* ---- HERO SECTION (new) ---- */
@@ -370,16 +494,76 @@
         }
         .pill.active, .pill:hover { background: linear-gradient(180deg, var(--primary), var(--primary-deep)); color: white; border-color: var(--primary-deep); }
         .pill:active { box-shadow: var(--emboss-pressed); transform: translateY(1px); }
-        .theme-toggle {
-            background: var(--surface); border: 1.5px solid var(--gold-deep); cursor: pointer;
+        /* ═══════════════════════════════════════════════════════════════
+           THEME PICKER — replaces the old binary dark/light toggle with
+           a 5-flavor swatch picker. Trigger button shows the active
+           flavor's own gradient (so the control previews the choice
+           before you even open it) + name; opening it reveals a popover
+           of all 5 flavors as tappable gradient chips with a check-mark
+           on the active one. Built flat/vanilla (no framework) to match
+           the rest of this file.
+           ═══════════════════════════════════════════════════════════════ */
+        .theme-picker { position: relative; }
+        .theme-picker-trigger {
+            background: linear-gradient(135deg, var(--tp-swatch-a, var(--primary)), var(--tp-swatch-b, var(--gold-mid)));
+            border: 1.5px solid var(--gold-deep); cursor: pointer;
             padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-family: var(--font-btn);
-            font-size: var(--text-footnote); font-weight: 600; color: var(--primary); display: flex;
-            align-items: center; gap: var(--space-2); white-space: nowrap; transition: var(--transition);
-            box-shadow: var(--emboss-raised);
+            font-size: var(--text-footnote); font-weight: 600; color: #fff; display: flex;
+            align-items: center; gap: var(--space-2); white-space: nowrap; transition: var(--transition-spring);
+            box-shadow: var(--emboss-raised), 0 2px 10px color-mix(in srgb, var(--tp-swatch-a, var(--primary)) 45%, transparent);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.35);
         }
-        .theme-toggle:hover { background: linear-gradient(180deg, var(--gold-bright), var(--gold-mid)); color: var(--primary-deep); transform: translateY(-1px); }
-        .theme-toggle:active { box-shadow: var(--emboss-pressed); transform: translateY(1px); }
-        #theme-icon { font-size: var(--text-callout); line-height: 1; }
+        .theme-picker-trigger:hover { transform: translateY(-1px) scale(1.015); box-shadow: var(--emboss-raised), 0 4px 16px color-mix(in srgb, var(--tp-swatch-a, var(--primary)) 60%, transparent); }
+        .theme-picker-trigger:active { box-shadow: var(--emboss-pressed); transform: translateY(1px) scale(0.99); }
+        .theme-picker-trigger .tp-swatch-dot {
+            width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--tp-swatch-a, var(--primary)) 0%, var(--tp-swatch-b, var(--gold-mid)) 100%);
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.55), inset 0 1px 2px rgba(255,255,255,0.4);
+        }
+        .theme-picker-trigger .tp-chevron { font-size: var(--text-caption2); opacity: 0.85; transition: transform 0.22s ease; }
+        .theme-picker.open .theme-picker-trigger .tp-chevron { transform: rotate(180deg); }
+
+        .theme-picker-panel {
+            position: absolute; top: calc(100% + 10px); right: 0; z-index: 500;
+            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lift);
+            padding: var(--space-3);
+            min-width: 240px;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            transform-origin: top right;
+            animation: tp-pop 0.18s cubic-bezier(0.34,1.4,0.64,1);
+        }
+        .theme-picker.open .theme-picker-panel { display: flex; }
+        @keyframes tp-pop { from { opacity: 0; transform: scale(0.94) translateY(-4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .theme-picker-label {
+            font-family: var(--font-btn); font-size: var(--text-caption1); font-weight: 700;
+            color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;
+            padding: var(--space-1) var(--space-2) var(--space-2);
+        }
+        .theme-option {
+            display: flex; align-items: center; gap: var(--space-3);
+            width: 100%; border: none; background: none; cursor: pointer;
+            padding: var(--space-2); border-radius: var(--radius-md);
+            font-family: var(--font-btn); font-size: var(--text-subhead); color: var(--text-main);
+            text-align: left; transition: var(--transition);
+        }
+        .theme-option:hover { background: color-mix(in srgb, var(--primary) 10%, transparent); }
+        .theme-option:active { transform: scale(0.98); }
+        .theme-option .to-swatch {
+            width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+            box-shadow: inset 2px 2px 0 rgba(255,255,255,0.35), inset -2px -3px 5px rgba(0,0,0,0.25), 0 2px 5px rgba(0,0,0,0.18);
+        }
+        .theme-option .to-text { flex: 1; display: flex; flex-direction: column; line-height: 1.25; }
+        .theme-option .to-name { font-weight: 700; }
+        .theme-option .to-desc { font-size: var(--text-caption2); color: var(--text-muted); }
+        .theme-option .to-check { font-size: var(--text-headline); color: var(--primary); opacity: 0; flex-shrink: 0; }
+        .theme-option.active .to-check { opacity: 1; }
+        .theme-option.active { background: color-mix(in srgb, var(--primary) 12%, transparent); }
+        @media (max-width: 768px) {
+            .theme-picker-panel { right: 0; left: auto; min-width: 220px; }
+        }
 
         .mode-tabs {
             display: flex; gap: var(--space-2); margin-bottom: var(--space-4); flex-wrap: wrap;
@@ -458,7 +642,7 @@
             background: rgba(156, 107, 20, 0.07); border: 1px dashed var(--accent);
             border-radius: var(--radius-md); animation: toast-in 0.2s ease-out;
         }
-        [data-theme="dark"] .item-schedule-panel { background: rgba(217, 166, 46, 0.08); }
+        [data-theme-mode="dark"] .item-schedule-panel { background: rgba(217, 166, 46, 0.08); }
         .isp-label {
             font-size: var(--text-caption2); font-weight: 700; color: var(--accent); text-transform: uppercase;
             letter-spacing: 0.04em; display: block; margin-bottom: var(--space-2); /* 0.6rem → --space-2 (8px) */
@@ -471,7 +655,7 @@
             padding: var(--space-2) var(--space-2); font-size: var(--text-footnote); font-weight: 600; color: var(--accent);
             background: rgba(156, 107, 20, 0.09); border: 1px solid var(--border); border-radius: var(--radius-md);
         }
-        [data-theme="dark"] .isp-fixed-time { background: rgba(217, 166, 46, 0.1); }
+        [data-theme-mode="dark"] .isp-fixed-time { background: rgba(217, 166, 46, 0.1); }
         .isp-days { display: none; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
         .isp-days.visible { display: flex; }
         .day-chip {
@@ -552,12 +736,17 @@
             overflow: hidden;
             border-radius: 20px;
             padding: var(--space-4);
-            border: 1px solid color-mix(in srgb, var(--card-accent) 60%, black 40%);
-            border-left: 6px solid color-mix(in srgb, var(--card-accent) 70%, black 30%);
+            /* Category hue is mixed against the ACTIVE THEME's own surface/
+               primary-deep tokens (not raw white/black) so every cube reads
+               as "dipped in this theme" rather than a theme-agnostic neon
+               sticker — this is what makes the 10 category colors feel
+               curated per flavor instead of clashing with it. */
+            border: 1px solid color-mix(in srgb, var(--card-accent) 55%, var(--primary-deep) 45%);
+            border-left: 6px solid color-mix(in srgb, var(--card-accent) 65%, var(--primary-deep) 35%);
             background: linear-gradient(155deg,
-                color-mix(in srgb, var(--card-accent) 55%, white 45%) 0%,
-                color-mix(in srgb, var(--card-accent) 94%, transparent 6%) 42%,
-                color-mix(in srgb, var(--card-accent) 76%, black 24%) 100%
+                color-mix(in srgb, var(--card-accent) 50%, var(--surface) 50%) 0%,
+                color-mix(in srgb, var(--card-accent) 88%, var(--surface) 12%) 42%,
+                color-mix(in srgb, var(--card-accent) 70%, var(--primary-deep) 30%) 100%
             );
             box-shadow:
                 inset 2px 2px 0 rgba(255,255,255,0.5),
@@ -751,7 +940,7 @@
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.14), inset 0 -1px 0 rgba(255,255,255,0.5);
             position: relative;
         }
-        [data-theme="dark"] .menu-items-body {
+        [data-theme-mode="dark"] .menu-items-body {
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.4), inset 0 -1px 0 rgba(255,255,255,0.06);
         }
 
@@ -842,7 +1031,7 @@
             font-size: var(--text-caption1); color: var(--text-muted); margin-bottom: 0.75rem;
         }
         .order-ref-value { font-family: var(--font-mono); color: var(--primary); font-weight: 600; font-size: var(--text-footnote); }
-        [data-theme="dark"] .order-ref-chip { background: rgba(232,199,102,0.08); }
+        [data-theme-mode="dark"] .order-ref-chip { background: rgba(232,199,102,0.08); }
 
         .cart-empty-state { text-align: center; padding: var(--space-4) 0 var(--space-2); color: var(--text-muted); font-size: var(--text-footnote); }
         .cart-empty-state .empty-icon { font-size: var(--text-title1); display: block; margin-bottom: 0.3rem; }
@@ -1106,7 +1295,7 @@
                     0 2px 4px rgba(59,15,19,0.05) inset,
                     0 1px 0 rgba(255,255,255,0.35) inset;  /* specular highlight on top edge */
             }
-            html.glass-enabled[data-theme="dark"] .phone-input-group {
+            html.glass-enabled[data-theme-mode="dark"] .phone-input-group {
                 background: var(--phone-glass-fill);
                 -webkit-backdrop-filter: blur(8px) saturate(1.6);
                 backdrop-filter: blur(8px) saturate(1.6);
@@ -1122,7 +1311,7 @@
                     0 1px 0 rgba(255,255,255,0.45) inset,
                     0 0 0 4px var(--focus-glow);
             }
-            html.glass-enabled[data-theme="dark"] .phone-input-group:focus-within {
+            html.glass-enabled[data-theme-mode="dark"] .phone-input-group:focus-within {
                 background: rgba(30, 45, 36, 0.68);
                 box-shadow:
                     0 2px 4px rgba(0,0,0,0.22) inset,
@@ -1239,7 +1428,7 @@
             padding: var(--space-3); background: var(--surface); transition: border-color 0.25s, box-shadow 0.25s;
         }
         .qr-wrapper.active { border-color: var(--gold-mid); box-shadow: 0 0 0 3px rgba(201,162,39,0.16); }
-        [data-theme="dark"] .qr-wrapper.active { box-shadow: 0 0 0 3px rgba(232,199,102,0.2); }
+        [data-theme-mode="dark"] .qr-wrapper.active { box-shadow: 0 0 0 3px rgba(232,199,102,0.2); }
         .qr-image { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; display: block; border-radius: var(--radius-md); }
         .qr-placeholder-box {
             display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -1435,7 +1624,7 @@
             .category-pills { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; min-width: 0; }
             .category-pills::-webkit-scrollbar { display: none; }
             .pill { white-space: nowrap; flex-shrink: 0; }
-            .theme-toggle { align-self: flex-start; }
+            .theme-picker { align-self: flex-start; }
             .menu-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
             .category-card { max-width: 100%; overflow: hidden; }
             .category-title { cursor: pointer; user-select: none; -webkit-user-select: none; display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
@@ -1565,7 +1754,17 @@
                     </button>
                 </div>
                 <div class="category-pills" id="category-pills-container" role="group" aria-label="Filter by category"></div>
-                <button id="btn-theme" class="theme-toggle" title="Toggle Dark/Light Mode" aria-label="Toggle dark mode" aria-pressed="false"><span id="theme-icon" aria-hidden="true">🌙</span><span id="theme-label">Dark Mode</span></button>
+                <div class="theme-picker" id="theme-picker">
+                    <button id="btn-theme" class="theme-picker-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="theme-picker-panel" title="Change theme">
+                        <span class="tp-swatch-dot" aria-hidden="true"></span>
+                        <span id="theme-label">White Chocolate</span>
+                        <span class="tp-chevron" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="theme-picker-panel" id="theme-picker-panel" role="menu" aria-label="Choose a theme">
+                        <span class="theme-picker-label">Choose a flavor</span>
+                        <div id="theme-options-list"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="menu-grid" id="menu-container" aria-label="Menu items" aria-live="polite"></div>
@@ -3141,15 +3340,80 @@
                     if (e.key === "Enter") { e.preventDefault(); this.applyCoupon(); }
                 });
 
-                document.getElementById("btn-theme").addEventListener("click", () => {
+                const THEME_REGISTRY = [
+                    { id: "white-chocolate", name: "White Chocolate", desc: "Bright, creamy, classic",       mode: "light", a: "#0B5D42", b: "#C9A227" },
+                    { id: "dark-chocolate",  name: "Dark Chocolate",  desc: "Rich cocoa, moody & premium",    mode: "dark",  a: "#6E4425", b: "#D9A44E" },
+                    { id: "creamy-cookie",   name: "Creamy Cookie",   desc: "Warm, cozy, biscuit-toned",      mode: "light", a: "#8B5E34", b: "#D3A63E" },
+                    { id: "matcha-cream",    name: "Matcha Cream",    desc: "Fresh, calm, garden green",      mode: "light", a: "#4C7A4B", b: "#CBA945" },
+                    { id: "berry-mousse",    name: "Berry Mousse",    desc: "Playful deep berry, after dark", mode: "dark",  a: "#7A2E4D", b: "#E0A65E" }
+                ];
+
+                function applyTheme(themeId, persist) {
+                    const theme = THEME_REGISTRY.find(t => t.id === themeId) || THEME_REGISTRY[0];
                     const html = document.documentElement;
-                    const mode = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-                    html.setAttribute("data-theme", mode);
-                    document.getElementById("theme-icon").innerText = mode === "dark" ? "☀️" : "🌙";
-                    document.getElementById("theme-label").innerText = mode === "dark" ? "Light Mode" : "Dark Mode";
-                    document.getElementById("btn-theme").setAttribute("aria-pressed", mode === "dark" ? "true" : "false");
+                    html.setAttribute("data-theme", theme.id);
+                    html.setAttribute("data-theme-mode", theme.mode);
+                    html.style.setProperty("--tp-swatch-a", theme.a);
+                    html.style.setProperty("--tp-swatch-b", theme.b);
+                    const labelEl = document.getElementById("theme-label");
+                    if (labelEl) labelEl.innerText = theme.name;
+                    const metaTheme = document.querySelector('meta[name="theme-color"]');
+                    if (metaTheme) metaTheme.setAttribute("content", theme.a);
+                    document.querySelectorAll(".theme-option").forEach(opt => {
+                        opt.classList.toggle("active", opt.dataset.themeId === theme.id);
+                    });
+                    if (persist) {
+                        try { localStorage.setItem("adTheme", theme.id); } catch (e) { /* storage unavailable, ignore */ }
+                    }
                     updateWatermark();
+                }
+
+                const themeOptionsList = document.getElementById("theme-options-list");
+                THEME_REGISTRY.forEach(theme => {
+                    const opt = document.createElement("button");
+                    opt.type = "button";
+                    opt.className = "theme-option";
+                    opt.dataset.themeId = theme.id;
+                    opt.setAttribute("role", "menuitemradio");
+                    opt.setAttribute("aria-label", `${theme.name} — ${theme.desc}`);
+                    opt.innerHTML = `
+                        <span class="to-swatch" style="background: linear-gradient(135deg, ${theme.a}, ${theme.b});" aria-hidden="true"></span>
+                        <span class="to-text"><span class="to-name">${theme.name}</span><span class="to-desc">${theme.desc}</span></span>
+                        <span class="to-check" aria-hidden="true">✓</span>
+                    `;
+                    opt.addEventListener("click", () => {
+                        applyTheme(theme.id, true);
+                        themePicker.classList.remove("open");
+                        btnTheme.setAttribute("aria-expanded", "false");
+                    });
+                    themeOptionsList.appendChild(opt);
                 });
+
+                const themePicker = document.getElementById("theme-picker");
+                const btnTheme = document.getElementById("btn-theme");
+                btnTheme.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const isOpen = themePicker.classList.toggle("open");
+                    btnTheme.setAttribute("aria-expanded", isOpen ? "true" : "false");
+                });
+                document.addEventListener("click", (e) => {
+                    if (!themePicker.contains(e.target)) {
+                        themePicker.classList.remove("open");
+                        btnTheme.setAttribute("aria-expanded", "false");
+                    }
+                });
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape" && themePicker.classList.contains("open")) {
+                        themePicker.classList.remove("open");
+                        btnTheme.setAttribute("aria-expanded", "false");
+                        btnTheme.focus();
+                    }
+                });
+
+                // Sync the picker UI with whatever theme the <head> blocking
+                // script already applied (avoids a flash-of-wrong-theme) and
+                // mark the matching swatch active — no persist, no re-apply.
+                applyTheme(document.documentElement.getAttribute("data-theme"), false);
 
                 const sidebar = document.querySelector(".sidebar");
                 const mobileOverlay = document.getElementById("mobile-overlay");
@@ -3599,7 +3863,10 @@
         }
 
         function buildWatermarkDataURI(line1, line2, line3, isDark) {
-            const color = isDark ? 'rgba(240,235,216,0.16)' : 'rgba(31,42,33,0.14)';
+            /* Alpha trimmed slightly from the original (0.16/0.14 → 0.12/0.10)
+               — tracing text stays fully legible on inspection but competes
+               less with item names/prices at a normal reading glance. */
+            const color = isDark ? 'rgba(240,235,216,0.12)' : 'rgba(31,42,33,0.10)';
             const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="340" height="170">
                 <g transform="rotate(-28 170 85)" font-family="Inter, sans-serif" font-size="12" fill="${color}">
                     <text x="0" y="40">${line1}</text>
@@ -3621,7 +3888,7 @@
             const code = (codeEl && codeEl.value.trim()) || "+91";
             const phone = (phoneEl && phoneEl.value.trim()) ? `${code} ${phoneEl.value.trim()}` : "no phone yet";
             const ts = new Date(LiveClock.nowMs()).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
-            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+            const isDark = document.documentElement.getAttribute("data-theme-mode") === "dark";
 
             const uri = buildWatermarkDataURI(
                 escapeXML(name),
