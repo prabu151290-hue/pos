@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="white-chocolate" data-theme-mode="light">
+<html lang="en" data-theme="masala-chai" data-theme-mode="light" class="glass-enabled">
 <head>
     <script>
         /* Applied synchronously, before first paint, to avoid a flash of the
@@ -9,12 +9,12 @@
         (function () {
             try {
                 var saved = localStorage.getItem("adTheme");
-                var validThemes = ["white-chocolate", "dark-chocolate", "creamy-cookie", "matcha-cream", "berry-mousse"];
-                var darkThemes = ["dark-chocolate", "berry-mousse"];
+                var validThemes = ["dark-chocolate", "berry-mousse", "masala-chai", "tomato-chilli", "filter-coffee", "rose-milk", "regular"];
+                var darkThemes = ["dark-chocolate", "berry-mousse", "filter-coffee", "rose-milk"];
                 if (saved === "dark" || saved === "light") { saved = null; } // legacy toggle value — ignore, fall through to system pref
                 if (!saved || validThemes.indexOf(saved) === -1) {
                     var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-                    saved = prefersDark ? "dark-chocolate" : "white-chocolate";
+                    saved = prefersDark ? "dark-chocolate" : "masala-chai";
                 }
                 document.documentElement.setAttribute("data-theme", saved);
                 document.documentElement.setAttribute("data-theme-mode", darkThemes.indexOf(saved) !== -1 ? "dark" : "light");
@@ -29,7 +29,7 @@
     <meta property="og:title" content="AMRUTHADHAARANAM — Order Fresh Vegetarian Snacks & Beverages">
     <meta property="og:description" content="Freshly crafted snacks & refreshing beverages, ordered straight to WhatsApp.">
     <meta property="og:type" content="website">
-    <meta name="theme-color" content="#0B5D42">
+    <meta name="theme-color" content="#A85C2E">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,58 +38,56 @@
     <style>
         :root {
             /* ═══════════════════════════════════════════════════════════════
-               THEME SYSTEM — "Flavor Palette" (5 selectable themes)
-               ───────────────────────────────────────────────────────────────
-               :root holds the WHITE CHOCOLATE theme — the default flavor —
-               plus every non-color structural token (spacing, radius, type
-               scale, fonts) that all five flavors share unmodified. Each
-               other flavor overrides only the color tokens below, scoped
-               under [data-theme="<flavor-id>"]. A companion attribute,
-               data-theme-mode="light|dark", is set alongside data-theme so
-               the handful of mode-specific structural rules (glass fills,
-               watermark ink, body texture) apply correctly regardless of
-               which flavor is active — see THEME_REGISTRY in the JS below.
-
-               Color-psychology brief per flavor (why each palette was
-               chosen) sits above its own token block further down.
+               THEME SYSTEM — "Flavor Palette" (7 selectable themes)
+               Apple HIG × Microsoft Fluent Design refinement pass.
+               Color tokens unchanged. Structural tokens elevated:
+               — Radius stepped up to Apple's iOS 17 card geometry
+               — Shadows layered (ambient + key) per Fluent depth model
+               — Transitions tuned to Apple's 0.2s ease-in-out standard
+               — Focus ring uses 3px offset (WCAG 2.5.8 + Apple guideline)
                ═══════════════════════════════════════════════════════════════ */
 
-            /* ---- White Chocolate (default) — purity, comfort, appetite ---- */
-            --primary: #0B5D42;
-            --primary-deep: #062F22;
-            /* Naming unified with sales-dashboard's --gold-* convention (Phase 5,
-               Aug 2026 token unification). --gold-mid and --gold-deep are the same
-               hex values as the dashboard's dark-theme tokens; --gold-bright is
-               NOT — this file's tint (#F0D584) is intentionally lighter than the
-               dashboard's (#F0C040) and was already the case before this rename.
-               Renaming only; no hex values were changed here. */
-            --gold-mid: #C9A227;
-            --gold-bright: #F0D584;
-            --gold-deep: #8A6A14;
-            --background: #F7F3E8;
-            --surface: #FFFCF2;
-            --accent: #9C6B14;
-            --success: #2E7D32;
-            --danger: #C62828;
-            --warning: #8B5E10;
-            --text-main: #1F2A21;
-            --text-muted: #6E7A6E;
-            --border: #E1D5AE;
-            --radius-sm: 6px;
-            --radius-md: 9px;
-            --radius-lg: 16px;
-            --shadow: 0 4px 14px rgba(59, 15, 19, 0.10);
-            --shadow-lift: 0 14px 34px rgba(59, 15, 19, 0.22);
-            --transition: all 0.18s ease-in-out;
-            --transition-spring: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* ---- Masala Chai (default) — warm terracotta/amber, comfort +
+               nostalgia, the menu's own world rather than a borrowed
+               Western-dessert flavor ---- */
+            --primary: #A85C2E;
+            --primary-deep: #6B3714;
+            --gold-mid: #D9A03E;
+            --gold-bright: #F0C878;
+            --gold-deep: #9C7016;
+            --background: #F7EBD8;
+            --surface: #FFF9EE;
+            --accent: #C77B3D;
+            --success: #4B8A3E;
+            --danger: #C24A2E;
+            --warning: #A8641A;
+            --text-main: #3A2517;
+            --text-muted: #8A6F55;
+            --border: #E8D2AC;
+            --heading-color: var(--primary);
+
+            /* ── Radius — Apple iOS 17 card geometry ── */
+            --radius-sm:  8px;   /* chips, badges, small controls   */
+            --radius-md: 12px;   /* inputs, buttons, secondary cards */
+            --radius-lg: 20px;   /* primary cards, modals            */
+            --radius-xl: 28px;   /* hero, category cards             */
+
+            /* ── Fluent depth model — ambient + key light layers ── */
+            --shadow:      0 1px 3px rgba(60,30,10,0.07), 0 4px 14px rgba(60,30,10,0.11);
+            --shadow-lift: 0 2px 6px rgba(60,30,10,0.08), 0 14px 34px rgba(60,30,10,0.19), 0 1px 0 rgba(255,255,255,0.5) inset;
+            --shadow-deep: 0 4px 12px rgba(60,30,10,0.11), 0 24px 48px rgba(60,30,10,0.23);
+
+            /* ── Apple system timing ── */
+            --transition:        all 0.20s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+            --transition-spring: all 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-fast:   all 0.12s cubic-bezier(0.25, 0.1, 0.25, 1.0);
 
             --font-heading: 'Playfair Display', serif;
             --font-body: 'Inter', sans-serif;
             --font-btn: 'Inter', sans-serif;
             --font-mono: 'Inter', sans-serif;
-            --heading-color: var(--primary);
 
-            /* ── 8pt spacing scale (mirrors sales-dashboard token values exactly) ── */
+            /* ── 8pt spacing scale ── */
             --space-1: 0.25rem;  /* 4px  */
             --space-2: 0.5rem;   /* 8px  */
             --space-3: 0.75rem;  /* 12px */
@@ -99,18 +97,7 @@
             --space-7: 2.5rem;   /* 40px */
             --space-8: 3rem;     /* 48px */
 
-            /* ── Apple HIG type scale (mirrors sales-dashboard token names exactly) ──
-               Mapping from terminal's raw values:
-               0.58–0.72rem → --text-caption2 (0.6875rem / 11px)
-               0.74–0.78rem → --text-caption1 (0.75rem   / 12px)
-               0.80–0.88rem → --text-footnote (0.8125rem / 13px)
-               0.90–0.98rem → --text-subhead  (0.9375rem / 15px)
-               1.00rem      → --text-callout  (1rem      / 16px) — iOS zoom-safe floor for inputs
-               1.05–1.10rem → --text-headline (1.0625rem / 17px)
-               1.15–1.20rem → --text-title3   (1.25rem   / 20px)
-               1.30–1.40rem → --text-title2   (1.375rem  / 22px)
-               1.60–1.80rem → --text-title1   (1.75rem   / 28px)
-               1.90–2.20rem → --text-largetitle (2.125rem / 34px)               ── */
+            /* ── Apple HIG type scale ── */
             --text-largetitle: 2.125rem;  /* 34px */
             --text-title1:     1.75rem;   /* 28px */
             --text-title2:     1.375rem;  /* 22px */
@@ -123,20 +110,17 @@
             --text-caption1:   0.75rem;   /* 12px */
             --text-caption2:   0.6875rem; /* 11px */
 
-            --emboss-raised: 0 2px 8px rgba(20,10,10,0.08);
-            --emboss-pressed: 0 1px 3px rgba(20,10,10,0.10) inset;
-            --focus-glow: rgba(11, 93, 66, 0.14);
+            /* ── Fluent layered emboss ── */
+            --emboss-raised:  0 1px 0 rgba(255,255,255,0.7) inset, 0 2px 8px rgba(60,30,10,0.10);
+            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.05) inset, 0 2px 4px rgba(60,30,10,0.13) inset;
 
-            /* Year-1 glass feature flag — set to 1 by adding class="glass-enabled"
-               to <html>. 0 = flat (current default). 1 = backdrop-filter glass.
-               @supports guard below means non-supporting browsers always get flat. */
+            /* ── Apple focus ring — 3px offset per WCAG 2.5.8 ── */
+            --focus-glow: rgba(199, 123, 61, 0.20);
+            --focus-ring: 0 0 0 3px rgba(199, 123, 61, 0.24);
+
             --phone-glass: 0;
-
-            /* Blur strength for the category-card liquid-glass surface
-               (see .category-card below). Kept as its own token in case
-               a future settings toggle wants to graduate the strength,
-               same pattern as --phone-glass above. */
-            --glass-blur: 20px;
+            --glass-blur: 18px;
+            --glass-intensity: 1;
         }
 
         /* ── Dark Chocolate — dark mode. Color psychology: deep cocoa +
@@ -158,65 +142,15 @@
             --text-main: #F3E6D8;
             --text-muted: #B79A83;
             --border: #3A2A1E;
-            --shadow: 0 4px 14px rgba(0,0,0,0.45);
-            --shadow-lift: 0 16px 38px rgba(0,0,0,0.6);
             --heading-color: var(--gold-mid);
-            --emboss-raised: 0 2px 8px rgba(0,0,0,0.3);
-            --emboss-pressed: 0 1px 3px rgba(0,0,0,0.4) inset;
-            --focus-glow: rgba(217, 164, 78, 0.25);
+            --shadow:      0 1px 3px rgba(0,0,0,0.25), 0 4px 14px rgba(0,0,0,0.4);
+            --shadow-lift: 0 2px 6px rgba(0,0,0,0.3), 0 16px 38px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset;
+            --shadow-deep: 0 4px 12px rgba(0,0,0,0.4), 0 24px 48px rgba(0,0,0,0.65);
+            --emboss-raised:  0 1px 0 rgba(255,255,255,0.06) inset, 0 2px 8px rgba(0,0,0,0.3);
+            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.2) inset, 0 2px 4px rgba(0,0,0,0.4) inset;
+            --focus-glow: rgba(217, 164, 78, 0.28);
+            --focus-ring: 0 0 0 3px rgba(217, 164, 78, 0.32);
             --phone-glass-fill: rgba(32, 21, 16, 0.6);
-        }
-
-        /* ── Creamy Cookie — light mode. Color psychology: toasted-biscuit
-           browns on a warm butter-cream base read as cozy, nostalgic,
-           homely — softer and more casual than White Chocolate. ── */
-        [data-theme="creamy-cookie"] {
-            --primary: #8B5E34;
-            --primary-deep: #5A3A1E;
-            --gold-mid: #D3A63E;
-            --gold-bright: #F2D48A;
-            --gold-deep: #9C7420;
-            --background: #F5E9D6;
-            --surface: #FFF8EC;
-            --accent: #C08A3E;
-            --success: #4B8A3E;
-            --danger: #C1502E;
-            --warning: #9C6B14;
-            --text-main: #3E2C18;
-            --text-muted: #8C7256;
-            --border: #E3CBA0;
-            --shadow: 0 4px 14px rgba(80,50,20,0.12);
-            --shadow-lift: 0 14px 34px rgba(80,50,20,0.22);
-            --heading-color: var(--primary);
-            --emboss-raised: 0 2px 8px rgba(60,35,10,0.10);
-            --emboss-pressed: 0 1px 3px rgba(60,35,10,0.14) inset;
-            --focus-glow: rgba(192, 138, 62, 0.18);
-        }
-
-        /* ── Matcha Cream — light mode. Color psychology: sage green +
-           soft cream reads as fresh, natural, calming — and doubles as a
-           gentle nod to the menu's 100%-vegetarian identity. ── */
-        [data-theme="matcha-cream"] {
-            --primary: #4C7A4B;
-            --primary-deep: #2E4F30;
-            --gold-mid: #CBA945;
-            --gold-bright: #EBD98C;
-            --gold-deep: #8F7420;
-            --background: #F1F6EC;
-            --surface: #FBFDF7;
-            --accent: #6E9A5C;
-            --success: #3E8A4A;
-            --danger: #B5482E;
-            --warning: #8F7420;
-            --text-main: #223522;
-            --text-muted: #6B7F63;
-            --border: #D6E3CB;
-            --shadow: 0 4px 14px rgba(30,50,20,0.10);
-            --shadow-lift: 0 14px 34px rgba(30,50,20,0.20);
-            --heading-color: var(--primary);
-            --emboss-raised: 0 2px 8px rgba(20,40,15,0.09);
-            --emboss-pressed: 0 1px 3px rgba(20,40,15,0.13) inset;
-            --focus-glow: rgba(76, 122, 75, 0.16);
         }
 
         /* ── Berry Mousse — dark mode. Color psychology: deep plum/berry
@@ -238,21 +172,141 @@
             --text-main: #F5E6EC;
             --text-muted: #B58C9C;
             --border: #3E1E2C;
-            --shadow: 0 4px 14px rgba(0,0,0,0.42);
-            --shadow-lift: 0 16px 38px rgba(0,0,0,0.55);
             --heading-color: var(--gold-mid);
-            --emboss-raised: 0 2px 8px rgba(0,0,0,0.28);
-            --emboss-pressed: 0 1px 3px rgba(0,0,0,0.38) inset;
-            --focus-glow: rgba(194, 92, 130, 0.24);
+            --shadow:      0 1px 3px rgba(0,0,0,0.22), 0 4px 14px rgba(0,0,0,0.38);
+            --shadow-lift: 0 2px 6px rgba(0,0,0,0.28), 0 16px 38px rgba(0,0,0,0.52), 0 1px 0 rgba(255,255,255,0.04) inset;
+            --shadow-deep: 0 4px 12px rgba(0,0,0,0.38), 0 24px 48px rgba(0,0,0,0.60);
+            --emboss-raised:  0 1px 0 rgba(255,255,255,0.06) inset, 0 2px 8px rgba(0,0,0,0.28);
+            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.2) inset, 0 2px 4px rgba(0,0,0,0.38) inset;
+            --focus-glow: rgba(194, 92, 130, 0.28);
+            --focus-ring: 0 0 0 3px rgba(194, 92, 130, 0.32);
             --phone-glass-fill: rgba(36, 16, 25, 0.6);
+        }
+
+        /* ── Tomato Chilli — light mode. Color psychology: vivid red-orange
+           is the strongest literal appetite trigger there is, directly
+           echoing the Maggi/Pasta spice cues on the menu itself — the most
+           craving-forward theme in the set. ── */
+        [data-theme="tomato-chilli"] {
+            --primary: #C6371F;
+            --primary-deep: #7A1D10;
+            --gold-mid: #E0932E;
+            --gold-bright: #F2BE72;
+            --gold-deep: #A66A18;
+            --background: #FBEEE4;
+            --surface: #FFF8F3;
+            --accent: #E0632E;
+            --success: #3E8A4E;
+            --danger: #A81F14;
+            --warning: #B85A12;
+            --text-main: #3A1810;
+            --text-muted: #8A6152;
+            --border: #F0C9AE;
+            --heading-color: var(--primary);
+            --shadow:      0 1px 3px rgba(70,15,5,0.07), 0 4px 14px rgba(70,15,5,0.11);
+            --shadow-lift: 0 2px 6px rgba(70,15,5,0.08), 0 14px 34px rgba(70,15,5,0.19), 0 1px 0 rgba(255,255,255,0.5) inset;
+            --shadow-deep: 0 4px 12px rgba(70,15,5,0.11), 0 24px 48px rgba(70,15,5,0.23);
+            --emboss-raised:  0 1px 0 rgba(255,255,255,0.7) inset, 0 2px 8px rgba(70,15,5,0.10);
+            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.05) inset, 0 2px 4px rgba(70,15,5,0.13) inset;
+            --focus-glow: rgba(224, 99, 46, 0.22);
+            --focus-ring: 0 0 0 3px rgba(224, 99, 46, 0.26);
+        }
+
+        /* ── Filter Coffee — dark mode. Color psychology: deep roasted
+           brown/toffee reads as premium and iconic — the South Indian
+           filter-kaapi identity — serving as the set's dark-mode anchor
+           alongside Dark Chocolate, but rooted in the menu's own world. ── */
+        [data-theme="filter-coffee"] {
+            --primary: #7A4A24;
+            --primary-deep: #3A2410;
+            --gold-mid: #C68A3E;
+            --gold-bright: #E0B274;
+            --gold-deep: #8F5E1E;
+            --background: #150E08;
+            --surface: #221609;
+            --accent: #B5793A;
+            --success: #4CAF6D;
+            --danger: #E2574C;
+            --warning: #D9A62E;
+            --text-main: #F0E2D0;
+            --text-muted: #B39A80;
+            --border: #3A2A18;
+            --heading-color: var(--gold-mid);
+            --shadow:      0 1px 3px rgba(0,0,0,0.25), 0 4px 14px rgba(0,0,0,0.4);
+            --shadow-lift: 0 2px 6px rgba(0,0,0,0.3), 0 16px 38px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset;
+            --shadow-deep: 0 4px 12px rgba(0,0,0,0.4), 0 24px 48px rgba(0,0,0,0.65);
+            --emboss-raised:  0 1px 0 rgba(255,255,255,0.06) inset, 0 2px 8px rgba(0,0,0,0.3);
+            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.2) inset, 0 2px 4px rgba(0,0,0,0.4) inset;
+            --focus-glow: rgba(198, 138, 62, 0.28);
+            --focus-ring: 0 0 0 3px rgba(198, 138, 62, 0.32);
+            --phone-glass-fill: rgba(34, 22, 9, 0.6);
+        }
+
+        /* ── Rose Milk — dark mode. Color psychology: pink-magenta with a
+           creamy milk-gold accent is the iconic South Indian beverage,
+           tying directly to the Milkshakes/Juices lines — playful and
+           distinctly local, replacing Berry Mousse's Western-dessert
+           framing as the set's second dark option. ── */
+        [data-theme="rose-milk"] {
+            --primary: #C2557A;
+            --primary-deep: #6B2740;
+            --gold-mid: #E8B67E;
+            --gold-bright: #F5D6A8;
+            --gold-deep: #B5824A;
+            --background: #1A1015;
+            --surface: #271620;
+            --accent: #D97CA0;
+            --success: #4CAF7A;
+            --danger: #E2574C;
+            --warning: #E0A65E;
+            --text-main: #F7E8EC;
+            --text-muted: #BC94A2;
+            --border: #3E2430;
+            --heading-color: var(--gold-mid);
+            --shadow:      0 1px 3px rgba(0,0,0,0.22), 0 4px 14px rgba(0,0,0,0.38);
+            --shadow-lift: 0 2px 6px rgba(0,0,0,0.28), 0 16px 38px rgba(0,0,0,0.52), 0 1px 0 rgba(255,255,255,0.04) inset;
+            --shadow-deep: 0 4px 12px rgba(0,0,0,0.38), 0 24px 48px rgba(0,0,0,0.60);
+            --emboss-raised:  0 1px 0 rgba(255,255,255,0.06) inset, 0 2px 8px rgba(0,0,0,0.28);
+            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.2) inset, 0 2px 4px rgba(0,0,0,0.38) inset;
+            --focus-glow: rgba(217, 124, 160, 0.28);
+            --focus-ring: 0 0 0 3px rgba(217, 124, 160, 0.32);
+            --phone-glass-fill: rgba(39, 22, 32, 0.6);
+        }
+
+        /* ── Regular — light mode. Clean, brand-neutral pairing: Microsoft
+           Fluent blue as the primary action color against a crisp white
+           surface, with a bubblegum-pink accent for highlights/badges. A
+           calmer, corporate-friendly alternative to the food-flavor set
+           above — no warm/cocoa undertone, just blue + white + a pink pop. ── */
+        [data-theme="regular"] {
+            --primary: #0078D4;
+            --primary-deep: #005A9E;
+            --gold-mid: #FF6FB5;
+            --gold-bright: #FFA5D2;
+            --gold-deep: #E0399E;
+            --background: #F3F7FC;
+            --surface: #FFFFFF;
+            --accent: #FF6FB5;
+            --success: #16A34A;
+            --danger: #D13438;
+            --warning: #C99400;
+            --text-main: #201F1E;
+            --text-muted: #616161;
+            --border: #E1E6EC;
+            --heading-color: var(--primary);
+            --shadow:      0 1px 3px rgba(0,45,90,0.07), 0 4px 14px rgba(0,45,90,0.10);
+            --shadow-lift: 0 2px 6px rgba(0,45,90,0.08), 0 14px 34px rgba(0,45,90,0.16), 0 1px 0 rgba(255,255,255,0.6) inset;
+            --shadow-deep: 0 4px 12px rgba(0,45,90,0.10), 0 24px 48px rgba(0,45,90,0.20);
+            --emboss-raised:  0 1px 0 rgba(255,255,255,0.8) inset, 0 2px 8px rgba(0,45,90,0.08);
+            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.04) inset, 0 2px 4px rgba(0,45,90,0.12) inset;
+            --focus-glow: rgba(0, 120, 212, 0.20);
+            --focus-ring: 0 0 0 3px rgba(0, 120, 212, 0.26);
         }
 
         [data-theme-mode="dark"] body {
             background-image:
-                radial-gradient(circle at 12% 8%, rgba(232,199,102,0.04) 0, transparent 40%),
-                radial-gradient(circle at 88% 92%, rgba(232,199,102,0.04) 0, transparent 40%),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23E8C766' stroke-width='0.6' opacity='0.07'%3E%3Cpath d='M60 8 L68 44 L104 36 L76 60 L104 84 L68 76 L60 112 L52 76 L16 84 L44 60 L16 36 L52 44 Z'/%3E%3Cpath d='M60 34 L64 52 L82 48 L68 60 L82 72 L64 68 L60 86 L56 68 L38 72 L52 60 L38 48 L56 52 Z'/%3E%3C/g%3E%3Ccircle cx='60' cy='60' r='2.2' fill='%23E8C766' opacity='0.08'/%3E%3Ccircle cx='0' cy='0' r='1.4' fill='%23E8C766' opacity='0.06'/%3E%3Ccircle cx='120' cy='0' r='1.4' fill='%23E8C766' opacity='0.06'/%3E%3Ccircle cx='0' cy='120' r='1.4' fill='%23E8C766' opacity='0.06'/%3E%3Ccircle cx='120' cy='120' r='1.4' fill='%23E8C766' opacity='0.06'/%3E%3C/svg%3E");
-            background-size: auto, auto, 120px 120px;
+                radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--gold-mid) 10%, transparent) 0, transparent 40%),
+                radial-gradient(circle at 88% 92%, color-mix(in srgb, var(--gold-mid) 10%, transparent) 0, transparent 40%);
         }
 
         html { overflow-x: hidden; }
@@ -261,17 +315,53 @@
             font-family: var(--font-body);
             background-color: var(--background);
             background-image:
-                radial-gradient(circle at 10% 10%, rgba(11,93,66,0.04) 0, transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(11,93,66,0.04) 0, transparent 40%),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%230B5D42' stroke-width='0.6' opacity='0.05'%3E%3Cpath d='M60 8 L68 44 L104 36 L76 60 L104 84 L68 76 L60 112 L52 76 L16 84 L44 60 L16 36 L52 44 Z'/%3E%3Cpath d='M60 34 L64 52 L82 48 L68 60 L82 72 L64 68 L60 86 L56 68 L38 72 L52 60 L38 48 L56 52 Z'/%3E%3C/g%3E%3Ccircle cx='60' cy='60' r='2.2' fill='%23C9A227' opacity='0.08'/%3E%3Ccircle cx='0' cy='0' r='1.4' fill='%23C9A227' opacity='0.06'/%3E%3Ccircle cx='120' cy='0' r='1.4' fill='%23C9A227' opacity='0.06'/%3E%3Ccircle cx='0' cy='120' r='1.4' fill='%23C9A227' opacity='0.06'/%3E%3Ccircle cx='120' cy='120' r='1.4' fill='%23C9A227' opacity='0.06'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: auto, auto, 120px 120px;
+                radial-gradient(circle at 10% 10%, color-mix(in srgb, var(--primary) 6%, transparent) 0, transparent 40%),
+                radial-gradient(circle at 90% 90%, color-mix(in srgb, var(--primary) 6%, transparent) 0, transparent 40%);
             color: var(--text-main);
-            line-height: 1.5;
-            transition: var(--transition);
+            line-height: 1.55;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.22s ease, color 0.22s ease;
+            position: relative;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           LIQUID GLASS BACKGROUND — full-page glass mode
+           Three large, softly blurred color blobs drift slowly behind the
+           whole page. Colors come straight from the active theme's own
+           --primary / --gold-mid / --accent tokens via currentColor-style
+           inheritance, so switching themes recolors the blobs automatically
+           with no extra per-theme markup. Panels above (cards, modals, the
+           theme picker, the cart) then reveal a frosted version of this
+           through backdrop-filter — that combination is what reads as
+           "liquid glass" rather than a flat blurred wallpaper.
+           Respects prefers-reduced-motion and degrades to invisible
+           (opacity 0) on browsers that can't do backdrop-filter, since a
+           colorful blob wallpaper without any glass panels to filter it
+           would fight with menu-item legibility instead of supporting it.
+           ═══════════════════════════════════════════════════════════════ */
+        .glass-orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 0.4s ease; }
+        @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+            html.glass-enabled .glass-orbs { opacity: calc(0.9 * var(--glass-intensity)); }
+        }
+        .glass-orb { position: absolute; border-radius: 50%; filter: blur(70px); will-change: transform; }
+        .glass-orb--a { width: 46vw; height: 46vw; min-width: 340px; min-height: 340px; top: -14vw; left: -10vw; background: var(--primary); opacity: 0.55; animation: glassDrift1 26s ease-in-out infinite; }
+        .glass-orb--b { width: 38vw; height: 38vw; min-width: 300px; min-height: 300px; bottom: -10vw; right: -8vw; background: var(--gold-mid); opacity: 0.45; animation: glassDrift2 32s ease-in-out infinite; }
+        .glass-orb--c { width: 30vw; height: 30vw; min-width: 240px; min-height: 240px; top: 42%; left: 58%; background: var(--accent); opacity: 0.35; animation: glassDrift3 22s ease-in-out infinite; }
+        @keyframes glassDrift1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(6vw, 8vw) scale(1.08); } }
+        @keyframes glassDrift2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-5vw, -6vw) scale(1.1); } }
+        @keyframes glassDrift3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-4vw, 5vw) scale(0.94); } }
+        @media (prefers-reduced-motion: reduce) {
+            .glass-orb { animation: none !important; }
         }
         a { color: inherit; }
-        :focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; }
+        /* Apple-style 3px offset focus ring — passes WCAG 2.5.8 */
+        :focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+            border-radius: var(--radius-sm);
+        }
 
         .skip-link {
             position: absolute;
@@ -307,13 +397,13 @@
             max-width: 1600px;
             margin: 0 auto var(--space-4);
             padding: var(--space-2) var(--space-5);
-            background: linear-gradient(90deg, var(--primary-deep), var(--primary));
+            background: linear-gradient(90deg, var(--primary-deep) 0%, var(--primary) 60%, color-mix(in srgb, var(--primary) 80%, var(--gold-deep) 20%) 100%);
             color: #F5EEDD;
-            border-radius: var(--radius-md);
-            border-bottom: 2px solid var(--gold-deep);
+            border-radius: var(--radius-lg);
+            border-bottom: 1.5px solid var(--gold-deep);
             font-family: var(--font-mono);
             font-size: var(--text-caption1);
-            letter-spacing: 0.03em;
+            letter-spacing: 0.02em;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -385,41 +475,63 @@
 
         .app-container {
             display: grid;
-            grid-template-columns: 1fr 420px;
+            grid-template-columns: 1fr 428px;
             min-height: 100vh;
             max-width: 1600px;
             margin: 0 auto;
         }
         .main-content { padding: 0 var(--space-6) var(--space-6); max-height: 100vh; overflow-y: auto; }
+        /* Sidebar uses Fluent's "Mica" surface concept — slightly elevated, with ambient tint */
         .sidebar {
-            background-color: var(--surface);
+            background: color-mix(in srgb, var(--surface) 97%, var(--primary) 3%);
             border-left: 1px solid var(--border);
-            padding: var(--space-5);
+            padding: var(--space-5) var(--space-5);
             display: flex;
             flex-direction: column;
-            gap: var(--space-5);
+            gap: var(--space-4);
             height: 100vh;
             position: sticky;
             top: 0;
-            box-shadow: var(--shadow);
+            box-shadow: -2px 0 16px rgba(15,8,5,0.06);
             overflow-y: auto;
+        }
+        [data-theme-mode="dark"] .sidebar {
+            background: color-mix(in srgb, var(--surface) 96%, var(--gold-mid) 4%);
+        }
+        @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+            html.glass-enabled .sidebar {
+                background: color-mix(in srgb, var(--surface) 72%, transparent);
+                -webkit-backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.5);
+                backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.5);
+            }
         }
 
         .pos-header {
             display: grid;
             grid-template-columns: 190px 1fr;
             align-items: center;
-            background: linear-gradient(120deg, rgba(110,32,39,0.05) 0%, var(--surface) 55%, rgba(201,162,39,0.08) 100%);
-            padding: var(--space-4) var(--space-5);
-            border-radius: var(--radius-lg);
-            margin-bottom: var(--space-5); /* 1.5rem → --space-5 */
-            box-shadow: 0 2px 10px rgba(110,32,39,0.09), 0 1px 3px rgba(0,0,0,0.04);
+            background: linear-gradient(135deg, rgba(11,93,66,0.04) 0%, var(--surface) 50%, rgba(201,162,39,0.06) 100%);
+            padding: var(--space-5) var(--space-6);
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-5);
+            box-shadow: var(--shadow), 0 1px 0 rgba(255,255,255,0.8) inset;
             border: 1px solid var(--border);
-            border-bottom: 3px solid var(--gold-mid);
-            gap: var(--space-4);
+            border-bottom: 2.5px solid var(--gold-mid);
+            gap: var(--space-5);
+            position: relative;
+            overflow: hidden;
+        }
+        /* Subtle gloss sweep on the header card */
+        .pos-header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(145deg, rgba(255,255,255,0.12) 0%, transparent 55%);
+            pointer-events: none;
+            border-radius: inherit;
         }
         [data-theme-mode="dark"] .pos-header {
-            background: linear-gradient(120deg, rgba(177,75,82,0.12) 0%, var(--surface) 55%, rgba(232,199,102,0.06) 100%);
+            background: linear-gradient(135deg, rgba(110,68,37,0.18) 0%, var(--surface) 50%, rgba(217,164,78,0.06) 100%);
         }
         .header-left { display: flex; align-items: center; justify-content: center; }
         .brand-logo {
@@ -442,20 +554,41 @@
         .header-center { text-align: center; }
         .header-center h1 {
             font-family: var(--font-heading); color: var(--heading-color); font-size: var(--text-largetitle);
-            letter-spacing: 1.5px; transition: color 0.3s ease;
+            letter-spacing: 0.5px; transition: color 0.22s ease;
             text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+            line-height: 1.15;
         }
-        [data-theme-mode="dark"] .header-center h1 { text-shadow: 0 1px 6px rgba(232,199,102,0.25); }
-        .header-center p { font-size: var(--text-footnote); color: var(--text-muted); margin-top: 0.3rem; letter-spacing: 0.03em; }
+        [data-theme-mode="dark"] .header-center h1 { text-shadow: 0 1px 8px rgba(232,199,102,0.22); }
+        .header-center p { font-size: var(--text-footnote); color: var(--text-muted); margin-top: var(--space-1); letter-spacing: 0.01em; font-weight: 500; }
 
-        /* ---- HERO SECTION (new) ---- */
+        /* ---- HERO SECTION — Apple SF gradient card ---- */
         .hero-section {
-            background: linear-gradient(135deg, var(--primary-deep), var(--primary));
-            border-radius: var(--radius-lg);
+            background: linear-gradient(145deg, var(--primary-deep) 0%, var(--primary) 55%, color-mix(in srgb, var(--primary) 70%, var(--gold-deep) 30%) 100%);
+            border-radius: var(--radius-xl);
             padding: var(--space-8) var(--space-6);
-            margin-bottom: var(--space-5); /* 1.5rem → --space-5 */
+            margin-bottom: var(--space-5);
             text-align: center;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-deep);
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+        /* Frosted inner glow — Apple feature-banner technique */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -40%; left: -20%;
+            width: 70%; height: 120%;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.10) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 45%);
+            pointer-events: none;
+            border-radius: inherit;
         }
         .hero-title { font-family: var(--font-heading); color: var(--gold-bright); font-size: var(--text-largetitle); line-height: 1.15; margin-bottom: 0.75rem; }
         .hero-subtitle { color: #F0EBD8; font-size: var(--text-subhead); max-width: 480px; margin: 0 auto var(--space-4); opacity: 0.9; }
@@ -465,18 +598,30 @@
         @media (max-width: 768px) { .hero-section { padding: var(--space-6) var(--space-4); } .hero-title { font-size: var(--text-title1); } }
 
         .controls-row {
-            display: flex; gap: var(--space-4); margin: var(--space-5) 0 var(--space-5);
+            display: flex; gap: var(--space-3); margin: var(--space-5) 0 var(--space-4);
             align-items: center; flex-wrap: wrap;
             position: sticky; top: 0; z-index: 5;
             background: var(--background);
-            padding: var(--space-2) 0;
+            padding: var(--space-3) 0;
+            /* Apple-style sticky blur separator */
+            -webkit-backdrop-filter: blur(12px) saturate(1.4);
+            backdrop-filter: blur(12px) saturate(1.4);
+            background: color-mix(in srgb, var(--background) 88%, transparent);
+            border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
         }
         .search-wrapper { flex: 1; position: relative; min-width: 250px; }
         .search-input {
             width: 100%; padding: var(--space-3) var(--space-4) var(--space-3) var(--space-7);
-            border-radius: var(--radius-md); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); border: 1px solid var(--border);
             background: var(--surface); color: var(--text-main); font-size: var(--text-subhead);
-            box-shadow: 0 2px 5px rgba(59,15,19,0.06) inset;
+            box-shadow: 0 1px 2px rgba(15,8,5,0.04) inset, var(--shadow);
+            transition: var(--transition), box-shadow 0.20s ease;
+            letter-spacing: -0.01em;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 1px 2px rgba(15,8,5,0.04) inset, var(--focus-ring);
         }
         .search-wrapper::before { content: "🔍"; position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); }
         .search-shortcut-hint {
@@ -488,12 +633,15 @@
         .category-pills { display: flex; gap: var(--space-2); flex-wrap: wrap; }
         .pill {
             padding: var(--space-2) var(--space-4); border: 1px solid var(--border); background: var(--surface);
-            color: var(--text-main); cursor: pointer; border-radius: 20px;
-            font-family: var(--font-btn); font-size: var(--text-footnote); transition: var(--transition);
+            color: var(--text-main); cursor: pointer; border-radius: 999px;
+            font-family: var(--font-btn); font-size: var(--text-footnote); font-weight: 500;
+            transition: var(--transition);
             box-shadow: var(--emboss-raised);
+            letter-spacing: -0.01em;
         }
-        .pill.active, .pill:hover { background: linear-gradient(180deg, var(--primary), var(--primary-deep)); color: white; border-color: var(--primary-deep); }
-        .pill:active { box-shadow: var(--emboss-pressed); transform: translateY(1px); }
+        .pill:hover { background: color-mix(in srgb, var(--primary) 8%, var(--surface)); border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+        .pill.active { background: linear-gradient(160deg, var(--primary), var(--primary-deep)); color: white; border-color: var(--primary-deep); box-shadow: var(--shadow); }
+        .pill:active { box-shadow: var(--emboss-pressed); transform: translateY(0) scale(0.97); }
         /* ═══════════════════════════════════════════════════════════════
            THEME PICKER — replaces the old binary dark/light toggle with
            a 5-flavor swatch picker. Trigger button shows the active
@@ -524,20 +672,46 @@
         .theme-picker.open .theme-picker-trigger .tp-chevron { transform: rotate(180deg); }
 
         .theme-picker-panel {
-            position: absolute; top: calc(100% + 10px); right: 0; z-index: 500;
+            /* Fixed (not absolute) and re-parented to <body> by JS: the
+               trigger lives inside a position:sticky row nested in
+               .main-content (which scrolls internally via overflow-y:auto),
+               and that combination was clipping/stacking the popover behind
+               the menu grid. Fixed positioning + a body-level parent sidesteps
+               every ancestor's overflow and stacking context entirely — the
+               panel's exact top/left is computed in JS (positionThemePanel())
+               from the trigger's live bounding box every time it opens,
+               resizes, or the page scrolls. */
+            position: fixed; top: 0; left: 0; z-index: 9996;
             background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lift);
             padding: var(--space-3);
             min-width: 240px;
+            max-width: calc(100vw - 2 * var(--space-4));
+            max-height: min(60vh, 420px);
+            overflow-y: auto;
             display: none;
             flex-direction: column;
             gap: 2px;
             transform-origin: top right;
             animation: tp-pop 0.18s cubic-bezier(0.34,1.4,0.64,1);
         }
-        .theme-picker.open .theme-picker-panel { display: flex; }
+        /* Visibility is toggled by an "open" class on the panel itself
+           (set in JS) rather than via a `.theme-picker.open` ancestor
+           selector, since the panel is moved out to <body> and is no
+           longer a descendant of .theme-picker in the DOM. */
+        .theme-picker-panel.open { display: flex; }
+        @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+            html.glass-enabled .theme-picker-panel {
+                background: color-mix(in srgb, var(--surface) 75%, transparent);
+                -webkit-backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.6);
+                backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.6);
+            }
+        }
+        html.glass-enabled .theme-picker-label { background: color-mix(in srgb, var(--surface) 90%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
         @keyframes tp-pop { from { opacity: 0; transform: scale(0.94) translateY(-4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         .theme-picker-label {
+            position: sticky; top: calc(-1 * var(--space-3)); z-index: 1;
+            background: var(--surface);
             font-family: var(--font-btn); font-size: var(--text-caption1); font-weight: 700;
             color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;
             padding: var(--space-1) var(--space-2) var(--space-2);
@@ -562,29 +736,30 @@
         .theme-option.active .to-check { opacity: 1; }
         .theme-option.active { background: color-mix(in srgb, var(--primary) 12%, transparent); }
         @media (max-width: 768px) {
-            .theme-picker-panel { right: 0; left: auto; min-width: 220px; }
+            .theme-picker-panel { min-width: 220px; }
         }
 
         .mode-tabs {
             display: flex; gap: var(--space-2); margin-bottom: var(--space-4); flex-wrap: wrap;
         }
         .mode-tab {
-            flex: 1; min-width: 150px; padding: var(--space-3) var(--space-4); border: 1.5px solid var(--gold-deep);
-            background: linear-gradient(180deg, var(--surface), var(--background));
-            color: var(--text-main); border-radius: var(--radius-md);
-            font-family: var(--font-btn); font-weight: 700; font-size: var(--text-footnote); cursor: pointer;
+            flex: 1; min-width: 150px; padding: var(--space-3) var(--space-4);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted); border-radius: var(--radius-lg);
+            font-family: var(--font-btn); font-weight: 600; font-size: var(--text-footnote); cursor: pointer;
             transition: var(--transition-spring); text-align: center;
             box-shadow: var(--emboss-raised);
             display: flex; flex-direction: column; align-items: center; gap: var(--space-1);
-            will-change: transform;
+            will-change: transform; letter-spacing: -0.01em;
         }
-        .mode-tab:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .mode-tab:hover { border-color: color-mix(in srgb, var(--primary) 40%, var(--border)); color: var(--text-main); transform: translateY(-2px); }
         .mode-tab:active { transform: translateY(0) scale(0.97); transition: all 0.08s ease-out; }
         .mode-tab.active {
-            background: linear-gradient(180deg, var(--primary-deep), var(--primary));
+            background: linear-gradient(160deg, color-mix(in srgb, var(--primary) 80%, #fff 20%), var(--primary-deep));
             color: var(--gold-bright); border-color: var(--primary-deep);
-            box-shadow: var(--emboss-pressed);
-            text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.10) inset;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         .mode-tab-date {
             display: inline-flex; align-items: center; gap: var(--space-1);
@@ -730,39 +905,44 @@
            scannable instead of visually loud.
            ═══════════════════════════════════════════════════════════════ */
         .category-card {
-            --card-accent: var(--gold-mid); /* fallback for one frame before JS sets the real per-category color */
+            --card-accent: var(--gold-mid);
+            /* Blended, not swapped: each category keeps its own hand-picked
+               hue (Sandwich=orange, Maggi=amber, Pasta=crimson, etc. — see
+               CATEGORY_COLOR_MAP JS above, the appetite-color research the
+               continuity brief documents) so categories stay tellable
+               apart at a glance, but that hue is tinted toward the active
+               theme's --primary so the cards read as part of the current
+               theme rather than a fixed palette bolted on top of it. */
+            --card-accent-themed: color-mix(in srgb, var(--card-accent) 70%, var(--primary) 30%);
             position: relative;
             isolation: isolate;
             overflow: hidden;
-            border-radius: 20px;
-            padding: var(--space-4);
-            /* Category hue is mixed against the ACTIVE THEME's own surface/
-               primary-deep tokens (not raw white/black) so every cube reads
-               as "dipped in this theme" rather than a theme-agnostic neon
-               sticker — this is what makes the 10 category colors feel
-               curated per flavor instead of clashing with it. */
-            border: 1px solid color-mix(in srgb, var(--card-accent) 55%, var(--primary-deep) 45%);
-            border-left: 6px solid color-mix(in srgb, var(--card-accent) 65%, var(--primary-deep) 35%);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            border: 1px solid color-mix(in srgb, var(--card-accent-themed) 45%, var(--primary-deep) 55%);
+            border-left: 5px solid color-mix(in srgb, var(--card-accent-themed) 70%, var(--primary-deep) 30%);
             background: linear-gradient(155deg,
-                color-mix(in srgb, var(--card-accent) 50%, var(--surface) 50%) 0%,
-                color-mix(in srgb, var(--card-accent) 88%, var(--surface) 12%) 42%,
-                color-mix(in srgb, var(--card-accent) 70%, var(--primary-deep) 30%) 100%
+                color-mix(in srgb, var(--card-accent-themed) 48%, var(--surface) 52%) 0%,
+                color-mix(in srgb, var(--card-accent-themed) 82%, var(--surface) 18%) 45%,
+                color-mix(in srgb, var(--card-accent-themed) 65%, var(--primary-deep) 35%) 100%
             );
+            /* Fluent depth: ambient layer + key-light layer */
             box-shadow:
-                inset 2px 2px 0 rgba(255,255,255,0.5),
-                inset -2px -3px 7px rgba(0,0,0,0.28),
-                0 10px 22px rgba(0,0,0,0.22),
-                0 3px 6px rgba(0,0,0,0.15);
-            transition: transform 0.28s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.28s ease;
+                inset 1.5px 1.5px 0 rgba(255,255,255,0.52),
+                inset -1px -2px 6px rgba(0,0,0,0.22),
+                0 1px 3px rgba(0,0,0,0.10),
+                0 8px 20px rgba(0,0,0,0.18);
+            transition: transform 0.26s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.26s ease, background 0.3s ease, border-color 0.3s ease;
             transform-style: preserve-3d;
         }
         .category-card:hover {
-            transform: translateY(-4px) scale(1.012);
+            transform: translateY(-5px) scale(1.014);
             box-shadow:
-                inset 2px 2px 0 rgba(255,255,255,0.6),
-                inset -2px -3px 9px rgba(0,0,0,0.32),
-                0 18px 34px color-mix(in srgb, var(--card-accent) 48%, transparent),
-                0 4px 10px rgba(0,0,0,0.22);
+                inset 1.5px 1.5px 0 rgba(255,255,255,0.62),
+                inset -1px -2px 8px rgba(0,0,0,0.26),
+                0 2px 5px rgba(0,0,0,0.09),
+                0 16px 32px color-mix(in srgb, var(--card-accent-themed) 42%, transparent),
+                0 4px 8px rgba(0,0,0,0.18);
         }
         /* Corner gloss bloom — soft light catching the top-left of the cube */
         .category-card::before {
@@ -949,21 +1129,29 @@
             flex-direction: column;
             padding: 0;
             border: none;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             overflow: hidden;
             background: var(--surface);
             box-shadow: var(--shadow);
-            transition: var(--transition);
+            transition: var(--transition), box-shadow 0.22s ease;
+            border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
         }
-        .menu-item:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
-        .menu-item.item-disabled { opacity: 0.45; }
+        .menu-item:hover { box-shadow: var(--shadow-lift); transform: translateY(-3px); border-color: color-mix(in srgb, var(--primary) 20%, var(--border)); }
+        .menu-item.item-disabled { opacity: 0.42; filter: grayscale(0.3); }
         .menu-item.item-disabled .qty-btn { cursor: not-allowed; }
         .menu-item-img {
-            height: 110px;
+            height: 100px;
             display: flex; align-items: center; justify-content: center;
             font-size: var(--text-largetitle);
-            background: linear-gradient(135deg, var(--primary-deep), var(--primary));
+            background: linear-gradient(145deg, var(--primary-deep), var(--primary));
             color: var(--gold-bright);
+            position: relative;
+        }
+        .menu-item-img::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 50%);
+            pointer-events: none;
         }
         .menu-item-body {
             display: flex; flex-direction: column; gap: var(--space-2);
@@ -981,14 +1169,15 @@
 
         .qty-controls { display: flex; align-items: center; gap: var(--space-2); justify-content: space-between; }
         .qty-btn {
-            /* 44×44px — Apple HIG / WCAG 2.5.5 minimum tap target for customer-facing qty stepper */
-            background: linear-gradient(180deg, var(--surface), var(--border)); border: 1px solid var(--border); width: 44px; height: 44px;
-            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: var(--text-headline);
-            display: flex; align-items: center; justify-content: center; transition: var(--transition);
+            /* 44×44px — Apple HIG / WCAG 2.5.5 minimum tap target */
+            background: color-mix(in srgb, var(--surface) 70%, var(--background) 30%);
+            border: 1px solid var(--border); width: 44px; height: 44px;
+            border-radius: var(--radius-md); cursor: pointer; font-weight: 700; font-size: var(--text-headline);
+            display: flex; align-items: center; justify-content: center; transition: var(--transition-fast);
             box-shadow: var(--emboss-raised); color: var(--text-main);
         }
-        .qty-btn:hover { background: linear-gradient(180deg, var(--gold-bright), var(--gold-mid)); border-color: var(--gold-deep); }
-        .qty-btn:active { box-shadow: var(--emboss-pressed); transform: scale(0.94); }
+        .qty-btn:hover { background: linear-gradient(160deg, var(--gold-bright), var(--gold-mid)); border-color: var(--gold-deep); color: var(--primary-deep); }
+        .qty-btn:active { box-shadow: var(--emboss-pressed); transform: scale(0.93); }
         .qty-input {
             width: 38px; text-align: center; border: 1px solid var(--border);
             border-radius: 4px; background: transparent; color: var(--text-main); font-family: var(--font-mono);
@@ -1026,37 +1215,55 @@
 
         .order-ref-chip {
             display: flex; align-items: center; justify-content: space-between;
-            background: rgba(110,32,39,0.05); border: 1px dashed var(--gold-deep);
+            background: color-mix(in srgb, var(--gold-mid) 6%, var(--surface));
+            border: 1px solid color-mix(in srgb, var(--gold-deep) 35%, transparent);
             border-radius: var(--radius-md); padding: var(--space-2) var(--space-3);
-            font-size: var(--text-caption1); color: var(--text-muted); margin-bottom: 0.75rem;
+            font-size: var(--text-caption1); color: var(--text-muted); margin-bottom: var(--space-3);
         }
-        .order-ref-value { font-family: var(--font-mono); color: var(--primary); font-weight: 600; font-size: var(--text-footnote); }
-        [data-theme-mode="dark"] .order-ref-chip { background: rgba(232,199,102,0.08); }
+        .order-ref-value { font-family: var(--font-mono); color: var(--primary); font-weight: 700; font-size: var(--text-footnote); letter-spacing: 0.01em; }
+        [data-theme-mode="dark"] .order-ref-chip { background: rgba(232,199,102,0.06); }
 
         .cart-empty-state { text-align: center; padding: var(--space-4) 0 var(--space-2); color: var(--text-muted); font-size: var(--text-footnote); }
         .cart-empty-state .empty-icon { font-size: var(--text-title1); display: block; margin-bottom: 0.3rem; }
 
         .step-title {
-            display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-subhead); text-transform: uppercase;
-            letter-spacing: 0.05em; color: var(--primary); font-family: var(--font-btn);
-            border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 0.85rem;
+            display: flex; align-items: center; gap: var(--space-2);
+            font-size: var(--text-caption1); text-transform: uppercase;
+            letter-spacing: 0.07em; font-weight: 700; color: var(--text-muted);
+            font-family: var(--font-btn);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: var(--space-2);
+            margin-bottom: var(--space-3);
         }
         .step-num {
-            width: 22px; height: 22px; border-radius: 50%;
-            background: radial-gradient(circle at 35% 30%, var(--gold-bright), var(--gold-mid) 60%, var(--gold-deep) 100%);
+            width: 20px; height: 20px; border-radius: 50%;
+            background: linear-gradient(145deg, var(--gold-bright) 0%, var(--gold-mid) 55%, var(--gold-deep) 100%);
             color: var(--primary-deep);
-            font-family: var(--font-mono); font-size: var(--text-caption2); display: flex; align-items: center;
+            font-family: var(--font-mono); font-size: var(--text-caption2);
+            font-weight: 800;
+            display: flex; align-items: center;
             justify-content: center; flex-shrink: 0;
-            box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 -2px 3px rgba(0,0,0,0.2) inset;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.65) inset, 0 1px 4px rgba(0,0,0,0.18);
         }
 
-        .segmented { display: flex; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--emboss-raised); }
-        .segmented button {
-            flex: 1; padding: var(--space-2); border: none; background: var(--surface); color: var(--text-main);
-            font-family: var(--font-btn); font-size: var(--text-footnote); font-weight: 600; cursor: pointer; transition: var(--transition);
+        .segmented {
+            display: flex; border: 1px solid var(--border); border-radius: var(--radius-lg);
+            overflow: hidden; box-shadow: var(--emboss-raised);
+            background: var(--background);
+            padding: 3px; gap: 2px;
         }
-        .segmented button:not(:last-child) { border-right: 1px solid var(--border); }
-        .segmented button.active { background: linear-gradient(180deg, var(--primary), var(--primary-deep)); color: #fff; }
+        .segmented button {
+            flex: 1; padding: var(--space-2) var(--space-3); border: none; background: transparent;
+            color: var(--text-muted); border-radius: calc(var(--radius-lg) - 3px);
+            font-family: var(--font-btn); font-size: var(--text-footnote); font-weight: 600;
+            cursor: pointer; transition: var(--transition-fast); letter-spacing: -0.01em;
+        }
+        .segmented button:hover:not(.active):not(:disabled) { background: color-mix(in srgb, var(--surface) 80%, transparent); color: var(--text-main); }
+        .segmented button.active {
+            background: linear-gradient(160deg, var(--primary), var(--primary-deep));
+            color: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.10) inset;
+        }
         .segmented button:disabled { opacity: 0.4; cursor: not-allowed; }
         .segmented button:disabled.active { background: var(--border); color: var(--text-muted); }
 
@@ -1070,13 +1277,19 @@
 
         .form-vertical { display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-3); }
         .form-group { display: flex; flex-direction: column; gap: var(--space-1); width: 100%; }
-        .form-group label { font-size: var(--text-caption1); font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .form-group label {
+            font-size: var(--text-caption2); font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
         .form-group .field-hint { font-size: var(--text-caption2); color: var(--text-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
         .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: var(--space-3) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-md);
-            background: var(--background); color: var(--text-main); font-size: var(--text-subhead); font-family: var(--font-body);
-            transition: var(--transition);
-            box-shadow: 0 2px 4px rgba(59,15,19,0.05) inset;
+            width: 100%; padding: var(--space-3) var(--space-3); border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface); color: var(--text-main);
+            font-size: var(--text-subhead); font-family: var(--font-body);
+            transition: var(--transition), box-shadow 0.20s ease;
+            box-shadow: 0 1px 2px rgba(15,8,5,0.04) inset;
+            letter-spacing: -0.01em;
         }
 
         /* ---- VOICE INPUT (mic button on text fields) ---- */
@@ -1115,8 +1328,11 @@
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237C6A57' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2rem;
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); background: var(--surface); }
-        .form-group input:invalid:not(:placeholder-shown) { border-color: var(--danger); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary); background: var(--surface);
+            box-shadow: 0 1px 2px rgba(15,8,5,0.04) inset, var(--focus-ring);
+        }
+        .form-group input:invalid:not(:placeholder-shown) { border-color: var(--danger); box-shadow: 0 1px 2px rgba(15,8,5,0.04) inset, 0 0 0 3px rgba(198,40,40,0.16); }
 
         /* Country code + phone number as ONE unified control — same
            pattern iOS uses for its own phone field (Contacts, Messages
@@ -1435,11 +1651,19 @@
             aspect-ratio: 1 / 1; color: var(--text-muted); font-size: var(--text-footnote); line-height: 1.8; text-align: center;
         }
         .qr-amount-tag {
-            margin-top: var(--space-3); /* 0.85rem → --space-3 (12px; nearest 8pt step) */
+            margin-top: var(--space-3);
             display: flex; align-items: center; justify-content: space-between;
-            background: linear-gradient(180deg, var(--primary), var(--primary-deep)); color: var(--gold-bright);
-            padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); width: 100%;
-            box-shadow: var(--emboss-raised);
+            background: linear-gradient(160deg, color-mix(in srgb, var(--primary) 80%, #fff 20%), var(--primary-deep));
+            color: var(--gold-bright);
+            padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); width: 100%;
+            box-shadow: var(--shadow), 0 1px 0 rgba(255,255,255,0.10) inset;
+            position: relative; overflow: hidden;
+        }
+        .qr-amount-tag::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 100%);
+            pointer-events: none;
         }
         .qr-amount-tag.zero { background: var(--border); color: var(--text-muted); box-shadow: none; }
         .qr-amount-label {
@@ -1495,21 +1719,33 @@
         ::-webkit-scrollbar-thumb { background: var(--gold-deep); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--gold-mid); }
 
-        .btn-group { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-2); }
+        .btn-group { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-3); }
         .btn-row { display: flex; gap: var(--space-2); }
         .btn-row .btn { flex: 1; }
         .btn {
-            padding: var(--space-3); border: none; border-radius: var(--radius-md); cursor: pointer;
-            font-family: var(--font-btn); font-weight: 600; font-size: var(--text-footnote); text-align: center;
-            text-decoration: none; transition: var(--transition);
+            padding: var(--space-3) var(--space-4); border: none; border-radius: var(--radius-lg); cursor: pointer;
+            font-family: var(--font-btn); font-weight: 600; font-size: var(--text-footnote);
+            text-align: center; text-decoration: none; transition: var(--transition);
             box-shadow: var(--emboss-raised);
+            letter-spacing: -0.01em;
+            position: relative; overflow: hidden;
         }
-        .btn:active { box-shadow: var(--emboss-pressed); transform: translateY(1px); }
-        .btn-primary { background: linear-gradient(180deg, var(--primary), var(--primary-deep)); color: white; }
-        .btn-primary:hover { background: linear-gradient(180deg, #7A252C, #4A1418); }
-        .btn-secondary { background: linear-gradient(180deg, var(--surface), var(--border)); color: var(--text-main); }
-        .btn-secondary:hover { background: linear-gradient(180deg, var(--gold-bright), var(--gold-mid)); color: var(--primary-deep); }
-        .btn-danger { background: var(--surface); color: var(--danger); border: 1.5px solid var(--danger); box-shadow: none; }
+        /* Subtle top-edge gloss on all buttons — Apple pill sheen */
+        .btn::after {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 100%);
+            pointer-events: none; border-radius: inherit;
+        }
+        .btn:active { box-shadow: var(--emboss-pressed); transform: translateY(1px) scale(0.98); }
+        .btn-primary {
+            background: linear-gradient(160deg, color-mix(in srgb, var(--primary) 80%, #fff 20%), var(--primary-deep));
+            color: white;
+        }
+        .btn-primary:hover { filter: brightness(1.08); }
+        .btn-secondary { background: linear-gradient(160deg, var(--surface), color-mix(in srgb, var(--border) 60%, var(--surface))); color: var(--text-main); }
+        .btn-secondary:hover { background: linear-gradient(160deg, var(--gold-bright), var(--gold-mid)); color: var(--primary-deep); }
+        .btn-danger { background: var(--surface); color: var(--danger); border: 1.5px solid color-mix(in srgb, var(--danger) 55%, transparent); box-shadow: none; }
         .btn-danger:hover { background: var(--danger); color: #fff; }
         .btn-danger:active { transform: translateY(1px); }
         .btn-whatsapp {
@@ -1520,13 +1756,19 @@
 
         .toast-container { position: fixed; bottom: var(--space-4); right: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); z-index: 9999; }
         .toast {
-            background: linear-gradient(180deg, var(--primary), var(--primary-deep)); color: #fff; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lift); font-family: var(--font-btn); font-size: var(--text-footnote);
-            display: flex; align-items: center; gap: var(--space-2); animation: toast-in 0.25s ease-out; max-width: 300px;
+            background: color-mix(in srgb, var(--primary-deep) 95%, transparent);
+            -webkit-backdrop-filter: blur(20px) saturate(1.8);
+            backdrop-filter: blur(20px) saturate(1.8);
+            color: #fff; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-deep); font-family: var(--font-btn); font-size: var(--text-footnote);
+            display: flex; align-items: center; gap: var(--space-2);
+            animation: toast-in 0.28s cubic-bezier(0.34, 1.4, 0.64, 1); max-width: 320px;
+            border: 1px solid rgba(255,255,255,0.10);
+            letter-spacing: -0.01em;
         }
-        .toast.error { background: linear-gradient(180deg, #D6413A, var(--danger)); }
-        .toast.success { background: linear-gradient(180deg, #3E9142, var(--success)); }
-        .toast.info { background: linear-gradient(180deg, #4A3A30, var(--text-main)); }
+        .toast.error { background: color-mix(in srgb, var(--danger) 88%, #000 12%); }
+        .toast.success { background: color-mix(in srgb, var(--success) 82%, #000 18%); }
+        .toast.info { background: color-mix(in srgb, var(--primary-deep) 90%, transparent); }
         @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         .modal-overlay {
@@ -1535,21 +1777,37 @@
         }
         .modal-overlay.hidden { display: none; }
         .modal-box {
-            background: var(--surface); border-radius: var(--radius-lg); padding: var(--space-5);
-            max-width: 380px; width: 100%; box-shadow: 0 24px 60px rgba(0,0,0,0.4);
-            border-top: 3px solid var(--gold-mid);
-            animation: toast-in 0.2s ease-out;
+            background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-6);
+            max-width: 390px; width: 100%;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 32px 72px rgba(0,0,0,0.36), 0 1px 0 rgba(255,255,255,0.5) inset;
+            border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+            border-top: 2.5px solid var(--gold-mid);
+            animation: toast-in 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
         }
-        .modal-box h3 { font-family: var(--font-heading); color: var(--heading-color); margin-bottom: 0.6rem; font-size: var(--text-title3); }
-        .modal-box p { font-size: var(--text-footnote); color: var(--text-muted); line-height: 1.6; margin-bottom: 1.3rem; white-space: pre-line; }
+        [data-theme-mode="dark"] .modal-box { box-shadow: 0 4px 16px rgba(0,0,0,0.3), 0 32px 72px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05) inset; }
+        @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+            html.glass-enabled .modal-box {
+                background: color-mix(in srgb, var(--surface) 78%, transparent);
+                -webkit-backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.6);
+                backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.6);
+            }
+        }
+        .modal-box h3 { font-family: var(--font-heading); color: var(--heading-color); margin-bottom: var(--space-2); font-size: var(--text-title3); letter-spacing: -0.02em; }
+        .modal-box p { font-size: var(--text-footnote); color: var(--text-muted); line-height: 1.65; margin-bottom: var(--space-5); white-space: pre-line; }
         .modal-actions { display: flex; gap: var(--space-2); justify-content: flex-end; }
         .modal-actions .btn { padding: var(--space-2) var(--space-4); }
 
         .mobile-cart-bar {
-            display: none; position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(180deg, var(--primary), var(--primary-deep));
-            color: #fff; padding: var(--space-3) var(--space-4); align-items: center; justify-content: space-between;
-            z-index: 9998; box-shadow: 0 -6px 18px rgba(0,0,0,0.22); font-family: var(--font-btn); cursor: pointer;
-            border-top: 2px solid var(--gold-mid);
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            background: color-mix(in srgb, var(--primary-deep) 94%, transparent);
+            -webkit-backdrop-filter: blur(20px) saturate(1.6);
+            backdrop-filter: blur(20px) saturate(1.6);
+            color: #fff; padding: var(--space-3) var(--space-5);
+            align-items: center; justify-content: space-between;
+            z-index: 9998;
+            box-shadow: 0 -1px 0 rgba(255,255,255,0.08), 0 -8px 24px rgba(0,0,0,0.28);
+            font-family: var(--font-btn); cursor: pointer;
+            border-top: 1px solid color-mix(in srgb, var(--gold-mid) 40%, transparent);
         }
         .mobile-cart-bar.visible { display: flex; }
         .mobile-cart-bar .mcb-left { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-footnote); }
@@ -1636,13 +1894,14 @@
             .qty-btn { width: 44px; height: 44px; font-size: var(--text-headline); } /* never below 44px tap floor */
             .qty-input { width: 42px; height: 44px; }
             .sidebar {
-                position: fixed; bottom: 0; left: 0; right: 0; top: auto; height: 88vh;
-                z-index: 950; border-radius: 20px 20px 0 0; border-top: 2px solid var(--gold-mid);
+                position: fixed; bottom: 0; left: 0; right: 0; top: auto; height: 90vh;
+                z-index: 950; border-radius: 24px 24px 0 0; border-top: 1px solid color-mix(in srgb, var(--gold-mid) 45%, transparent);
                 border-left: none; transform: translateY(100%);
-                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1); /* Apple sheet spring */
                 overflow-y: auto; padding: 0 var(--space-4) var(--space-6);
+                box-shadow: 0 -4px 32px rgba(0,0,0,0.22);
             }
-            .sidebar::before { content: ''; display: block; width: 44px; height: 4px; background: var(--gold-deep); border-radius: 2px; margin: var(--space-3) auto var(--space-4); }
+            .sidebar::before { content: ''; display: block; width: 40px; height: 5px; background: color-mix(in srgb, var(--border) 80%, transparent); border-radius: 3px; margin: var(--space-3) auto var(--space-4); }
             .sidebar.mobile-open { transform: translateY(0); }
             .sidebar-close-btn {
                 display: flex; align-items: center; gap: var(--space-2); width: 100%;
@@ -1683,6 +1942,17 @@
     </style>
 </head>
 <body>
+
+    <!-- Liquid glass background — three soft blurred blobs colored from the
+         active theme's own tokens (recolor automatically on theme switch).
+         Purely decorative (aria-hidden), sits behind everything via
+         negative z-index. Controlled by html.glass-enabled + @supports;
+         degrades to nothing on unsupporting browsers/older devices. -->
+    <div class="glass-orbs" aria-hidden="true">
+        <span class="glass-orb glass-orb--a"></span>
+        <span class="glass-orb glass-orb--b"></span>
+        <span class="glass-orb glass-orb--c"></span>
+    </div>
 
     <a href="#main-content" class="skip-link">Skip to menu</a>
 
@@ -1755,9 +2025,9 @@
                 </div>
                 <div class="category-pills" id="category-pills-container" role="group" aria-label="Filter by category"></div>
                 <div class="theme-picker" id="theme-picker">
-                    <button id="btn-theme" class="theme-picker-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="theme-picker-panel" title="Change theme">
+                    <button id="btn-theme" class="theme-picker-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="theme-picker-panel" aria-label="Change theme">
                         <span class="tp-swatch-dot" aria-hidden="true"></span>
-                        <span id="theme-label">White Chocolate</span>
+                        <span id="theme-label">Masala Chai</span>
                         <span class="tp-chevron" aria-hidden="true">▾</span>
                     </button>
                     <div class="theme-picker-panel" id="theme-picker-panel" role="menu" aria-label="Choose a theme">
@@ -3341,11 +3611,13 @@
                 });
 
                 const THEME_REGISTRY = [
-                    { id: "white-chocolate", name: "White Chocolate", desc: "Bright, creamy, classic",       mode: "light", a: "#0B5D42", b: "#C9A227" },
+                    { id: "masala-chai",     name: "Masala Chai",     desc: "Warm terracotta, comfort & spice", mode: "light", a: "#A85C2E", b: "#D9A03E" },
                     { id: "dark-chocolate",  name: "Dark Chocolate",  desc: "Rich cocoa, moody & premium",    mode: "dark",  a: "#6E4425", b: "#D9A44E" },
-                    { id: "creamy-cookie",   name: "Creamy Cookie",   desc: "Warm, cozy, biscuit-toned",      mode: "light", a: "#8B5E34", b: "#D3A63E" },
-                    { id: "matcha-cream",    name: "Matcha Cream",    desc: "Fresh, calm, garden green",      mode: "light", a: "#4C7A4B", b: "#CBA945" },
-                    { id: "berry-mousse",    name: "Berry Mousse",    desc: "Playful deep berry, after dark", mode: "dark",  a: "#7A2E4D", b: "#E0A65E" }
+                    { id: "berry-mousse",    name: "Berry Mousse",    desc: "Playful deep berry, after dark", mode: "dark",  a: "#7A2E4D", b: "#E0A65E" },
+                    { id: "tomato-chilli",   name: "Tomato Chilli",   desc: "Vivid red-orange, spice-forward", mode: "light", a: "#C6371F", b: "#E0932E" },
+                    { id: "filter-coffee",   name: "Filter Coffee",   desc: "Roasted toffee brown, iconic & premium", mode: "dark",  a: "#7A4A24", b: "#C68A3E" },
+                    { id: "rose-milk",       name: "Rose Milk",       desc: "Pink-magenta with creamy gold", mode: "dark",  a: "#C2557A", b: "#E8B67E" },
+                    { id: "regular",         name: "Regular",         desc: "Bubblegum pink & Microsoft blue, clean & bright", mode: "light", a: "#0078D4", b: "#FF6FB5" }
                 ];
 
                 function applyTheme(themeId, persist) {
@@ -3383,29 +3655,87 @@
                     `;
                     opt.addEventListener("click", () => {
                         applyTheme(theme.id, true);
-                        themePicker.classList.remove("open");
-                        btnTheme.setAttribute("aria-expanded", "false");
+                        closeThemePanel();
                     });
                     themeOptionsList.appendChild(opt);
                 });
 
                 const themePicker = document.getElementById("theme-picker");
                 const btnTheme = document.getElementById("btn-theme");
+                const themePanel = document.getElementById("theme-picker-panel");
+
+                // Re-parent the popover to <body>. It used to live inside
+                // .theme-picker, which sits inside a position:sticky
+                // .controls-row, which sits inside .main-content
+                // (overflow-y:auto; max-height:100vh). That nesting was
+                // clipping/burying the open panel behind the menu grid on
+                // scroll. As a direct child of <body>, position:fixed + a
+                // high z-index (see CSS) puts it above everything, and its
+                // coordinates are computed fresh every time from the
+                // trigger's real on-screen position — see positionThemePanel().
+                document.body.appendChild(themePanel);
+
+                function closeThemePanel() {
+                    themePicker.classList.remove("open");
+                    themePanel.classList.remove("open");
+                    btnTheme.setAttribute("aria-expanded", "false");
+                }
+
+                // Keeps the popover fully on-screen and anchored to the
+                // trigger regardless of scroll position, viewport size, or
+                // where the trigger sits in the controls row. Runs after the
+                // panel is visible so its real width/height are measurable,
+                // and re-runs continuously (scroll + resize) while open.
+                function positionThemePanel() {
+                    const margin = 12;
+                    const triggerRect = btnTheme.getBoundingClientRect();
+                    const panelRect = themePanel.getBoundingClientRect();
+                    const panelWidth = panelRect.width || 240;
+                    const panelHeight = panelRect.height || 0;
+
+                    // Right-align to the trigger by default, clamped so it
+                    // never runs off either edge of the viewport.
+                    let left = triggerRect.right - panelWidth;
+                    left = Math.min(left, window.innerWidth - panelWidth - margin);
+                    left = Math.max(left, margin);
+
+                    // Prefer opening below the trigger; flip above it if
+                    // there isn't room below (e.g. trigger near the bottom
+                    // of a scrolled viewport).
+                    let top = triggerRect.bottom + 10;
+                    if (top + panelHeight > window.innerHeight - margin) {
+                        const above = triggerRect.top - 10 - panelHeight;
+                        top = above > margin ? above : Math.max(margin, window.innerHeight - margin - panelHeight);
+                    }
+
+                    themePanel.style.left = `${left}px`;
+                    themePanel.style.top = `${top}px`;
+                }
+
                 btnTheme.addEventListener("click", (e) => {
                     e.stopPropagation();
                     const isOpen = themePicker.classList.toggle("open");
+                    themePanel.classList.toggle("open", isOpen);
                     btnTheme.setAttribute("aria-expanded", isOpen ? "true" : "false");
+                    if (isOpen) requestAnimationFrame(positionThemePanel);
                 });
+                window.addEventListener("resize", () => {
+                    if (themePicker.classList.contains("open")) positionThemePanel();
+                });
+                // Capture phase on window catches scroll events fired by any
+                // descendant scroll container (like .main-content), not just
+                // window-level scrolling, since scroll events don't bubble.
+                window.addEventListener("scroll", () => {
+                    if (themePicker.classList.contains("open")) positionThemePanel();
+                }, true);
                 document.addEventListener("click", (e) => {
-                    if (!themePicker.contains(e.target)) {
-                        themePicker.classList.remove("open");
-                        btnTheme.setAttribute("aria-expanded", "false");
+                    if (!themePicker.contains(e.target) && !themePanel.contains(e.target)) {
+                        closeThemePanel();
                     }
                 });
                 document.addEventListener("keydown", (e) => {
                     if (e.key === "Escape" && themePicker.classList.contains("open")) {
-                        themePicker.classList.remove("open");
-                        btnTheme.setAttribute("aria-expanded", "false");
+                        closeThemePanel();
                         btnTheme.focus();
                     }
                 });
@@ -3843,18 +4173,26 @@
             // ── end country-code reset ──────────────────────────────────
 
             // ── Glass feature flag ────────────────────────────────────────
-            // To activate the Year-1 glass variant on the phone pill, add
-            // "glass-enabled" to the <html> class list. Toggle it here or
-            // via a settings toggle in your admin panel. Currently OFF by
-            // default — the flat token-based style is the production default.
+            // Project AURORA — full liquid-glass mode is ON by default via
+            // class="glass-enabled" set directly on <html> in the markup
+            // (zero-flash, no late JS needed for the initial paint). The
+            // drifting background orbs plus the modal, cart sidebar, and
+            // theme-picker panels all pick up a frosted/translucent
+            // treatment from that class; the phone-number pill has used
+            // this same flag since the Year-1 glass variant. The line below
+            // just keeps this in sync if the class is ever toggled at
+            // runtime (e.g. a future admin setting).
             //
-            // To turn ON: change the line below to:
-            //   document.documentElement.classList.add("glass-enabled");
-            // To turn OFF: leave as-is (classList.remove is a no-op).
+            // To turn OFF (flat token-based surfaces everywhere): remove
+            // class="glass-enabled" from the <html> tag in the markup, and
+            // change the line below to
+            //   document.documentElement.classList.remove("glass-enabled");
             //
             // The @supports guard in the CSS means unsupporting browsers
-            // ignore the glass rules entirely — no JS check needed here.
-            document.documentElement.classList.remove("glass-enabled"); // OFF
+            // ignore all glass rules regardless of this flag. --glass-
+            // intensity in :root (0–1, default 1) can dial the effect down
+            // without an on/off flip if a lighter touch is wanted later.
+            document.documentElement.classList.add("glass-enabled"); // ON
             // ── end glass flag ────────────────────────────────────────────
         });
 
