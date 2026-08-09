@@ -1684,11 +1684,21 @@
            trust-building calls to action across iOS/macOS (Phone/FaceTime
            accept states, default button tint, links). White label text on
            a saturated blue gives the highest legible contrast at this size. */
-        .btn-call-us {
+        /* Shared fixed wrapper for the two bottom-left floating buttons —
+           music toggle stacked directly above "Call us for help". Anchoring
+           the *wrapper* (not each button individually) keeps them locked
+           together as one unit at every breakpoint. */
+        .floating-actions {
             position: fixed;
             left: 20px;
             bottom: 20px;
             z-index: 9970;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--space-3);
+        }
+        .btn-call-us {
             display: flex;
             align-items: center;
             gap: var(--space-2);
@@ -1709,13 +1719,14 @@
         .btn-call-us:active { transform: translateY(0) scale(0.97); box-shadow: var(--emboss-pressed); }
         .btn-call-us svg { flex-shrink: 0; }
         @media (max-width: 768px) {
-            .btn-call-us { left: 14px; bottom: 84px; padding: var(--space-2) var(--space-4); font-size: var(--text-caption1); }
+            .floating-actions { left: 14px; bottom: 84px; gap: var(--space-2); }
+            .btn-call-us { padding: var(--space-2) var(--space-4); font-size: var(--text-caption1); }
         }
 
         /* Round music toggle: red = playing (tap to stop), green = stopped
-           (tap to start). Sits inline in .controls-row right next to the
-           theme picker, rather than floating over the page. Shows both an
-           icon and a short label ("Start"/"Stop") stacked inside the circle. */
+           (tap to start). Sits in .floating-actions directly above the
+           call-us button. Shows both an icon and a short label
+           ("Start"/"Stop") stacked inside the circle. */
         .btn-music-toggle {
             flex-shrink: 0;
             width: 56px; height: 56px;
@@ -1749,7 +1760,7 @@
         @media (max-width: 768px) {
             .btn-music-toggle { width: 50px; height: 50px; font-size: 0.55rem; }
         }
-        }
+
 
         .call-modal-box .modal-actions-stack { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-3); }
         .call-modal-box .btn { display: flex; align-items: center; justify-content: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); }
@@ -2074,11 +2085,6 @@
                         <div id="theme-options-list"></div>
                     </div>
                 </div>
-                <button id="btn-music-toggle" class="btn-music-toggle" type="button" title="Stop music" aria-label="Stop music" aria-pressed="false">
-                    <svg id="music-icon-stop" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false" style="display:none;"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
-                    <svg id="music-icon-start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg>
-                    <span id="music-toggle-label">Start</span>
-                </button>
             </div>
 
             <div class="menu-grid" id="menu-container" aria-label="Menu items" aria-live="polite"></div>
@@ -2243,18 +2249,26 @@
         </aside>
     </div>
 
-    <button id="btn-call-us" class="btn-call-us" title="Call us for help" aria-label="Call us for help">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.49a1 1 0 011 1 11.36 11.36 0 00.57 3.56 1 1 0 01-.25 1.01l-2.2 2.22z"/></svg>
-        Call us for help
-    </button>
+    <!-- Floating action stack, bottom-left: music toggle stacked directly
+         above "Call us for help", both anchored together so they move as
+         one unit and never drift apart at different breakpoints. -->
+    <div class="floating-actions">
+        <button id="btn-music-toggle" class="btn-music-toggle" type="button" title="Stop music" aria-label="Stop music" aria-pressed="false">
+            <svg id="music-icon-stop" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false" style="display:none;"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+            <svg id="music-icon-start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg>
+            <span id="music-toggle-label">Start</span>
+        </button>
+        <button id="btn-call-us" class="btn-call-us" title="Call us for help" aria-label="Call us for help">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.49a1 1 0 011 1 11.36 11.36 0 00.57 3.56 1 1 0 01-.25 1.01l-2.2 2.22z"/></svg>
+            Call us for help
+        </button>
+    </div>
 
     <!-- Background music: tries to play the instant the page finishes
          loading; if the browser's autoplay policy blocks that first
          attempt (see JS below for why that can happen and can't be
          bypassed from code), it silently starts on the visitor's very
-         first tap/click/keypress anywhere on the page instead. The round
-         Stop/Start button lives next to the theme picker in the controls
-         row (see .controls-row above). -->
+         first tap/click/keypress anywhere on the page instead. -->
     <audio id="bg-music-audio" src="Dew_on_the_Leaves.mp3" loop preload="auto"></audio>
 
     <div class="mobile-overlay" id="mobile-overlay"></div>
