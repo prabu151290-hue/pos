@@ -506,11 +506,30 @@
             }
         }
 
+        /* ── Header — realigned to the site's own brand system ────────
+           Panel note: the last two passes (medallion → engraved brass
+           plaque) kept escalating decoration on this one component
+           without checking it against the product's actual brand
+           system. Two concrete problems that caused:
+           — Color psychology: a solid metallic-gold surface reads as
+              jewelry/hardware, not food. Every other themed heading on
+              this site already resolves to var(--heading-color), which
+              is var(--primary) in light flavors and var(--gold-mid) in
+              dark ones — gold was always meant to be a trim color here,
+              not the dominant surface.
+           — Consistency: hero-section, category cards, etc. all use
+              var(--surface)/var(--border)/var(--shadow)/var(--radius-xl).
+              The brass header ignored all four, so it read as a
+              different product bolted onto this one.
+           Fix: the header card rejoins that system exactly. The only
+           bespoke elements left are the crest's own presentation (below)
+           and a single restrained gold rule — one deliberate accent,
+           not a whole plaque of it. */
         .pos-header {
             display: grid;
             grid-template-columns: 190px 1fr;
             align-items: center;
-            background: linear-gradient(135deg, rgba(11,93,66,0.04) 0%, var(--surface) 50%, rgba(201,162,39,0.06) 100%);
+            background: var(--surface);
             padding: var(--space-5) var(--space-6);
             border-radius: var(--radius-xl);
             margin-bottom: var(--space-5);
@@ -519,37 +538,44 @@
             border-bottom: 2.5px solid var(--gold-mid);
             gap: var(--space-5);
             position: relative;
-            overflow: hidden;
-        }
-        /* Subtle gloss sweep on the header card */
-        .pos-header::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(145deg, rgba(255,255,255,0.12) 0%, transparent 55%);
-            pointer-events: none;
-            border-radius: inherit;
-        }
-        [data-theme-mode="dark"] .pos-header {
-            background: linear-gradient(135deg, rgba(110,68,37,0.18) 0%, var(--surface) 50%, rgba(217,164,78,0.06) 100%);
         }
         .header-left { display: flex; align-items: center; justify-content: center; }
+        /* ── Crest seal ─────────────────────────────────────────────────
+           The source art (Amruthadharanam_logo2.png) is a flat raster
+           with an opaque ivory card baked in — no alpha to key out. In
+           light flavors var(--surface) is a near-match for that ivory
+           (#FFF9EE vs. the card's own #F6F1E2), so on those themes the
+           card all but disappears into the header on its own. Dark
+           flavors won't hide it that way — and shouldn't: a printed
+           card doesn't change color because the room lights dimmed. So
+           instead of masking it, it's presented honestly as what it is:
+           a small physical seal set on the page, lifted with real
+           shadow and a single fine gold hairline, never forced into a
+           metal-plaque conceit it was never drawn for. */
+        .brand-medallion {
+            position: relative;
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 8px 12px;
+            border-radius: 14px;
+            background: linear-gradient(165deg, #FFFDF7 0%, #F6F1E2 55%, #F0E7CC 100%);
+            border: 1px solid color-mix(in srgb, var(--gold-mid) 55%, transparent);
+            box-shadow:
+                0 1px 0 rgba(255,255,255,0.85) inset,
+                0 -1.5px 3px rgba(122,84,20,0.14) inset,
+                0 4px 12px rgba(30,14,4,0.22);
+        }
         .brand-logo {
-            width: 100%; height: auto; max-height: 92px;
+            position: relative; z-index: 1;
+            width: auto; height: auto; max-height: 80px; max-width: 100%;
             object-fit: contain; object-position: center;
-            display: block;
-            filter: drop-shadow(0 3px 8px rgba(59,15,19,0.25));
+            display: block; border-radius: 6px;
         }
         .brand-logo-fallback {
-            width: 100%; height: 64px; border-radius: var(--radius-md);
-            background: radial-gradient(circle at 35% 30%, var(--gold-bright), var(--gold-mid) 55%, var(--gold-deep) 100%);
-            color: var(--primary-deep);
+            width: 64px; height: 64px;
             display: flex; align-items: center; justify-content: center;
-            font-family: var(--font-heading); font-weight: 700; font-size: var(--text-title2);
-            box-shadow:
-                0 1px 0 rgba(255,255,255,0.6) inset,
-                0 -3px 5px rgba(0,0,0,0.25) inset,
-                0 3px 10px rgba(59,15,19,0.35);
+            font-family: var(--font-heading); font-weight: 700; font-size: var(--text-largetitle);
+            background: linear-gradient(160deg, var(--gold-bright), var(--gold-deep));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
         }
         .header-center { text-align: center; }
         .header-center h1 {
@@ -559,6 +585,17 @@
             line-height: 1.15;
         }
         [data-theme-mode="dark"] .header-center h1 { text-shadow: 0 1px 8px rgba(232,199,102,0.22); }
+        .brand-divider {
+            display: flex; align-items: center; gap: 10px;
+            max-width: 360px; margin: 6px auto 4px;
+        }
+        .brand-divider .bd-line {
+            flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--gold-mid) 55%, transparent) 50%, transparent);
+        }
+        .brand-divider .bd-ornament {
+            font-size: 0.75rem; line-height: 1; color: var(--gold-mid);
+        }
         .header-center p { font-size: var(--text-footnote); color: var(--text-muted); margin-top: var(--space-1); letter-spacing: 0.01em; font-weight: 500; }
 
         /* ---- HERO SECTION — Apple SF gradient card ---- */
@@ -1923,7 +1960,8 @@
             .status-board { flex-direction: column; gap: var(--space-1); font-size: var(--text-caption2); padding: var(--space-2) var(--space-4); }
             .status-board .divider { display: none; }
             .pos-header { grid-template-columns: 120px 1fr; gap: var(--space-2); padding: var(--space-3) var(--space-4); }
-            .brand-logo { max-height: 62px; }
+            .brand-medallion { padding: 6px 9px; border-radius: 12px; }
+            .brand-logo { max-height: 58px; }
             .header-center h1 { font-size: var(--text-title2); }
             .header-center p { font-size: var(--text-caption2); }
             .main-content { padding: 0 var(--space-4) 6rem; min-width: 0; }
@@ -1965,7 +2003,8 @@
 
         @media (max-width: 480px) {
             .pos-header { grid-template-columns: 92px 1fr; padding: var(--space-2) var(--space-3); }
-            .brand-logo { max-height: 46px; }
+            .brand-medallion { padding: 5px 7px; border-radius: 10px; }
+            .brand-logo { max-height: 42px; }
             .header-center h1 { font-size: var(--text-headline); }
             .main-content { padding: 0 var(--space-3) 6rem; }
         }
@@ -2026,12 +2065,15 @@
 
             <header class="pos-header">
                 <div class="header-left">
-                    <img src="Amruthadharanam_logo2.png" alt="Amruthadhaaranam Logo" class="brand-logo"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="brand-logo-fallback" style="display:none;" aria-hidden="true">AD</div>
+                    <div class="brand-medallion">
+                        <img src="Amruthadharanam_logo2.png" alt="Amruthadhaaranam Logo" class="brand-logo"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="brand-logo-fallback" style="display:none;" aria-hidden="true">AD</div>
+                    </div>
                 </div>
                 <div class="header-center">
                     <h1>AMRUTHADHAARANAM</h1>
+                    <div class="brand-divider" aria-hidden="true"><span class="bd-line"></span><span class="bd-ornament">✦</span><span class="bd-line"></span></div>
                     <p>Freshly Crafted Snacks &amp; Refreshing Beverages</p>
                 </div>
             </header>
@@ -2609,19 +2651,56 @@
             async sync() {
                 if (!LIVE_TIME_SYNC_ENABLED) return false;
 
+                // Each source gets its own hard timeout via AbortController.
+                // Without this, a source that's dead at the network level
+                // (connection accepted then never responds, vs. a clean
+                // 404/500) can hang a fetch() for the browser's full
+                // default timeout — well over a minute in the worst case —
+                // which stalls every resync this page ever attempts
+                // (on load, every 5 min, and on every focus/visibility
+                // change) behind that one dead call. That stall is what
+                // shows up as "closing time isn't syncing / lagging": the
+                // page silently keeps running on whatever time it had
+                // (or the raw device clock) far longer than the 5-minute
+                // resync interval implies.
+                const TIME_SOURCE_TIMEOUT_MS = 4000;
+                const fetchWithTimeout = async (url, opts = {}) => {
+                    const ctrl = new AbortController();
+                    const t = setTimeout(() => ctrl.abort(), TIME_SOURCE_TIMEOUT_MS);
+                    try {
+                        return await fetch(url, { ...opts, signal: ctrl.signal });
+                    } finally {
+                        clearTimeout(t);
+                    }
+                };
+
+                // worldtimeapi.org (the previous primary source) was
+                // permanently sunset in 2026 — every call to it was
+                // guaranteed to fail, and did so slowly (dead host, not a
+                // fast error). Dropped in favor of two sources that are
+                // each independently sufficient: a dedicated time API,
+                // and — because relying on any single small free API is
+                // itself a single point of failure — the `Date` response
+                // header from a large, high-uptime CORS-enabled endpoint
+                // as a fully independent fallback.
                 const sources = [
                     async () => {
-                        const res = await fetch("https://worldtimeapi.org/api/timezone/Asia/Kolkata", { cache: "no-store" });
-                        if (!res.ok) throw new Error("worldtimeapi.org not ok");
-                        const data = await res.json();
-                        if (typeof data.unixtime !== "number") throw new Error("no unixtime field");
-                        return data.unixtime * 1000;
-                    },
-                    async () => {
-                        const res = await fetch("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Kolkata", { cache: "no-store" });
+                        const res = await fetchWithTimeout("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Kolkata", { cache: "no-store" });
                         if (!res.ok) throw new Error("timeapi.io not ok");
                         const data = await res.json();
                         return Date.UTC(data.year, data.month - 1, data.day, data.hour, data.minute, data.seconds, data.milliSeconds || 0) - IST_OFFSET_MS;
+                    },
+                    async () => {
+                        // `Date` is on the CORS-safelisted response-header
+                        // list, so it's readable even without the server
+                        // opting in via Access-Control-Expose-Headers —
+                        // this works against almost any HTTPS endpoint.
+                        const res = await fetchWithTimeout("https://api.github.com/zen", { cache: "no-store", mode: "cors" });
+                        const dateHeader = res.headers.get("date");
+                        if (!dateHeader) throw new Error("no Date header");
+                        const serverMs = new Date(dateHeader).getTime();
+                        if (isNaN(serverMs)) throw new Error("unparseable Date header");
+                        return serverMs;
                     }
                 ];
 
@@ -2922,6 +3001,28 @@
                     updateWatermark();
                 };
 
+                // A lighter repaint with no network wait — used every time the
+                // tab regains visibility/focus, run *before* the resync below.
+                // Previously the countdown only repainted after LiveClock.sync()
+                // resolved, which is a network round trip (now up to ~4-8s with
+                // the timeout-guarded sources). Combined with browsers throttling
+                // timers heavily in backgrounded tabs — Chrome can drop a 15s
+                // interval to roughly one wake per minute once a tab has been
+                // hidden a few minutes — that left a real window where a
+                // freshly-refocused tab still showed however-long-ago-it-was-
+                // backgrounded numbers. This repaints immediately from whatever
+                // LiveClock.nowMs() can give right now (still accurate — it's
+                // either the live device clock or the last synced anchor plus
+                // elapsed monotonic time, not a frozen value), then verifies
+                // over the network afterward.
+                const refreshDisplayNow = () => {
+                    this.updateTimestamp();
+                    this.updateTodayDateBadge();
+                    this.updateKitchenStatus();
+                    this.renderMenu();
+                    updateWatermark();
+                };
+
                 LiveClock.sync().then(refreshAfterResync);
 
                 setInterval(() => { this.updateTimestamp(); this.updateTodayDateBadge(); this.updateKitchenStatus(); this.renderMenu(); updateWatermark(); }, 15000);
@@ -2929,13 +3030,16 @@
 
                 document.addEventListener("visibilitychange", () => {
                     if (document.visibilityState === "visible") {
+                        refreshDisplayNow();
                         LiveClock.sync().then(refreshAfterResync);
                     }
                 });
                 window.addEventListener("focus", () => {
+                    refreshDisplayNow();
                     LiveClock.sync().then(refreshAfterResync);
                 });
                 window.addEventListener("pageshow", () => {
+                    refreshDisplayNow();
                     LiveClock.sync().then(refreshAfterResync);
                 });
 
