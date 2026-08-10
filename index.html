@@ -25,7 +25,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AMRUTHADHAARANAM — Order Terminal</title>
 
-    <meta name="description" content="AMRUTHADHAARANAM — 100% pure vegetarian snacks, sandwiches, Maggi, pasta, juices & milkshakes. Order instantly on WhatsApp for delivery or pickup.">
+    <meta name="description" content="AMRUTHADHAARANAM — 100% pure vegetarian snacks, sandwiches, Maggi, pasta, juices & milkshakes. Order instantly on WhatsApp for self pickup, or delivery for elders, patients & emergencies.">
     <meta property="og:title" content="AMRUTHADHAARANAM — Order Fresh Vegetarian Snacks & Beverages">
     <meta property="og:description" content="Freshly crafted snacks & refreshing beverages, ordered straight to WhatsApp.">
     <meta property="og:type" content="website">
@@ -1310,7 +1310,34 @@
             margin-top: var(--space-3); /* 0.75rem → --space-3 (12px) */ display: none;
         }
         .pickup-note.visible { display: block; }
+        /* Delivery-restricted note: uses the theme's --warning token (redefined
+           per data-theme and adapted per data-theme-mode) instead of a fixed
+           color, so the highlight stays legible and on-brand across every
+           flavor and in both light and dark mode. */
+        .delivery-restricted-note {
+            background: color-mix(in srgb, var(--warning) 14%, var(--surface));
+            border: 1.5px solid color-mix(in srgb, var(--warning) 55%, transparent);
+            color: var(--text-main);
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(15,8,5,0.05) inset;
+        }
+        .delivery-restricted-note strong { color: var(--warning); }
+        [data-theme-mode="dark"] .delivery-restricted-note {
+            background: color-mix(in srgb, var(--warning) 20%, var(--surface));
+        }
+        .order-limit-banner {
+            background: color-mix(in srgb, var(--danger) 14%, var(--surface));
+            border: 1.5px solid color-mix(in srgb, var(--danger) 55%, transparent);
+            color: var(--text-main);
+            font-weight: 500;
+            margin-top: var(--space-3);
+        }
+        .order-limit-banner strong { color: var(--danger); }
+        [data-theme-mode="dark"] .order-limit-banner {
+            background: color-mix(in srgb, var(--danger) 22%, var(--surface));
+        }
         .address-fields.collapsed { display: none; }
+        #delivery-reason-group.collapsed { display: none; }
 
         .form-vertical { display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-3); }
         .form-group { display: flex; flex-direction: column; gap: var(--space-1); width: 100%; }
@@ -1969,6 +1996,11 @@
             .search-wrapper { min-width: unset; }
             .category-pills { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; min-width: 0; }
             .category-pills::-webkit-scrollbar { display: none; }
+            /* Fade the trailing edge so a horizontally-scrolling pill row
+               visibly hints "more categories this way" instead of just
+               cutting off mid-pill — the scroll affordance itself (no
+               scrollbar, no arrow) gave no clue more existed off-screen. */
+            .category-pills { mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%); -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%); }
             .pill { white-space: nowrap; flex-shrink: 0; }
             .theme-picker { align-self: flex-start; }
             .menu-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
@@ -2149,10 +2181,21 @@
             <section>
                 <h3 class="step-title"><span class="step-num" aria-hidden="true">1</span> Order Type</h3>
                 <div class="segmented" id="order-type-toggle" role="group" aria-label="Order type">
-                    <button type="button" class="active" data-type="Delivery" aria-pressed="true">🛵 Delivery</button>
-                    <button type="button" data-type="Pickup" aria-pressed="false">🏠 Self Pickup</button>
+                    <button type="button" class="active" data-type="Pickup" aria-pressed="true">🏠 Self Pickup</button>
+                    <button type="button" data-type="Delivery" aria-pressed="false">🚑 Delivery</button>
                 </div>
-                <p class="pickup-note" id="pickup-note">Customer will collect at the counter — delivery fee is waived. Door/Flat and Apartment details are still collected for your records.</p>
+                <p class="pickup-note visible" id="pickup-note">Customer will collect at the counter — delivery fee is waived. Door/Flat and Apartment details are still collected for your records.</p>
+                <p class="pickup-note delivery-restricted-note" id="delivery-note">🚑 Home delivery is reserved for <strong>elders, patients & emergencies</strong> — everyone else, please select Self Pickup. Pick the reason below so the kitchen can confirm eligibility.</p>
+                <div class="form-group collapsed" id="delivery-reason-group" style="margin-top:var(--space-2);">
+                    <label for="cust-delivery-reason">Reason for Delivery *</label>
+                    <select id="cust-delivery-reason">
+                        <option value="" selected disabled>-- Select a reason --</option>
+                        <option value="Elderly customer">Elderly customer</option>
+                        <option value="Patient / unwell">Patient / unwell</option>
+                        <option value="Emergency">Emergency</option>
+                        <option value="Other — approved by staff">Other — approved by staff</option>
+                    </select>
+                </div>
             </section>
 
             <section>
@@ -2161,7 +2204,7 @@
                     <div class="form-group">
                         <label for="cust-name">Customer Name *</label>
                         <div class="voice-field-wrap">
-                            <input type="text" id="cust-name" required placeholder="Enter customer name">
+                            <input type="text" id="cust-name" required placeholder="Enter customer name" autocomplete="name">
                             <button type="button" class="voice-mic-btn" data-voice-target="cust-name" aria-label="Enter name by voice" title="Enter by voice">
                                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a1 1 0 10-2 0 5 5 0 01-10 0 1 1 0 10-2 0 7 7 0 006 6.93V20H9a1 1 0 100 2h6a1 1 0 100-2h-2v-2.07A7 7 0 0019 11z"/></svg>
                             </button>
@@ -2176,7 +2219,7 @@
                             </div>
                             <span class="phone-divider" aria-hidden="true"></span>
                             <div class="voice-field-wrap">
-                                <input type="tel" id="cust-phone" required pattern="[0-9]{5} ?[0-9]{5}" maxlength="11" inputmode="numeric" placeholder="90000 00000" aria-describedby="cust-phone-hint" autocomplete="off">
+                                <input type="tel" id="cust-phone" required pattern="[0-9]{5} ?[0-9]{5}" maxlength="11" inputmode="numeric" placeholder="90000 00000" aria-describedby="cust-phone-hint" autocomplete="tel-national">
                                 <svg id="phone-valid-icon" class="phone-valid-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                     <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.14"/>
                                     <path d="M7.5 12.5l3 3 6-6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2189,7 +2232,7 @@
                         <div class="form-group">
                             <label for="cust-door">Door / Flat No *</label>
                             <div class="voice-field-wrap">
-                                <input type="text" id="cust-door" required placeholder="e.g., Door G-4 / Flat B404">
+                                <input type="text" id="cust-door" required placeholder="e.g., Door G-4 / Flat B404" autocomplete="address-line2">
                                 <button type="button" class="voice-mic-btn" data-voice-target="cust-door" aria-label="Enter door/flat number by voice" title="Enter by voice">
                                     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a1 1 0 10-2 0 5 5 0 01-10 0 1 1 0 10-2 0 7 7 0 006 6.93V20H9a1 1 0 100 2h6a1 1 0 100-2h-2v-2.07A7 7 0 0019 11z"/></svg>
                                 </button>
@@ -2288,6 +2331,7 @@
                 </button>
                 <button id="trigger-reset" class="btn btn-danger">🔄 Reset Order</button>
             </div>
+            <p class="pickup-note order-limit-banner" id="order-limit-banner">🚫 You've reached today's limit of 2 orders on this device. Please try again after 24 hours, or call us at <strong>+91 78453 87741</strong> to place this order.</p>
         </aside>
     </div>
 
@@ -2727,6 +2771,127 @@
         const OPEN_HOUR = 6;
         const CLOSE_HOUR = 22;
 
+        // ------------------------------------------------------------------
+        // Daily order cap — max DAILY_ORDER_LIMIT orders per device per IST
+        // calendar day, resetting at IST midnight.
+        //
+        // IMPORTANT: browsers never expose a device's MAC address to
+        // JavaScript (every major browser blocks this on purpose, for
+        // privacy — there is no API and no workaround). So this cannot be a
+        // true MAC-based lock, and it cannot be enforced "for all devices"
+        // in the sense of one real-world customer being capped across their
+        // phone AND their laptop. What it *does* do reliably:
+        //   - identifies THIS browser on THIS device persistently, using a
+        //     random id stored in both localStorage and a cookie (so it
+        //     survives a cache clear of either one alone, and works the
+        //     same way on every device/browser that opens this page)
+        //   - counts orders against the tamper-resistant IST clock this
+        //     page already syncs from the server (LiveClock), not the
+        //     device's own clock, so changing the phone's date/time does
+        //     not reset the count early
+        //   - disables Place Order and shows a clear message once the cap
+        //     is hit, re-enabling automatically at the next IST midnight
+        // True cross-device enforcement (e.g. keyed to the customer's phone
+        // number, checked against a shared backend) would need a small
+        // server component — this file has no backend today.
+        const DAILY_ORDER_LIMIT = 2;
+        const ORDER_LOG_COOKIE = "ad_order_log";
+        const ORDER_LOG_LS_KEY = "ad_order_log";
+        const ORDER_LOG_DEVICE_COOKIE = "ad_device_id";
+        const ORDER_LOG_DEVICE_LS_KEY = "ad_device_id";
+
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
+            return match ? decodeURIComponent(match[1]) : null;
+        }
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+            document.cookie = `${name}=${encodeURIComponent(value)}; expires=${d.toUTCString()}; path=/; SameSite=Lax`;
+        }
+
+        const DailyOrderLimiter = {
+            getDeviceId() {
+                let id = null;
+                try { id = localStorage.getItem(ORDER_LOG_DEVICE_LS_KEY); } catch (e) { /* ignore */ }
+                if (!id) id = getCookie(ORDER_LOG_DEVICE_COOKIE);
+                if (!id) {
+                    id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+                }
+                try { localStorage.setItem(ORDER_LOG_DEVICE_LS_KEY, id); } catch (e) { /* ignore */ }
+                setCookie(ORDER_LOG_DEVICE_COOKIE, id, 400);
+                return id;
+            },
+
+            todayKey() {
+                const { year, month, date } = LiveClock.istParts();
+                return `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+            },
+
+            readLog() {
+                let raw = null;
+                try { raw = localStorage.getItem(ORDER_LOG_LS_KEY); } catch (e) { /* ignore */ }
+                if (!raw) raw = getCookie(ORDER_LOG_COOKIE);
+                if (!raw) return { date: this.todayKey(), count: 0 };
+                try {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.date !== this.todayKey()) return { date: this.todayKey(), count: 0 };
+                    // Clamp: a tampered/negative count must never grant MORE
+                    // than the configured limit back (Math.max(0, LIMIT - count)
+                    // would otherwise blow past the cap for count < 0).
+                    const count = Math.max(0, Number(parsed.count) || 0);
+                    return { date: parsed.date, count };
+                } catch (e) {
+                    return { date: this.todayKey(), count: 0 };
+                }
+            },
+
+            writeLog(log) {
+                const raw = JSON.stringify(log);
+                try { localStorage.setItem(ORDER_LOG_LS_KEY, raw); } catch (e) { /* ignore */ }
+                setCookie(ORDER_LOG_COOKIE, raw, 2);
+            },
+
+            remaining() {
+                return Math.max(0, DAILY_ORDER_LIMIT - this.readLog().count);
+            },
+
+            isBlocked() {
+                return this.remaining() <= 0;
+            },
+
+            recordOrder() {
+                const log = this.readLog();
+                log.count += 1;
+                this.writeLog(log);
+                this.applyToUI();
+            },
+
+            applyToUI() {
+                const btn = document.getElementById("trigger-whatsapp");
+                const banner = document.getElementById("order-limit-banner");
+                if (!btn) return;
+                const blocked = this.isBlocked();
+                btn.disabled = blocked;
+                btn.title = blocked ? `Daily order limit (${DAILY_ORDER_LIMIT}) reached for this device — try again after 24 hours or call us.` : "";
+                if (banner) banner.classList.toggle("visible", blocked);
+            },
+
+            // If two tabs of this same browser are open at once, a click in
+            // one tab wouldn't otherwise update the other tab's button state
+            // until its next reload/resync — narrowing (not just cosmetic)
+            // that race window between "tab B read the old count" and "tab B
+            // clicks Place Order" is worth doing since it's a real gap, not
+            // just polish. The native `storage` event fires in OTHER tabs
+            // the moment localStorage changes, so this closes it to
+            // effectively the width of a single synchronous write.
+            watchOtherTabs() {
+                window.addEventListener("storage", (e) => {
+                    if (e.key === ORDER_LOG_LS_KEY) this.applyToUI();
+                });
+            }
+        };
+
         const CATEGORY_WINDOWS = {
             "Breakfast":      { start: "07:00", end: "10:00" },
             "Lunch Special":  { start: "12:30", end: "14:00" },
@@ -2946,7 +3111,7 @@
             activeCategory: "ALL",
             searchQuery: "",
             deliveryCharge: 0.00,
-            orderType: "Delivery",
+            orderType: "Pickup",
             discount: { code: "", type: null, value: 0, label: "" },
             orderId: "",
             orderMode: "Instant",
@@ -2987,6 +3152,9 @@
                 this.applyOrderTypeAvailability();
                 this.syncTotals();
                 VoiceInputEngine.init();
+                DailyOrderLimiter.getDeviceId();
+                DailyOrderLimiter.applyToUI();
+                DailyOrderLimiter.watchOtherTabs();
 
                 updateWatermark();
 
@@ -2996,6 +3164,7 @@
                     this.renderCategories();
                     this.renderMenu();
                     this.applyOrderTypeAvailability();
+                    DailyOrderLimiter.applyToUI();
                     POSState.generateOrderId();
                     this.syncTotals();
                     updateWatermark();
@@ -3369,6 +3538,9 @@
                 document.getElementById("address-fields").classList.remove("collapsed");
                 document.getElementById("cust-door").required = true;
                 document.getElementById("pickup-note").classList.toggle("visible", isPickup);
+                document.getElementById("delivery-note").classList.toggle("visible", !isPickup);
+                document.getElementById("delivery-reason-group").classList.toggle("collapsed", isPickup);
+                document.getElementById("cust-delivery-reason").required = !isPickup;
                 document.getElementById("row-delivery-fee").style.display = isPickup ? "none" : "table-row";
                 document.getElementById("input-delivery-fee").disabled = isPickup;
 
@@ -3395,9 +3567,11 @@
                     (POSState.orderType === "Delivery" && deliveryEnabled) ||
                     (POSState.orderType === "Pickup" && pickupEnabled);
 
-                if (!currentStillAllowed) {
-                    this.setOrderType(deliveryEnabled ? "Delivery" : "Pickup");
-                }
+                // Always resync the dependent UI (notes, reason field, fee row)
+                // to POSState.orderType — not just when the type itself had to
+                // change — so a page load never leaves those out of sync with
+                // whichever tab is marked active in the markup.
+                this.setOrderType(currentStillAllowed ? POSState.orderType : (pickupEnabled ? "Pickup" : "Delivery"));
             },
 
             syncTotals() {
@@ -4075,6 +4249,7 @@
                     if (!ok) return;
 
                     document.getElementById("form-customer").reset();
+                    document.getElementById("cust-delivery-reason").value = "";
                     localStorage.removeItem("ad_country_code");
                     document.getElementById("txt-search").value = "";
                     document.getElementById("input-delivery-fee").value = "0";
@@ -4093,7 +4268,7 @@
                     POSState.init();
 
                     UIEngine.applyOrderMode("Instant");
-                    UIEngine.setOrderType(ORDER_TYPE_CONFIG.deliveryEnabled ? "Delivery" : "Pickup");
+                    UIEngine.setOrderType(ORDER_TYPE_CONFIG.pickupEnabled ? "Pickup" : "Delivery");
                     updateWatermark();
                     UIEngine.showToast("New order started", "success");
                     document.getElementById("txt-search").focus();
@@ -4153,6 +4328,14 @@
                     UIEngine.alertModal("A few details are missing", "Please fill in your name and a valid 10-digit phone number, plus your door/flat number for delivery orders.");
                     return false;
                 }
+                if (POSState.orderType === "Delivery") {
+                    const reasonEl = document.getElementById("cust-delivery-reason");
+                    if (!reasonEl.value) {
+                        reasonEl.reportValidity();
+                        UIEngine.alertModal("Delivery reason required", "Home delivery is reserved for elders, patients & emergencies. Please select a reason, or choose Self Pickup instead.");
+                        return false;
+                    }
+                }
 
                 if (POSState.orderMode === "Subscription") {
                     const bounds = getSubscriptionDateBounds();
@@ -4201,7 +4384,8 @@
                     fullPhone: `${countryCode} ${phoneDisplay}`,
                     door: document.getElementById("cust-door").value.trim(),
                     apart: document.getElementById("cust-apart").value,
-                    notes: document.getElementById("cust-notes").value.trim()
+                    notes: document.getElementById("cust-notes").value.trim(),
+                    deliveryReason: POSState.orderType === "Delivery" ? document.getElementById("cust-delivery-reason").value : ""
                 };
             },
 
@@ -4222,7 +4406,7 @@
                     (POSState.orderMode === "Subscription" ? " (Subscribe My Item)" : "");
                 document.getElementById("print-cust-info").innerHTML = `<strong>${customer.name}</strong> (${customer.fullPhone})<br>
                        Flat/Door: ${customer.door}${customer.apart ? ', ' + customer.apart : ''}
-                       ${isPickup ? '<br>Self Pickup at Counter' : ''}`;
+                       ${isPickup ? '<br>Self Pickup at Counter' : (customer.deliveryReason ? `<br>Delivery Reason: ${customer.deliveryReason}` : '')}`;
 
                 const body = document.getElementById("print-items-body");
                 body.innerHTML = invoice.itemsList.map(item => {
@@ -4275,7 +4459,10 @@
                 text += `👤 *Name:*   ${customer.name}\n`;
                 text += `📞 *Phone:*  ${customer.fullPhone}\n`;
                 text += `🕒 *Order Date/Time:* ${orderTimestamp}\n`;
-                text += `🚚 *Order Mode:* ${isPickup ? '🏠 Self Pickup' : '🛵 Home Delivery'}\n`;
+                text += `🚚 *Order Mode:* ${isPickup ? '🏠 Self Pickup' : '🚑 Home Delivery'}\n`;
+                if (!isPickup && customer.deliveryReason) {
+                    text += `🩺 *Delivery Reason:* ${customer.deliveryReason}\n`;
+                }
                 // Address on the SAME line as the emoji so the parser reliably
                 // finds it even when WhatsApp collapses \n to spaces on copy-paste.
                 text += `📍 *Address:*   ${customer.door}${customer.apart ? ', ' + customer.apart : ''}\n`;
@@ -4332,6 +4519,15 @@
             sendWhatsApp() {
                 if (!this.validateInputs()) return;
 
+                if (DailyOrderLimiter.isBlocked()) {
+                    DailyOrderLimiter.applyToUI();
+                    UIEngine.alertModal(
+                        "Daily order limit reached",
+                        `You've reached today's limit of ${DAILY_ORDER_LIMIT} orders on this device. Please try again after 24 hours, or call us at +91 78453 87741 to place this order.`
+                    );
+                    return;
+                }
+
                 if (!BUSINESS_WHATSAPP_NUMBER || BUSINESS_WHATSAPP_NUMBER.includes("X")) {
                     UIEngine.alertModal(
                         "WhatsApp number not set up yet",
@@ -4344,6 +4540,8 @@
                 const url = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
                 const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
                 if (newWindow) newWindow.opener = null;
+
+                DailyOrderLimiter.recordOrder();
 
                 const toastMsg = POSState.orderMode === "Subscription"
                     ? "Opening WhatsApp with your subscription request pre-filled…"
