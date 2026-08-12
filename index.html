@@ -922,6 +922,7 @@
              Milkshakes        → orchid purple  — playful, creamy treat
              Combos            → sunflower gold — value, festivity
              Evening Snacks    → coral pink     — cozy, social warmth
+             Waffles           → toasted amber  — crisp, buttery treat
              Xtra Delights     → royal violet   — premium, exclusive
              Dinner Special    → deep indigo    — calm evening sophistication
            Saturation is kept high (~80–90%) with mid-range lightness —
@@ -2747,7 +2748,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             const icons = {
                 "Dinner Special": "🌙", "Sandwich": "🥪", "Premium Sandwich": "🥪",
                 "Maggi": "🍜", "Pasta": "🍝", "Juices": "🥤",
-                "Milkshakes": "🥛", "Combos": "🎁", "Evening Snacks": "🌆", "Xtra Delights": "✨"
+                "Milkshakes": "🥛", "Combos": "🎁", "Evening Snacks": "🌆", "Xtra Delights": "✨", "Waffles": "🧇"
             };
             return icons[cat] || "🍽️";
         }
@@ -2778,6 +2779,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             "Milkshakes":        '#B24DE8', // orchid purple  — playful, creamy indulgence
             "Combos":            '#FFD60A', // sunflower gold — value, festivity
             "Evening Snacks":    '#FF5D8F', // coral pink     — cozy, social evening warmth
+            "Waffles":           '#C9962C', // toasted amber  — crisp, buttery, dessert warmth (distinct from Maggi/Combos golds)
             "Xtra Delights":     '#7B2FF7', // royal violet   — premium, exclusive
             "Dinner Special":    '#5E5CE6'  // deep indigo    — calm evening sophistication
         };
@@ -2856,8 +2858,10 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             
         //     { id: "co1", category: "Combos", title: "🎁 Combos & Offers", name: "BUY 2 sets Premium Biscoff Cheese Butter grilled sandwich worth 350:", price: 150 },
 
-              { id: "es1", category: "Evening Snacks", title: "🌆 Delightful Evening Snacks", name: "Vannila Waffles with choclate spread and sprinkles", price: 99 },
-
+              { id: "wf1", category: "Waffle Sandwich", title: "🧇 Waffle Sandwich Corner", name: "Vannila Waffle Sandwich with choclate and sprinkles Worth 180 NOW AT OFFER ", price: 99 },
+              { id: "wf2", category: "Waffle Sandwich", title: "🧇 Waffle Sandwich Corner", name: "Vannila Waffle Sandwich with Bubble Gum and sprinkles Worth 180 NOW AT OFFER ", price: 99 },
+              { id: "wf3", category: "Waffle Sandwich", title: "🧇 Waffle Sandwich Corner", name: "Vannila Waffle Sandwich with Redvelvette and Cheese Worth 180 NOW AT OFFER ", price: 99 },
+              
              { id: "X1", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Spicy Veg chunks Butter Grilled Sandwich", price: 149 },
              { id: "X2", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Spicy Veg chunks with Fresh Paneer and Oregano and Basil sprinkled Butter grilled Sandwich", price: 149 },
              { id: "X3", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Fresh Corn and Italian Herbs Butter Grilled Sandwich", price: 149 },
@@ -2922,7 +2926,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             { id: "sub-d6", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Choco Banana Milkshake", price: 99, popular: true },
             { id: "sub-d7", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Fresh Coconut Milk (1 Ltr)", price: 125 },
 
-              { id: "sub-es1", category: "Evening Snacks", title: "🌆 Delightful Evening Snacks", name: "Snack of the Day", price: 50 }
+           //   { id: "sub-es1", category: "Evening Snacks", title: "🌆 Delightful Evening Snacks", name: "Snack of the Day", price: 50 }
 
         ]
 
