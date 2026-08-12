@@ -2061,6 +2061,295 @@
             pointer-events: none;
         }
     </style>
+    <style>
+/* ═══════════════════════════════════════════════════════════════════════
+   AMRUTHADHAARANAM — "Liquid Crystal Gem" refresh
+   ───────────────────────────────────────────────────────────────────────
+   Merged in as the third <style> block, after the two original ones —
+   every rule below targets selectors already defined above, and CSS
+   resolves same-specificity ties by source order, so this block wins
+   the tie and overrides only what's needed. Nothing above was edited.
+
+   WHAT WAS WRONG (diagnosis)
+   Your "Regular" theme's --border and --background tokens were flat,
+   generic greys (#E1E6EC / #F3F7FC) with zero relationship to the
+   theme's own --primary (blue) or --accent (pink). Every OTHER theme's
+   border was hand-tinted from its own palette (e.g. Masala Chai's
+   #E8D2AC is a warm tint of its terracotta), so only Regular's search
+   box, pills and cards read as "generic UI" sitting on top of a colorful
+   page instead of being made of the same light.
+
+   THE FIX
+   1. Regular's tokens are retuned to a punchier Apple-system-blue +
+      hot-pink duo, with a border/background actually derived from them.
+   2. Every control that used to read var(--border) directly (search box,
+      pills, buttons) now derives its border/background from var(--primary)
+      via color-mix() — so the fix is automatic across all 7 flavors, not
+      just Regular, and stays automatic for any theme you add later.
+   3. The "liquid glass gem" language your category cards already used
+      (corner gloss bloom + diagonal specular sweep + inset bevel) is now
+      extended to the menu-item product cards *inside* those categories,
+      the search box, the pills, and the primary buttons — so the whole
+      page reads as one material instead of "fancy cards, plain everything
+      else." Each menu-item picks up its parent category's own hue via
+      the --card-accent-themed custom property your JS already sets, so
+      Sandwich items glow orange, Pasta items glow crimson, etc. — zero
+      JS changes needed.
+   4. The page background gets a second, more saturated radial-gradient
+      mesh plus a faint scattered "glint" layer, so the canvas itself
+      feels like it's sitting behind cut glass instead of a flat tint.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+
+/* ── 1. THEME TOKEN RETUNE ────────────────────────────────────────────
+   Only the tokens that needed more chroma / a real relationship to their
+   own primary are touched. Everything else (typography, radius, shadow
+   system) is untouched. */
+
+/* Regular — was flat MS-blue + a disconnected pink + neutral grey UI.
+   Now: a punchier Apple system blue, a hotter pink, and a border/bg that
+   are genuinely tints of those two — this is the fix for your screenshot. */
+[data-theme="regular"] {
+    --primary: #0A84FF;
+    --primary-deep: #0055D4;
+    --gold-mid: #FF3D9A;
+    --gold-bright: #FF7AC6;
+    --gold-deep: #D6007F;
+    --background: #EEF3FF;
+    --surface: #FFFFFF;
+    --accent: #FF3D9A;
+    --border: #CFE0FF;
+    --focus-glow: rgba(10, 132, 255, 0.22);
+    --focus-ring: 0 0 0 3px rgba(10, 132, 255, 0.28);
+}
+
+/* Masala Chai — border/gold pulled up in saturation so it doesn't wash
+   out next to the new gem surfaces below. */
+[data-theme="masala-chai"], :root {
+    --gold-mid: #E0A83E;
+    --gold-bright: #F5D08A;
+    --border: #EACB8C;
+}
+
+[data-theme="tomato-chilli"] {
+    --gold-mid: #F0912E;
+    --border: #F5B98C;
+}
+
+[data-theme="dark-chocolate"] {
+    --border: #4A3420;
+    --gold-mid: #E8B156;
+}
+[data-theme="berry-mousse"] {
+    --border: #4A2438;
+    --gold-mid: #EAB268;
+}
+[data-theme="filter-coffee"] {
+    --border: #4A3420;
+    --gold-mid: #D89A46;
+}
+[data-theme="rose-milk"] {
+    --border: #4A2C3C;
+    --gold-mid: #F0C088;
+}
+
+
+/* ── 2. PAGE CANVAS — richer gem-mesh + scattered glints ──────────────
+   Same selectors your file already uses (body, [data-theme-mode="dark"]
+   body, .glass-orb*) so these declarations simply override in place. */
+
+body {
+    background-image:
+        radial-gradient(circle at 8% 10%,  color-mix(in srgb, var(--primary) 16%, transparent) 0, transparent 42%),
+        radial-gradient(circle at 92% 12%, color-mix(in srgb, var(--gold-mid) 14%, transparent) 0, transparent 40%),
+        radial-gradient(circle at 88% 90%, color-mix(in srgb, var(--accent) 12%, transparent) 0, transparent 45%),
+        radial-gradient(circle at 12% 88%, color-mix(in srgb, var(--primary) 10%, transparent) 0, transparent 42%);
+}
+[data-theme-mode="dark"] body {
+    background-image:
+        radial-gradient(circle at 10% 8%,  color-mix(in srgb, var(--gold-mid) 16%, transparent) 0, transparent 38%),
+        radial-gradient(circle at 90% 15%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 38%),
+        radial-gradient(circle at 85% 92%, color-mix(in srgb, var(--gold-mid) 14%, transparent) 0, transparent 42%),
+        radial-gradient(circle at 15% 90%, color-mix(in srgb, var(--primary) 12%, transparent) 0, transparent 40%);
+}
+
+/* Faint scattered "glint" layer — the tiny sparkle a cut gem throws.
+   Fixed + negative z-index + pointer-events:none, so it never interferes
+   with clicks and sits behind every panel, exactly like .glass-orbs. */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.55;
+    mix-blend-mode: overlay;
+    background-image:
+        radial-gradient(circle at 18% 22%, color-mix(in srgb, var(--gold-bright) 70%, white 30%) 0, transparent 1.6%),
+        radial-gradient(circle at 76% 14%, color-mix(in srgb, var(--gold-bright) 70%, white 30%) 0, transparent 1.1%),
+        radial-gradient(circle at 62% 72%, color-mix(in srgb, var(--gold-bright) 70%, white 30%) 0, transparent 1.3%),
+        radial-gradient(circle at 33% 84%, color-mix(in srgb, var(--gold-bright) 70%, white 30%) 0, transparent 1%),
+        radial-gradient(circle at 91% 60%, color-mix(in srgb, var(--gold-bright) 70%, white 30%) 0, transparent 0.9%),
+        radial-gradient(circle at 48% 40%, color-mix(in srgb, var(--gold-bright) 70%, white 30%) 0, transparent 0.8%);
+}
+@media (prefers-reduced-motion: reduce) {
+    body::after { opacity: 0.35; }
+}
+
+html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
+.glass-orb--a { opacity: 0.62; }
+.glass-orb--b { opacity: 0.5; }
+.glass-orb--c { opacity: 0.42; }
+
+
+/* ── 3. SEARCH BOX — the exact control from your screenshot ───────────
+   Border and fill are now tinted from --primary instead of flat grey,
+   so it visibly belongs to whichever theme is active. */
+.search-input {
+    border: 1.5px solid color-mix(in srgb, var(--primary) 32%, var(--border) 68%);
+    background: linear-gradient(155deg,
+        color-mix(in srgb, var(--surface) 90%, var(--primary) 10%) 0%,
+        color-mix(in srgb, var(--surface) 96%, var(--gold-mid) 4%) 60%,
+        var(--surface) 100%);
+    box-shadow:
+        0 1px 2px rgba(15,8,5,0.04) inset,
+        0 0 0 1px color-mix(in srgb, var(--primary) 14%, transparent),
+        0 6px 18px color-mix(in srgb, var(--primary) 12%, transparent),
+        var(--shadow);
+}
+.search-input:focus {
+    border-color: var(--primary);
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(15,8,5,0.04) inset, var(--focus-ring);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    html.glass-enabled .search-input {
+        background: color-mix(in srgb, var(--surface) 66%, transparent);
+        -webkit-backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.7);
+        backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.7);
+    }
+    html.glass-enabled .search-input:focus {
+        background: color-mix(in srgb, var(--surface) 84%, transparent);
+    }
+}
+
+
+/* ── 4. CATEGORY PILLS — same tinted-border treatment as the search box,
+   so the whole controls-row reads as one coherent surface. ─────────── */
+.pill {
+    border: 1.5px solid color-mix(in srgb, var(--primary) 24%, var(--border) 76%);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--surface) 92%, var(--primary) 8%), var(--surface));
+}
+.pill:hover {
+    border-color: color-mix(in srgb, var(--primary) 55%, var(--border));
+}
+.pill.active {
+    background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary-deep) 65%, var(--gold-deep) 35%) 100%);
+    box-shadow: var(--shadow), 0 0 0 1px color-mix(in srgb, var(--gold-bright) 40%, transparent) inset;
+}
+
+
+/* ── 5. PRIMARY ACTIONS — richer gradient + colored glow, matching the
+   category-card's own "cut glass" language instead of a flat fill. ─── */
+.btn-primary {
+    background: linear-gradient(135deg,
+        color-mix(in srgb, var(--primary) 85%, var(--gold-mid) 15%) 0%,
+        var(--primary) 45%,
+        var(--primary-deep) 100%);
+    box-shadow: var(--emboss-raised), 0 6px 16px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+.btn-primary:hover { filter: brightness(1.1) saturate(1.08); }
+
+.qty-btn:hover {
+    background: linear-gradient(160deg, var(--gold-bright), var(--gold-mid));
+    box-shadow: var(--emboss-raised), 0 0 0 1px color-mix(in srgb, var(--gold-deep) 40%, transparent);
+}
+
+.mode-tab.active {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.10) inset,
+                0 0 0 1px color-mix(in srgb, var(--gold-mid) 35%, transparent);
+}
+
+.category-card::after {
+    background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.62) 50%, transparent 75%);
+}
+
+
+/* ── 6. MENU-ITEM CARDS — the product cards *inside* each category.
+   This is the biggest visible change: every dish card now carries the
+   same corner-gloss-bloom + diagonal-specular-sweep + inset-bevel gem
+   language your category cards already use, tinted to that category's
+   own hue via --card-accent-themed (already set by your renderMenu() JS
+   — no script changes needed here). ─────────────────────────────────── */
+.menu-item {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(160deg,
+        var(--surface) 0%,
+        color-mix(in srgb, var(--surface) 90%, var(--card-accent-themed, var(--card-accent, var(--primary))) 10%) 100%);
+    border: 1px solid color-mix(in srgb, var(--card-accent-themed, var(--card-accent, var(--primary))) 28%, var(--border) 72%);
+    box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.menu-item::before {
+    content: '';
+    position: absolute;
+    top: -30%; left: -22%;
+    width: 55%; height: 55%;
+    background: radial-gradient(circle,
+        color-mix(in srgb, var(--card-accent-themed, var(--card-accent, var(--primary))) 40%, white 60%),
+        transparent 70%);
+    filter: blur(9px);
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+}
+.menu-item::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%);
+    background-size: 250% 250%;
+    background-position: -30% -30%;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    transition: background-position 0.7s ease;
+    z-index: 1;
+}
+.menu-item:hover::after { background-position: 130% 130%; }
+.menu-item:hover {
+    box-shadow: var(--shadow-lift), 0 10px 22px color-mix(in srgb, var(--card-accent-themed, var(--card-accent, var(--primary))) 30%, transparent);
+    border-color: color-mix(in srgb, var(--card-accent-themed, var(--card-accent, var(--primary))) 50%, var(--border));
+    transform: translateY(-4px) scale(1.012);
+}
+.menu-item-body { position: relative; z-index: 2; }
+.menu-item-img { position: relative; overflow: hidden; z-index: 2; }
+.menu-item-img::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%);
+    background-size: 220% 220%;
+    background-position: -40% -40%;
+    transition: background-position 0.8s ease;
+    pointer-events: none;
+}
+.menu-item:hover .menu-item-img::before { background-position: 140% 140%; }
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    html.glass-enabled .menu-item {
+        background: color-mix(in srgb, var(--surface) 78%, transparent);
+        -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.6 * var(--glass-intensity))) saturate(1.5);
+        backdrop-filter: blur(calc(var(--glass-blur) * 0.6 * var(--glass-intensity))) saturate(1.5);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .menu-item, .menu-item:hover { transform: none; transition: box-shadow 0.2s ease; }
+    .menu-item::after, .menu-item:hover::after { transition: none; background-position: -30% -30%; }
+    .menu-item-img::before, .menu-item:hover .menu-item-img::before { transition: none; background-position: -40% -40%; }
+}
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+    </style>
 </head>
 <body>
 
@@ -2505,7 +2794,7 @@
 
         Instant: [
                   { id: "ds1", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti 5 pcs", price: 125 },
-                  { id: "ds2", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "(Green Moong Majedhaar Gravy) Green Moong Dhal gravy with chunks of Onion capsicum corn shells and Paneer and covered with cheese slice 250ml", price: 125 },             
+                  { id: "ds2", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Cheesy Corn Paneer gravy 250ml", price: 100 },             
                   { id: "ds3", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti (2pcs) with Gravy of the day 100ml", price: 90 },
                   { id: "ds4", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti (1 pc)", price: 25 },
                   { id: "ds5", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Plain Roti (1 pc)", price: 20 },
@@ -2567,7 +2856,7 @@
             
         //     { id: "co1", category: "Combos", title: "🎁 Combos & Offers", name: "BUY 2 sets Premium Biscoff Cheese Butter grilled sandwich worth 350:", price: 150 },
 
-              { id: "es1", category: "Evening Snacks", title: "🌆 Delightful Evening Snacks", name: "Masala Marinated Paneer Tikka with molten butter dropped over", price: 99 },
+              { id: "es1", category: "Evening Snacks", title: "🌆 Delightful Evening Snacks", name: "Vannila Waffles with choclate spread and sprinkles", price: 99 },
 
              { id: "X1", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Spicy Veg chunks Butter Grilled Sandwich", price: 149 },
              { id: "X2", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Spicy Veg chunks with Fresh Paneer and Oregano and Basil sprinkled Butter grilled Sandwich", price: 149 },
