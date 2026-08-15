@@ -786,7 +786,7 @@
         .cart-item-row.sub-row .cir-notes { font-size: var(--text-caption2); color: var(--text-muted); font-style: italic; margin-top: 0.2rem; }
 
         /* ---- MENU ITEM → PRODUCT CARD (restyled) ---- */
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-5); perspective: 900px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-5); }
 
         /* ═══════════════════════════════════════════════════════════════
            LIQUID GLASS CATEGORY CARDS — "chocolate-cube" redesign
@@ -857,7 +857,15 @@
                 0 1px 3px rgba(0,0,0,0.10),
                 0 8px 20px rgba(0,0,0,0.18);
             transition: transform 0.26s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.26s ease, background 0.3s ease, border-color 0.3s ease;
-            transform-style: preserve-3d;
+            /* No rotateX/rotateY/translateZ is used anywhere on this card,
+               so there's no real 3D transform to establish a context for.
+               A prior pass added perspective/preserve-3d anyway "for depth",
+               but that forces the browser to rasterize the card — including
+               its text — into a 3D compositing texture instead of native
+               2D text, which is a well-documented cause of blurry text in
+               Chrome/Safari, worst on mobile at fractional device pixel
+               ratios. Removed; the translateY/scale hover below is a flat
+               2D transform and renders crisply without it. */
         }
         .category-card:hover {
             transform: translateY(-5px) scale(1.014);
@@ -1243,37 +1251,14 @@
             letter-spacing: -0.01em;
         }
 
-        /* ---- VOICE INPUT (mic button on text fields) ---- */
-        .voice-field-wrap { position: relative; display: flex; align-items: stretch; }
-        .voice-field-wrap > input,
-        .voice-field-wrap > textarea { padding-right: 2.5rem; }
-        .voice-mic-btn {
-            position: absolute; right: 4px; top: 4px;
-            width: 44px; height: calc(100% - 8px); min-height: 44px;
-            display: flex; align-items: center; justify-content: center;
-            background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
-            color: var(--text-muted); cursor: pointer; transition: var(--transition);
-            flex-shrink: 0; padding: 0;
-        }
-        .voice-mic-btn:hover { color: var(--primary); border-color: var(--primary); }
-        .voice-mic-btn:active { transform: scale(0.92); }
-        .voice-mic-btn svg { width: 15px; height: 15px; }
-        .voice-mic-btn.listening {
-            background: var(--danger); border-color: var(--danger); color: #fff;
-            animation: voice-mic-pulse 1.3s ease-in-out infinite;
-        }
-        @keyframes voice-mic-pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(198,40,40,0.45); }
-            50% { box-shadow: 0 0 0 6px rgba(198,40,40,0); }
-        }
-        .voice-mic-btn.unsupported { display: none; }
-        @media (prefers-reduced-motion: reduce) {
-            .voice-mic-btn.listening { animation: none; }
-        }
+        /* Generic relative-positioned input wrapper — holds an input plus
+           an absolutely-positioned inline icon (e.g. the phone number's
+           validity checkmark). */
+        .field-wrap { position: relative; display: flex; align-items: stretch; }
+
         /* the search box already has its own right-side "/" shortcut hint,
-           so its mic button sits a little further left / lower to avoid overlap */
+           so account for that spacing here too */
         #txt-search.search-input { padding-right: 2.5rem; }
-        .search-wrapper .voice-mic-btn { right: 4px; top: 8px; height: calc(100% - 16px); }
         .form-group select {
             appearance: none; -webkit-appearance: none; cursor: pointer;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237C6A57' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -1380,11 +1365,11 @@
             opacity: 0.3;
             flex-shrink: 0;
         }
-        .phone-input-group .voice-field-wrap {
+        .phone-input-group .field-wrap {
             flex: 1;
             min-width: 0;
         }
-        .phone-input-group .voice-field-wrap input {
+        .phone-input-group .field-wrap input {
             border: none;
             background: transparent;
             box-shadow: none;
@@ -1396,12 +1381,12 @@
             font-variant-numeric: tabular-nums;
             letter-spacing: 0.05em;
         }
-        .phone-input-group .voice-field-wrap input::placeholder {
+        .phone-input-group .field-wrap input::placeholder {
             color: var(--text-muted);
             font-weight: 400;
             letter-spacing: normal;
         }
-        .phone-input-group .voice-field-wrap input:focus {
+        .phone-input-group .field-wrap input:focus {
             outline: none;
             border: none;
             background: transparent;
@@ -1672,44 +1657,6 @@
         @media (max-width: 768px) {
             .floating-actions { left: 14px; bottom: 84px; gap: var(--space-2); }
             .btn-call-us { padding: var(--space-2) var(--space-4); font-size: var(--text-caption1); }
-        }
-
-        /* Round music toggle: red = playing (tap to stop), green = stopped
-           (tap to start). Sits in .floating-actions directly above the
-           call-us button. Shows both an icon and a short label
-           ("Start"/"Stop") stacked inside the circle. */
-        .btn-music-toggle {
-            flex-shrink: 0;
-            width: 56px; height: 56px;
-            border-radius: 50%;
-            border: 1.5px solid rgba(255,255,255,0.35);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1px;
-            color: #FFFFFF;
-            font-family: var(--font-btn);
-            font-weight: 700;
-            font-size: 0.6rem;
-            line-height: 1.1;
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.35);
-            box-shadow: var(--shadow-lift), var(--emboss-raised);
-            transition: var(--transition), background 0.25s ease;
-            background: linear-gradient(180deg, #16A34A, #0F7C38); /* green = stopped, tap to start */
-        }
-        .btn-music-toggle.playing {
-            background: linear-gradient(180deg, #E11D2E, #B4121F); /* red = playing, tap to stop */
-        }
-        .btn-music-toggle:hover { transform: translateY(-1px) scale(1.03); }
-        .btn-music-toggle:active { transform: translateY(0) scale(0.95); box-shadow: var(--emboss-pressed); }
-        .btn-music-toggle svg { flex-shrink: 0; }
-        .btn-music-toggle #music-toggle-label { display: block; }
-        @media (max-width: 768px) {
-            .btn-music-toggle { width: 50px; height: 50px; font-size: 0.55rem; }
         }
 
 
@@ -2362,9 +2309,6 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     <label for="txt-search" class="sr-only">Search menu items</label>
                     <input type="text" id="txt-search" class="search-input" placeholder="Search menu items (e.g., Cake, Pastry, Idli, Maggi, Pasta)..." aria-label="Search menu items">
                     <span class="search-shortcut-hint" aria-hidden="true">/</span>
-                    <button type="button" class="voice-mic-btn" data-voice-target="txt-search" aria-label="Search by voice" title="Search by voice">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a1 1 0 10-2 0 5 5 0 01-10 0 1 1 0 10-2 0 7 7 0 006 6.93V20H9a1 1 0 100 2h6a1 1 0 100-2h-2v-2.07A7 7 0 0019 11z"/></svg>
-                    </button>
                 </div>
                 <div class="category-pills" id="category-pills-container" role="group" aria-label="Filter by category"></div>
                 <div class="theme-picker" id="theme-picker">
@@ -2422,12 +2366,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 <form id="form-customer" class="form-vertical" style="margin-top:0;">
                     <div class="form-group">
                         <label for="cust-name">Customer Name *</label>
-                        <div class="voice-field-wrap">
-                            <input type="text" id="cust-name" required placeholder="Enter customer name" autocomplete="name">
-                            <button type="button" class="voice-mic-btn" data-voice-target="cust-name" aria-label="Enter name by voice" title="Enter by voice">
-                                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a1 1 0 10-2 0 5 5 0 01-10 0 1 1 0 10-2 0 7 7 0 006 6.93V20H9a1 1 0 100 2h6a1 1 0 100-2h-2v-2.07A7 7 0 0019 11z"/></svg>
-                            </button>
-                        </div>
+                        <input type="text" id="cust-name" required placeholder="Enter customer name" autocomplete="name">
                     </div>
                     <div class="form-group">
                         <label for="cust-phone">Phone Number * <span class="field-hint">— 10 digits, used for WhatsApp</span></label>
@@ -2437,7 +2376,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                                 <input type="text" id="cust-country-code" class="country-code-input" value="+91" maxlength="4" inputmode="tel" aria-label="Country code, tap to edit" placeholder="+91" autocomplete="off" data-lpignore="true" data-1p-ignore autocorrect="off" spellcheck="false" readonly>
                             </div>
                             <span class="phone-divider" aria-hidden="true"></span>
-                            <div class="voice-field-wrap">
+                            <div class="field-wrap">
                                 <input type="tel" id="cust-phone" required pattern="[0-9]{5} ?[0-9]{5}" maxlength="11" inputmode="numeric" placeholder="90000 00000" aria-describedby="cust-phone-hint" autocomplete="tel-national">
                                 <svg id="phone-valid-icon" class="phone-valid-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                     <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.14"/>
@@ -2450,12 +2389,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     <div class="address-fields" id="address-fields">
                         <div class="form-group">
                             <label for="cust-door">Door / Flat No *</label>
-                            <div class="voice-field-wrap">
-                                <input type="text" id="cust-door" required placeholder="e.g., Door G-4 / Flat B404" autocomplete="address-line2">
-                                <button type="button" class="voice-mic-btn" data-voice-target="cust-door" aria-label="Enter door/flat number by voice" title="Enter by voice">
-                                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a1 1 0 10-2 0 5 5 0 01-10 0 1 1 0 10-2 0 7 7 0 006 6.93V20H9a1 1 0 100 2h6a1 1 0 100-2h-2v-2.07A7 7 0 0019 11z"/></svg>
-                                </button>
-                            </div>
+                            <input type="text" id="cust-door" required placeholder="e.g., Door G-4 / Flat B404" autocomplete="address-line2">
                         </div>
                         <div class="form-group" style="margin-top:var(--space-2);"> <!-- 0.65rem → --space-2 (8px) -->
                             <label for="cust-apart">Apartment / Villa</label>
@@ -2469,12 +2403,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     </div>
                     <div class="form-group">
                         <label for="cust-notes">Notes for Kitchen / Delivery</label>
-                        <div class="voice-field-wrap">
-                            <textarea id="cust-notes" rows="2" style="resize:none;" placeholder="Special packaging, spice level, or route instructions..."></textarea>
-                            <button type="button" class="voice-mic-btn" data-voice-target="cust-notes" aria-label="Enter notes by voice" title="Enter by voice">
-                                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a1 1 0 10-2 0 5 5 0 01-10 0 1 1 0 10-2 0 7 7 0 006 6.93V20H9a1 1 0 100 2h6a1 1 0 100-2h-2v-2.07A7 7 0 0019 11z"/></svg>
-                            </button>
-                        </div>
+                        <textarea id="cust-notes" rows="2" style="resize:none;" placeholder="Special packaging, spice level, or route instructions..."></textarea>
                     </div>
                 </form>
             </section>
@@ -2555,27 +2484,13 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
         </aside>
     </div>
 
-    <!-- Floating action stack, bottom-left: music toggle stacked directly
-         above "Call us for help", both anchored together so they move as
-         one unit and never drift apart at different breakpoints. -->
+    <!-- Floating action stack, bottom-left: "Call us for help" -->
     <div class="floating-actions">
-        <button id="btn-music-toggle" class="btn-music-toggle" type="button" title="Stop music" aria-label="Stop music" aria-pressed="false">
-            <svg id="music-icon-stop" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false" style="display:none;"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
-            <svg id="music-icon-start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg>
-            <span id="music-toggle-label">Start</span>
-        </button>
         <button id="btn-call-us" class="btn-call-us" title="Call us for help" aria-label="Call us for help">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.49a1 1 0 011 1 11.36 11.36 0 00.57 3.56 1 1 0 01-.25 1.01l-2.2 2.22z"/></svg>
             Call us for help
         </button>
     </div>
-
-    <!-- Background music: tries to play the instant the page finishes
-         loading; if the browser's autoplay policy blocks that first
-         attempt (see JS below for why that can happen and can't be
-         bypassed from code), it silently starts on the visitor's very
-         first tap/click/keypress anywhere on the page instead. -->
-//    <audio id="bg-music-audio" src="Dew_on_the_Leaves.mp3" loop preload="auto"></audio>
 
     <div class="mobile-overlay" id="mobile-overlay"></div>
 
@@ -3378,7 +3293,6 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 this.bindEventHandlers();
                 this.applyOrderTypeAvailability();
                 this.syncTotals();
-                VoiceInputEngine.init();
                 DailyOrderLimiter.getDeviceId();
                 DailyOrderLimiter.applyToUI();
                 DailyOrderLimiter.watchOtherTabs();
@@ -4449,74 +4363,6 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
 
                 document.getElementById("btn-call-us").addEventListener("click", () => CallEngine.handleCallUsClick());
 
-                // Background music: tries to play the instant the page
-                // finishes loading. Browsers (Chrome, Safari, Firefox)
-                // block audio-with-sound from playing before the visitor
-                // has interacted with the page *at all* — an OS/browser
-                // policy no amount of JS can override. So: try on window
-                // "load" first; if that's blocked (common on a cold load
-                // with zero prior interaction), fall back to starting on
-                // the visitor's very first click/tap/keypress anywhere on
-                // the page — this fallback only ever fires once, so it
-                // won't fight with the button below once music is actually
-                // under the visitor's manual control.
-                //
-                // The round button is a manual override on top of that:
-                // red + "Stop" while playing (tap to pause), green +
-                // "Start" while stopped (tap to play). Its look always
-                // stays in sync with the audio element's real state via
-                // the play/pause events, regardless of what triggered them
-                // (autoplay, the anywhere-click fallback, or the button).
-                (function setupBackgroundMusic() {
-                    const audio = document.getElementById("bg-music-audio");
-                    const btn = document.getElementById("btn-music-toggle");
-                    const iconStop = document.getElementById("music-icon-stop");
-                    const iconStart = document.getElementById("music-icon-start");
-                    const label = document.getElementById("music-toggle-label");
-                    if (!audio) return;
-
-                    function setUI(isPlaying) {
-                        if (!btn) return;
-                        btn.classList.toggle("playing", isPlaying);
-                        btn.setAttribute("aria-pressed", isPlaying ? "true" : "false");
-                        btn.title = isPlaying ? "Stop music" : "Start music";
-                        btn.setAttribute("aria-label", btn.title);
-                        if (iconStop) iconStop.style.display = isPlaying ? "" : "none";
-                        if (iconStart) iconStart.style.display = isPlaying ? "none" : "";
-                        if (label) label.textContent = isPlaying ? "Stop" : "Start";
-                    }
-                    audio.addEventListener("play", () => setUI(true));
-                    audio.addEventListener("pause", () => setUI(false));
-                    audio.addEventListener("ended", () => setUI(false)); // shouldn't fire (loop is set), kept as a safety net
-
-                    function tryPlay() {
-                        if (!audio.paused) return;
-                        audio.play().catch(() => {
-                            const startOnInteraction = () => { audio.play().catch(() => {}); };
-                            ["click", "touchstart", "keydown"].forEach(evt =>
-                                document.addEventListener(evt, startOnInteraction, { once: true, passive: true })
-                            );
-                        });
-                    }
-
-                    if (document.readyState === "complete") {
-                        tryPlay();
-                    } else {
-                        window.addEventListener("load", tryPlay);
-                    }
-
-                    if (btn) {
-                        btn.addEventListener("click", (e) => {
-                            e.stopPropagation(); // don't also trigger the anywhere-click fallback above
-                            if (audio.paused) {
-                                audio.play().catch(() => {});
-                            } else {
-                                audio.pause();
-                            }
-                        });
-                    }
-                })();
-
                 document.getElementById("call-via-whatsapp-btn").addEventListener("click", () => {
                     CallEngine.closeCallModal();
                     CallEngine.callViaWhatsApp();
@@ -4980,116 +4826,6 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             );
             overlay.style.backgroundImage = `url("${uri}")`;
         }
-
-        const VoiceInputEngine = {
-            recognition: null,
-            activeBtn: null,
-            activeTargetId: null,
-            permissionGranted: false,
-
-            isSupported() {
-                return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
-            },
-
-            init() {
-                const buttons = document.querySelectorAll(".voice-mic-btn[data-voice-target]");
-                if (!this.isSupported()) {
-                    buttons.forEach(btn => {
-                        btn.classList.add("unsupported");
-                        btn.disabled = true;
-                    });
-                    return;
-                }
-
-                if (navigator.permissions && navigator.permissions.query) {
-                    navigator.permissions.query({ name: "microphone" })
-                        .then(status => { this.permissionGranted = status.state === "granted"; })
-                        .catch(() => {});
-                }
-
-                const SpeechRecognitionImpl = window.SpeechRecognition || window.webkitSpeechRecognition;
-                this.recognition = new SpeechRecognitionImpl();
-                this.recognition.lang = "en-IN";
-                this.recognition.continuous = false;
-                this.recognition.interimResults = false;
-                this.recognition.maxAlternatives = 1;
-
-                this.recognition.onresult = (event) => {
-                    this.permissionGranted = true;
-                    const transcript = event.results[0][0].transcript.trim();
-                    this.applyTranscript(transcript);
-                };
-                this.recognition.onerror = (event) => {
-                    let msg = "Couldn't hear that — please try again.";
-                    if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-                        msg = "Microphone access was blocked. Please allow mic permission and try again.";
-                    } else if (event.error === "no-speech") {
-                        msg = "No speech detected — please try again.";
-                    }
-                    UIEngine.showToast(msg, "error");
-                };
-                this.recognition.onend = () => {
-                    this.setListeningUI(false);
-                };
-
-                buttons.forEach(btn => {
-                    btn.addEventListener("click", () => this.toggle(btn));
-                });
-            },
-
-            toggle(btn) {
-                if (this.activeBtn === btn) {
-                    this.recognition.stop();
-                    return;
-                }
-                if (this.activeBtn) {
-                    this.recognition.stop();
-                }
-                this.activeTargetId = btn.dataset.voiceTarget;
-                this.activeBtn = btn;
-
-                if (!this.permissionGranted) {
-                    UIEngine.showToast("One-time step: please allow microphone access when asked", "info");
-                }
-
-                try {
-                    this.recognition.start();
-                    this.setListeningUI(true);
-                    if (this.permissionGranted) {
-                        UIEngine.showToast("Listening… speak now", "info");
-                    }
-                } catch (err) {
-                }
-            },
-
-            setListeningUI(isListening) {
-                if (this.activeBtn) {
-                    this.activeBtn.classList.toggle("listening", isListening);
-                }
-                if (!isListening) {
-                    this.activeBtn = null;
-                    this.activeTargetId = null;
-                }
-            },
-
-            applyTranscript(transcript) {
-                if (!transcript || !this.activeTargetId) return;
-                const el = document.getElementById(this.activeTargetId);
-                if (!el) return;
-
-                if (el.tagName === "TEXTAREA") {
-                    el.value = el.value ? `${el.value} ${transcript}` : transcript;
-                } else if (this.activeTargetId === "cust-phone") {
-                    el.value = transcript.replace(/\D/g, "").slice(0, 10);
-                } else {
-                    el.value = transcript;
-                }
-
-                el.dispatchEvent(new Event("input", { bubbles: true }));
-                el.dispatchEvent(new Event("change", { bubbles: true }));
-                el.focus();
-            }
-        };
 
         (function copyProtection() {
             // NOTE: previously form fields (input/textarea/contentEditable) were
