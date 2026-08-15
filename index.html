@@ -9,12 +9,12 @@
         (function () {
             try {
                 var saved = localStorage.getItem("adTheme");
-                var validThemes = ["dark-chocolate", "berry-mousse", "masala-chai", "tomato-chilli", "filter-coffee", "rose-milk", "regular"];
-                var darkThemes = ["dark-chocolate", "berry-mousse", "filter-coffee", "rose-milk"];
+                var validThemes = ["berry-mousse", "regular"];
+                var darkThemes = ["berry-mousse"];
                 if (saved === "dark" || saved === "light") { saved = null; } // legacy toggle value — ignore, fall through to system pref
                 if (!saved || validThemes.indexOf(saved) === -1) {
                     var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-                    saved = prefersDark ? "dark-chocolate" : "regular";
+                    saved = prefersDark ? "berry-mousse" : "regular";
                 }
                 document.documentElement.setAttribute("data-theme", saved);
                 document.documentElement.setAttribute("data-theme-mode", darkThemes.indexOf(saved) !== -1 ? "dark" : "light");
@@ -38,7 +38,8 @@
     <style>
         :root {
             /* ═══════════════════════════════════════════════════════════════
-               THEME SYSTEM — "Flavor Palette" (7 selectable themes)
+               THEME SYSTEM — "Flavor Palette" (2 selectable themes: Regular,
+               Berry Mousse)
                Apple HIG × Microsoft Fluent Design refinement pass.
                Color tokens unchanged. Structural tokens elevated:
                — Radius stepped up to Apple's iOS 17 card geometry
@@ -47,9 +48,8 @@
                — Focus ring uses 3px offset (WCAG 2.5.8 + Apple guideline)
                ═══════════════════════════════════════════════════════════════ */
 
-            /* ---- Masala Chai (default) — warm terracotta/amber, comfort +
-               nostalgia, the menu's own world rather than a borrowed
-               Western-dessert flavor ---- */
+            /* ---- Base fallback tokens (overridden by [data-theme="regular"]
+               / [data-theme="berry-mousse"] below) ---- */
             --primary: #A85C2E;
             --primary-deep: #6B3714;
             --gold-mid: #D9A03E;
@@ -77,10 +77,16 @@
             --shadow-lift: 0 2px 6px rgba(60,30,10,0.08), 0 14px 34px rgba(60,30,10,0.19), 0 1px 0 rgba(255,255,255,0.5) inset;
             --shadow-deep: 0 4px 12px rgba(60,30,10,0.11), 0 24px 48px rgba(60,30,10,0.23);
 
-            /* ── Apple system timing ── */
-            --transition:        all 0.20s cubic-bezier(0.25, 0.1, 0.25, 1.0);
-            --transition-spring: all 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --transition-fast:   all 0.12s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+            /* ── Apple system timing ──
+               Narrowed from `all` to the properties actually animated at
+               every call site (color/background/border/shadow/transform/
+               opacity) so hover/active states don't also implicitly watch
+               layout properties like width/height/padding for changes —
+               "all" forces the browser to keep every animatable property
+               under observation even when nothing but color is moving. */
+            --transition:        color 0.20s cubic-bezier(0.25, 0.1, 0.25, 1.0), background-color 0.20s cubic-bezier(0.25, 0.1, 0.25, 1.0), border-color 0.20s cubic-bezier(0.25, 0.1, 0.25, 1.0), box-shadow 0.20s cubic-bezier(0.25, 0.1, 0.25, 1.0), transform 0.20s cubic-bezier(0.25, 0.1, 0.25, 1.0), opacity 0.20s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+            --transition-spring: color 0.34s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.34s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.34s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.34s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-fast:   color 0.12s cubic-bezier(0.25, 0.1, 0.25, 1.0), background-color 0.12s cubic-bezier(0.25, 0.1, 0.25, 1.0), border-color 0.12s cubic-bezier(0.25, 0.1, 0.25, 1.0), box-shadow 0.12s cubic-bezier(0.25, 0.1, 0.25, 1.0), transform 0.12s cubic-bezier(0.25, 0.1, 0.25, 1.0);
 
             --font-heading: 'Playfair Display', serif;
             --font-body: 'Inter', sans-serif;
@@ -123,36 +129,6 @@
             --glass-intensity: 1;
         }
 
-        /* ── Dark Chocolate — dark mode. Color psychology: deep cocoa +
-           warm caramel gold reads as premium, indulgent, grounding; the
-           near-black espresso base makes every accent glow rather than
-           shout, the classic "expensive restaurant at night" feeling. ── */
-        [data-theme="dark-chocolate"] {
-            --primary: #6E4425;
-            --primary-deep: #2B190E;
-            --gold-mid: #D9A44E;
-            --gold-bright: #F2C879;
-            --gold-deep: #9C6B24;
-            --background: #140D09;
-            --surface: #201510;
-            --accent: #C77D3D;
-            --success: #4CAF6D;
-            --danger: #E2574C;
-            --warning: #D9A62E;
-            --text-main: #F3E6D8;
-            --text-muted: #B79A83;
-            --border: #3A2A1E;
-            --heading-color: var(--gold-mid);
-            --shadow:      0 1px 3px rgba(0,0,0,0.25), 0 4px 14px rgba(0,0,0,0.4);
-            --shadow-lift: 0 2px 6px rgba(0,0,0,0.3), 0 16px 38px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset;
-            --shadow-deep: 0 4px 12px rgba(0,0,0,0.4), 0 24px 48px rgba(0,0,0,0.65);
-            --emboss-raised:  0 1px 0 rgba(255,255,255,0.06) inset, 0 2px 8px rgba(0,0,0,0.3);
-            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.2) inset, 0 2px 4px rgba(0,0,0,0.4) inset;
-            --focus-glow: rgba(217, 164, 78, 0.28);
-            --focus-ring: 0 0 0 3px rgba(217, 164, 78, 0.32);
-            --phone-glass-fill: rgba(32, 21, 16, 0.6);
-        }
-
         /* ── Berry Mousse — dark mode. Color psychology: deep plum/berry
            with rose-gold accents reads as playful, indulgent, a little
            daring — the "dessert menu at night" energy, distinct in mood
@@ -181,96 +157,6 @@
             --focus-glow: rgba(194, 92, 130, 0.28);
             --focus-ring: 0 0 0 3px rgba(194, 92, 130, 0.32);
             --phone-glass-fill: rgba(36, 16, 25, 0.6);
-        }
-
-        /* ── Tomato Chilli — light mode. Color psychology: vivid red-orange
-           is the strongest literal appetite trigger there is, directly
-           echoing the Maggi/Pasta spice cues on the menu itself — the most
-           craving-forward theme in the set. ── */
-        [data-theme="tomato-chilli"] {
-            --primary: #C6371F;
-            --primary-deep: #7A1D10;
-            --gold-mid: #E0932E;
-            --gold-bright: #F2BE72;
-            --gold-deep: #A66A18;
-            --background: #FBEEE4;
-            --surface: #FFF8F3;
-            --accent: #E0632E;
-            --success: #3E8A4E;
-            --danger: #A81F14;
-            --warning: #B85A12;
-            --text-main: #3A1810;
-            --text-muted: #8A6152;
-            --border: #F0C9AE;
-            --heading-color: var(--primary);
-            --shadow:      0 1px 3px rgba(70,15,5,0.07), 0 4px 14px rgba(70,15,5,0.11);
-            --shadow-lift: 0 2px 6px rgba(70,15,5,0.08), 0 14px 34px rgba(70,15,5,0.19), 0 1px 0 rgba(255,255,255,0.5) inset;
-            --shadow-deep: 0 4px 12px rgba(70,15,5,0.11), 0 24px 48px rgba(70,15,5,0.23);
-            --emboss-raised:  0 1px 0 rgba(255,255,255,0.7) inset, 0 2px 8px rgba(70,15,5,0.10);
-            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.05) inset, 0 2px 4px rgba(70,15,5,0.13) inset;
-            --focus-glow: rgba(224, 99, 46, 0.22);
-            --focus-ring: 0 0 0 3px rgba(224, 99, 46, 0.26);
-        }
-
-        /* ── Filter Coffee — dark mode. Color psychology: deep roasted
-           brown/toffee reads as premium and iconic — the South Indian
-           filter-kaapi identity — serving as the set's dark-mode anchor
-           alongside Dark Chocolate, but rooted in the menu's own world. ── */
-        [data-theme="filter-coffee"] {
-            --primary: #7A4A24;
-            --primary-deep: #3A2410;
-            --gold-mid: #C68A3E;
-            --gold-bright: #E0B274;
-            --gold-deep: #8F5E1E;
-            --background: #150E08;
-            --surface: #221609;
-            --accent: #B5793A;
-            --success: #4CAF6D;
-            --danger: #E2574C;
-            --warning: #D9A62E;
-            --text-main: #F0E2D0;
-            --text-muted: #B39A80;
-            --border: #3A2A18;
-            --heading-color: var(--gold-mid);
-            --shadow:      0 1px 3px rgba(0,0,0,0.25), 0 4px 14px rgba(0,0,0,0.4);
-            --shadow-lift: 0 2px 6px rgba(0,0,0,0.3), 0 16px 38px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset;
-            --shadow-deep: 0 4px 12px rgba(0,0,0,0.4), 0 24px 48px rgba(0,0,0,0.65);
-            --emboss-raised:  0 1px 0 rgba(255,255,255,0.06) inset, 0 2px 8px rgba(0,0,0,0.3);
-            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.2) inset, 0 2px 4px rgba(0,0,0,0.4) inset;
-            --focus-glow: rgba(198, 138, 62, 0.28);
-            --focus-ring: 0 0 0 3px rgba(198, 138, 62, 0.32);
-            --phone-glass-fill: rgba(34, 22, 9, 0.6);
-        }
-
-        /* ── Rose Milk — dark mode. Color psychology: pink-magenta with a
-           creamy milk-gold accent is the iconic South Indian beverage,
-           tying directly to the Milkshakes/Juices lines — playful and
-           distinctly local, replacing Berry Mousse's Western-dessert
-           framing as the set's second dark option. ── */
-        [data-theme="rose-milk"] {
-            --primary: #C2557A;
-            --primary-deep: #6B2740;
-            --gold-mid: #E8B67E;
-            --gold-bright: #F5D6A8;
-            --gold-deep: #B5824A;
-            --background: #1A1015;
-            --surface: #271620;
-            --accent: #D97CA0;
-            --success: #4CAF7A;
-            --danger: #E2574C;
-            --warning: #E0A65E;
-            --text-main: #F7E8EC;
-            --text-muted: #BC94A2;
-            --border: #3E2430;
-            --heading-color: var(--gold-mid);
-            --shadow:      0 1px 3px rgba(0,0,0,0.22), 0 4px 14px rgba(0,0,0,0.38);
-            --shadow-lift: 0 2px 6px rgba(0,0,0,0.28), 0 16px 38px rgba(0,0,0,0.52), 0 1px 0 rgba(255,255,255,0.04) inset;
-            --shadow-deep: 0 4px 12px rgba(0,0,0,0.38), 0 24px 48px rgba(0,0,0,0.60);
-            --emboss-raised:  0 1px 0 rgba(255,255,255,0.06) inset, 0 2px 8px rgba(0,0,0,0.28);
-            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.2) inset, 0 2px 4px rgba(0,0,0,0.38) inset;
-            --focus-glow: rgba(217, 124, 160, 0.28);
-            --focus-ring: 0 0 0 3px rgba(217, 124, 160, 0.32);
-            --phone-glass-fill: rgba(39, 22, 32, 0.6);
         }
 
         /* ── Regular — light mode. Clean, brand-neutral pairing: Microsoft
@@ -2124,34 +2010,17 @@
     --focus-ring: 0 0 0 3px rgba(10, 132, 255, 0.28);
 }
 
-/* Masala Chai — border/gold pulled up in saturation so it doesn't wash
+/* Base fallback — border/gold pulled up in saturation so it doesn't wash
    out next to the new gem surfaces below. */
-[data-theme="masala-chai"], :root {
+:root {
     --gold-mid: #E0A83E;
     --gold-bright: #F5D08A;
     --border: #EACB8C;
 }
 
-[data-theme="tomato-chilli"] {
-    --gold-mid: #F0912E;
-    --border: #F5B98C;
-}
-
-[data-theme="dark-chocolate"] {
-    --border: #4A3420;
-    --gold-mid: #E8B156;
-}
 [data-theme="berry-mousse"] {
     --border: #4A2438;
     --gold-mid: #EAB268;
-}
-[data-theme="filter-coffee"] {
-    --border: #4A3420;
-    --gold-mid: #D89A46;
-}
-[data-theme="rose-milk"] {
-    --border: #4A2C3C;
-    --gold-mid: #F0C088;
 }
 
 
@@ -2350,6 +2219,65 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
 }
 /* ═══════════════════════════════════════════════════════════════════════ */
 
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MOBILE PERFORMANCE PASS
+   Phone GPUs choke on this page's two most expensive patterns:
+     1. backdrop-filter blur applied to EVERY .menu-item card (there can
+        be dozens on screen at once — each one forces the compositor to
+        sample and re-blur everything behind it, every frame anything
+        behind changes, e.g. while scrolling).
+     2. Three full-viewport blur(70px) orbs animating transform forever
+        underneath all that glass, so the blurred backdrop those cards
+        sample is itself constantly changing — the two effects compound.
+   None of this is visible enough to be worth the frame drops on mobile,
+   so below 768px we: kill per-card blur (keep the flat tinted fallback
+   that already exists for @supports-less browsers), shrink + freeze the
+   background orbs, and let offscreen menu content skip layout/paint
+   entirely via content-visibility. Nothing here changes desktop. ── */
+@media (max-width: 768px) {
+    /* Flattens every backdrop-filter on the page in one place, since
+       they all read var(--glass-blur)/var(--glass-intensity) rather than
+       hardcoded blur values — no per-selector overrides needed. */
+    :root, [data-theme], [data-theme-mode] {
+        --glass-blur: 0px;
+        --glass-intensity: 0;
+    }
+
+    /* Per-card blur is the biggest single cost on this page (N cards ×
+       1 compositor layer each). Drop straight to the plain tinted
+       surface instead of a near-zero blur() call, which some mobile
+       browsers still rasterize as if it were a real blur. */
+    html.glass-enabled .menu-item {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: color-mix(in srgb, var(--surface) 92%, transparent);
+    }
+    /* This card's own decorative highlight blur runs once per card too —
+       cheap alone, but it adds up across a full menu grid. */
+    .menu-item::before { filter: none; opacity: 0.22; }
+    .category-card::before { filter: none; opacity: 0.35; }
+
+    /* The diagonal "shine sweep" (::after, mix-blend-mode) and hover-lift
+       transform are hover-only wow moments meant for a mouse. Touch
+       devices don't get real :hover — a tap just fires and releases it,
+       often leaving the state visibly "stuck" until the next tap
+       elsewhere — so this is pure repaint cost with no payoff on mobile. */
+    .menu-item::after, .category-card::after { display: none; }
+    .menu-item:hover, .category-card:hover { transform: none; }
+
+    /* Shrink the blur radius and freeze the drift animation so the
+       glass surfaces above aren't re-sampling a moving backdrop on
+       every frame. Kept faintly visible (not display:none) so the
+       page doesn't visibly flatten on rotate/resize. */
+    .glass-orb { filter: blur(28px); animation: none !important; }
+
+    /* Offscreen categories/items skip layout, style, and paint work
+       entirely until they're scrolled near — the intrinsic-size guess
+       keeps scrollbar height stable so this doesn't jump the page. */
+    .category-card { content-visibility: auto; contain-intrinsic-size: 0 480px; }
+    .menu-item { content-visibility: auto; contain-intrinsic-size: 0 220px; }
+}
     </style>
 </head>
 <body>
@@ -2389,6 +2317,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 <div class="header-left">
                     <div class="brand-medallion">
                         <img src="Amruthadharanam_logo2.png" alt="Amruthadhaaranam Logo" class="brand-logo"
+                             decoding="async" fetchpriority="high"
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <div class="brand-logo-fallback" style="display:none;" aria-hidden="true">AD</div>
                     </div>
@@ -2441,7 +2370,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 <div class="theme-picker" id="theme-picker">
                     <button id="btn-theme" class="theme-picker-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="theme-picker-panel" aria-label="Change theme">
                         <span class="tp-swatch-dot" aria-hidden="true"></span>
-                        <span id="theme-label">Masala Chai</span>
+                        <span id="theme-label">Regular</span>
                         <span class="tp-chevron" aria-hidden="true">▾</span>
                     </button>
                     <div class="theme-picker-panel" id="theme-picker-panel" role="menu" aria-label="Choose a theme">
@@ -2602,6 +2531,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
 
                 <div class="qr-wrapper" id="qr-wrapper">
                     <img src="qr.jpeg" alt="UPI payment QR code — scan with PhonePe, GPay, Paytm, or any UPI app to pay the amount due shown below" class="qr-image"
+                         loading="lazy" decoding="async"
                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
                     <div class="qr-placeholder-box">
                         📲 Add your QR image<br>named <strong>qr.jpeg</strong><br>to this folder
@@ -2796,7 +2726,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
 
         Instant: [
                   { id: "ds1", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti 5 pcs", price: 125 },
-                  { id: "ds2", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Gobi Mutter gravy 250ml", price: 100 },             
+                  { id: "ds2", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Paneer Butter Masala gravy 250ml", price: 100 },             
                   { id: "ds3", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti (2pcs) with Gravy of the day 100ml", price: 90 },
                   { id: "ds4", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti (1 pc)", price: 25 },
                   { id: "ds5", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Plain Roti (1 pc)", price: 20 },
@@ -3485,13 +3415,21 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     this.updateTimestamp();
                     this.updateTodayDateBadge();
                     this.updateKitchenStatus();
-                    this.renderMenu();
+                    this.renderMenuIfChanged();
                     updateWatermark();
                 };
 
                 LiveClock.sync().then(refreshAfterResync);
 
-                setInterval(() => { this.updateTimestamp(); this.updateTodayDateBadge(); this.updateKitchenStatus(); this.renderMenu(); updateWatermark(); }, 15000);
+                // Was an unconditional renderMenu() every 15s — a full
+                // destroy-and-rebuild of every category card and item row,
+                // 240x/hour, even though the only thing that ever actually
+                // changes on this tick is a category's open/closed/
+                // closing-soon label (and that only near a window
+                // boundary). renderMenuIfChanged() does the same cheap
+                // status computation but only touches the DOM when the
+                // rendered output would actually differ.
+                setInterval(() => { this.updateTimestamp(); this.updateTodayDateBadge(); this.updateKitchenStatus(); this.renderMenuIfChanged(); updateWatermark(); }, 15000);
                 setInterval(() => { LiveClock.sync().then(refreshAfterResync); }, 5 * 60 * 1000);
 
                 document.addEventListener("visibilitychange", () => {
@@ -3600,8 +3538,13 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             renderMenu() {
                 const container = document.getElementById("menu-container");
 
+                // Computed once per render (was re-queried from matchMedia
+                // once per category-title-group inside the loop below, i.e.
+                // up to a dozen extra style-system round trips per render).
+                const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
                 const expandedTitles = new Set();
-                if (window.matchMedia('(max-width: 768px)').matches) {
+                if (isMobile) {
                     container.querySelectorAll('.category-card:not(.collapsed)').forEach(c => {
                         const sp = c.querySelector('.category-title span:first-child');
                         if (sp) expandedTitles.add(sp.textContent.trim());
@@ -3631,7 +3574,6 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 for (const [title, items] of Object.entries(groups)) {
                     cardIndex++;
                     const card = document.createElement("div");
-                    const isMobile = window.matchMedia('(max-width: 768px)').matches;
                     const shouldCollapse = isMobile && !expandedTitles.has(title);
 
                     const windowStatus = getCategoryWindowStatus(items[0].category);
@@ -3714,6 +3656,34 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                         body.appendChild(wrap);
                     });
                     container.appendChild(card);
+                }
+
+                this._lastMenuSignature = this.computeMenuSignature();
+            },
+
+            // Cheap fingerprint of everything renderMenu()'s output depends
+            // on. Used to skip full rebuilds (renderMenuIfChanged) when
+            // nothing that would change the rendered DOM has actually
+            // changed — the common case on the 15s poll tick.
+            computeMenuSignature() {
+                const cats = [...new Set(getMenuData().map(i => i.category))];
+                const cart = POSState.getCart();
+                let sig = `${POSState.orderMode}|${POSState.activeCategory}|${POSState.searchQuery}`;
+                for (const cat of cats) {
+                    const ws = getCategoryWindowStatus(cat);
+                    // minutesToClose only matters (and only ticks) while
+                    // "closing soon" is actually displayed; outside that
+                    // window it would cause a spurious rebuild every 15s
+                    // for a number nobody sees.
+                    sig += `|${cat}:${ws.isOpenNow}:${ws.isClosingSoon ? ws.minutesToClose : 'x'}`;
+                }
+                for (const id in cart) sig += `|${id}=${cart[id]}`;
+                return sig;
+            },
+
+            renderMenuIfChanged() {
+                if (this.computeMenuSignature() !== this._lastMenuSignature) {
+                    this.renderMenu();
                 }
             },
 
@@ -3871,6 +3841,44 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 this.setOrderType(currentStillAllowed ? POSState.orderType : (pickupEnabled ? "Pickup" : "Delivery"));
             },
 
+            // Was: every +/-/typed quantity change called renderCategories()
+            // + renderMenu(), tearing down and rebuilding *every* category
+            // card and item row (potentially 50-100+ DOM nodes) just to
+            // reflect one number changing. This updates only the pill
+            // badges (already a cheap, small rebuild) and the single
+            // affected item row/subscription panel, leaving the rest of
+            // the menu's DOM untouched — so scroll position, any open
+            // collapsible state, and unrelated rows are never disturbed.
+            refreshCartUI(id) {
+                this.renderCategories();
+                this.updateMenuItemRow(id);
+                this.syncTotals();
+                this._lastMenuSignature = this.computeMenuSignature();
+            },
+
+            updateMenuItemRow(id) {
+                const input = document.getElementById(`qty-${id}`);
+                if (!input) { this.renderMenu(); return; } // not currently in the filtered/rendered set — fall back to full render
+                const qty = POSState.getCart()[id] || 0;
+                if (input.value !== String(qty)) input.value = qty;
+
+                const row = input.closest(".menu-item");
+                if (row) row.classList.toggle("in-cart", qty > 0);
+
+                const wrap = input.closest(".menu-item-wrap");
+                if (!wrap) return;
+                let panel = wrap.querySelector(".item-schedule-panel");
+                if (POSState.orderMode === "Subscription" && qty > 0) {
+                    if (!panel) {
+                        wrap.appendChild(this.buildItemSchedulePanel(id));
+                    } else {
+                        this.refreshItemScheduleSummary(id, panel);
+                    }
+                } else if (panel) {
+                    panel.remove();
+                }
+            },
+
             syncTotals() {
                 const breakdown = computeOrderBreakdown();
                 const { itemsList, totalQty, subtotal, discountAmount, deliveryFee, grandTotal, isRecurring } = breakdown;
@@ -4017,9 +4025,17 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     }
                 });
 
+                // Debounced: previously renderMenu() (a full teardown +
+                // rebuild of every category card and item row) ran on every
+                // single keystroke. Typing a 6-character search term meant
+                // 6 full DOM rebuilds; this collapses rapid keystrokes into
+                // one render ~180ms after the user pauses, which is fast
+                // enough to feel instant but cuts rebuild count drastically.
+                let searchDebounceTimer = null;
                 document.getElementById("txt-search").addEventListener("input", (e) => {
                     POSState.searchQuery = e.target.value;
-                    this.renderMenu();
+                    clearTimeout(searchDebounceTimer);
+                    searchDebounceTimer = setTimeout(() => this.renderMenu(), 180);
                 });
 
                 document.addEventListener("keydown", (e) => {
@@ -4075,9 +4091,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                                 this.showToast(`${item.name} removed`, "info");
                             }
                         }
-                        this.renderCategories();
-                        this.renderMenu();
-                        this.syncTotals();
+                        this.refreshCartUI(id);
                     }
                 });
 
@@ -4092,9 +4106,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                             delete cart[id];
                             if (POSState.orderMode === "Subscription") delete POSState.getItemSchedules()[id];
                         }
-                        this.renderCategories();
-                        this.renderMenu();
-                        this.syncTotals();
+                        this.refreshCartUI(id);
                         return;
                     }
 
@@ -4253,13 +4265,8 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 });
 
                 const THEME_REGISTRY = [
-                    { id: "masala-chai",     name: "Masala Chai",     desc: "Warm terracotta, comfort & spice", mode: "light", a: "#A85C2E", b: "#D9A03E" },
-                    { id: "dark-chocolate",  name: "Dark Chocolate",  desc: "Rich cocoa, moody & premium",    mode: "dark",  a: "#6E4425", b: "#D9A44E" },
-                    { id: "berry-mousse",    name: "Berry Mousse",    desc: "Playful deep berry, after dark", mode: "dark",  a: "#7A2E4D", b: "#E0A65E" },
-                    { id: "tomato-chilli",   name: "Tomato Chilli",   desc: "Vivid red-orange, spice-forward", mode: "light", a: "#C6371F", b: "#E0932E" },
-                    { id: "filter-coffee",   name: "Filter Coffee",   desc: "Roasted toffee brown, iconic & premium", mode: "dark",  a: "#7A4A24", b: "#C68A3E" },
-                    { id: "rose-milk",       name: "Rose Milk",       desc: "Pink-magenta with creamy gold", mode: "dark",  a: "#C2557A", b: "#E8B67E" },
-                    { id: "regular",         name: "Regular",         desc: "Bubblegum pink & Microsoft blue, clean & bright", mode: "light", a: "#0078D4", b: "#FF6FB5" }
+                    { id: "regular",         name: "Regular",         desc: "Bubblegum pink & Microsoft blue, clean & bright", mode: "light", a: "#0078D4", b: "#FF6FB5" },
+                    { id: "berry-mousse",    name: "Berry Mousse",    desc: "Playful deep berry, after dark", mode: "dark",  a: "#7A2E4D", b: "#E0A65E" }
                 ];
 
                 function applyTheme(themeId, persist) {
@@ -4363,13 +4370,16 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 });
                 window.addEventListener("resize", () => {
                     if (themePicker.classList.contains("open")) positionThemePanel();
-                });
+                }, { passive: true });
                 // Capture phase on window catches scroll events fired by any
                 // descendant scroll container (like .main-content), not just
                 // window-level scrolling, since scroll events don't bubble.
+                // passive: true tells the browser this handler never calls
+                // preventDefault(), so touch-scroll on mobile isn't blocked
+                // waiting for it to run.
                 window.addEventListener("scroll", () => {
                     if (themePicker.classList.contains("open")) positionThemePanel();
-                }, true);
+                }, { capture: true, passive: true });
                 document.addEventListener("click", (e) => {
                     if (!themePicker.contains(e.target) && !themePanel.contains(e.target)) {
                         closeThemePanel();
