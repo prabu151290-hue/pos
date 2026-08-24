@@ -2295,10 +2295,9 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                         <span id="today-date-text">…</span>
                     </span>
                 </button>
-                <button type="button" class="mode-tab" data-mode="Subscription" aria-pressed="false">🔁 Subscribe My Item</button>
             </div>
 
-            <div class="schedule-card" id="subscription-schedule-card">
+            <div class="schedule-card" id="subscription-schedule-card" style="display:none;">
                 <h3 class="schedule-card-title">🔁 Subscribe My Item</h3>
                 <p class="schedule-card-hint" style="margin-top:0;">Add any item below and a scheduling panel will appear under it — set its own repeat pattern, date range, and delivery time. Every item in your basket can run on a different schedule.</p>
                 <p class="schedule-card-hint">⏳ The kitchen needs at least <strong>36 hours' notice</strong> before a subscription's first delivery, so the calendar only opens starting 36 hours from now — and stays selectable for <strong>45 days</strong> from that point.</p>
@@ -2593,7 +2592,8 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             const icons = {
                 "Dinner Special": "🌙", "Sandwich": "🥪", "Premium Sandwich": "🥪",
                 "Maggi": "🍜", "Pasta": "🍝", "Juices": "🥤",
-                "Milkshakes": "🥛", "Combos": "🎁", "Evening Snacks": "🌆", "Xtra Delights": "✨", "Waffles": "🧇"
+                "Milkshakes": "🥛", "Combos": "🎁", "Evening Snacks": "🌆", "Xtra Delights": "✨", "Waffles": "🧇",
+                "Wraps": "🌯"
             };
             return icons[cat] || "🍽️";
         }
@@ -2626,7 +2626,8 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             "Evening Snacks":    '#FF5D8F', // coral pink     — cozy, social evening warmth
             "Waffles":           '#C9962C', // toasted amber  — crisp, buttery, dessert warmth (distinct from Maggi/Combos golds)
             "Xtra Delights":     '#7B2FF7', // royal violet   — premium, exclusive
-            "Dinner Special":    '#5E5CE6'  // deep indigo    — calm evening sophistication
+            "Dinner Special":    '#5E5CE6', // deep indigo    — calm evening sophistication
+            "Wraps":             '#2EA85C'  // fresh green    — herby, veggie-forward, distinct from other warm hues
         };
         function hashStr(s) {
             let h = 0;
@@ -2719,8 +2720,12 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
              { id: "X1", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Spicy Veg chunks Butter Grilled Sandwich", price: 149 },
              { id: "X2", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Spicy Veg chunks with Fresh Paneer and Oregano and Basil sprinkled Butter grilled Sandwich", price: 149 },
              { id: "X3", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Fresh Corn and Italian Herbs Butter Grilled Sandwich", price: 149 },
-             { id: "X4", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Hot Redchilli paste marinated Fresh Corn and Paneer with Italian Herbs Butter Grilled Sandwich", price: 149 }
+             { id: "X4", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Hot Redchilli paste marinated Fresh Corn and Paneer with Italian Herbs Butter Grilled Sandwich", price: 149 },
        //    { id: "X5", category: "Xtra Delights", title: "Xtra Delight Specials", name: "DOUBLE CHEESE TRIPLE layererd Corn Tomato Jalepinos Black olives Capsicum with American mustard sauce Butter Grilled Sandwich", price: 75 },
+
+             { id: "w1", category: "Wraps", title: "🌯 Wraps", name: "Mexican Spicy Veggies Wrap", price: 149 },
+             { id: "w2", category: "Wraps", title: "🌯 Wraps", name: "Mexican Veg Spicy Paneer Wrap", price: 149 },
+             { id: "w3", category: "Wraps", title: "🌯 Wraps", name: "Indian Veggies with Spicy Paneer Wrap", price: 149 }
         ],
 
         Subscription: [
