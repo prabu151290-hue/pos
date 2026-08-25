@@ -1295,7 +1295,7 @@
            theme-aware --focus-glow token so it stays correct in dark
            mode. A quiet checkmark confirms a complete, valid number —
            functional feedback, not decoration — fading in only once. */
-        .phone-input-group {
+        .phone-input-group, .pickup-input-group {
             display: flex;
             align-items: stretch;
             border: 1px solid var(--border);
@@ -1304,12 +1304,12 @@
             box-shadow: 0 2px 4px rgba(59,15,19,0.05) inset;
             transition: var(--transition), box-shadow 0.22s ease;
         }
-        .phone-input-group:focus-within {
+        .phone-input-group:focus-within, .pickup-input-group:focus-within {
             border-color: var(--primary);
             background: var(--surface);
             box-shadow: 0 2px 4px rgba(59,15,19,0.05) inset, 0 0 0 4px var(--focus-glow);
         }
-        .phone-input-group .cc-field {
+        .phone-input-group .cc-field, .pickup-input-group .pdt-field {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -1317,7 +1317,7 @@
             padding: var(--space-2) 0.15rem var(--space-2) var(--space-3); /* 0.15rem: intentional sub-px optical inset, finer than --space-1 floor */
             gap: 0.08rem; /* sub-pixel optical gap between cc-label and dial code — intentionally below 4px scale floor */
         }
-        .cc-label {
+        .cc-label, .pdt-label {
             font-size: var(--text-caption2);
             font-weight: 600;
             text-transform: uppercase;
@@ -1327,7 +1327,7 @@
             cursor: pointer;
             white-space: nowrap;
         }
-        .phone-input-group .country-code-input {
+        .phone-input-group .country-code-input, .pickup-input-group .pickup-date-input {
             width: auto;
             min-width: 2.5rem;
             max-width: 3.6rem;
@@ -1344,7 +1344,7 @@
             letter-spacing: 0.01em;
             line-height: 1.2;
         }
-        .phone-input-group .country-code-input:focus {
+        .phone-input-group .country-code-input:focus, .pickup-input-group .pickup-date-input:focus {
             outline: none;
             border: none;
             background: transparent;
@@ -1357,6 +1357,14 @@
         .country-code-input[readonly] {
             cursor: pointer;
         }
+        /* Pickup date is genuinely fixed (always "today") — never tappable,
+           so it gets a plain cursor instead of the country code's "tap to
+           edit" pointer affordance. Source order after the rule above lets
+           this win at equal specificity. */
+        .pickup-input-group .pickup-date-input, .pickup-input-group .pickup-date-input[readonly] {
+            max-width: 6.4rem;
+            cursor: default;
+        }
         .phone-divider {
             width: 1px;
             align-self: center;
@@ -1365,11 +1373,11 @@
             opacity: 0.3;
             flex-shrink: 0;
         }
-        .phone-input-group .field-wrap {
+        .phone-input-group .field-wrap, .pickup-input-group .field-wrap {
             flex: 1;
             min-width: 0;
         }
-        .phone-input-group .field-wrap input {
+        .phone-input-group .field-wrap input, .pickup-input-group .field-wrap input {
             border: none;
             background: transparent;
             box-shadow: none;
@@ -1381,12 +1389,12 @@
             font-variant-numeric: tabular-nums;
             letter-spacing: 0.05em;
         }
-        .phone-input-group .field-wrap input::placeholder {
+        .phone-input-group .field-wrap input::placeholder, .pickup-input-group .field-wrap input::placeholder {
             color: var(--text-muted);
             font-weight: 400;
             letter-spacing: normal;
         }
-        .phone-input-group .field-wrap input:focus {
+        .phone-input-group .field-wrap input:focus, .pickup-input-group .field-wrap input:focus {
             outline: none;
             border: none;
             background: transparent;
@@ -1399,6 +1407,24 @@
         .phone-input-group:has(#cust-phone:invalid:not(:placeholder-shown)):focus-within {
             box-shadow: 0 2px 4px rgba(59,15,19,0.05) inset, 0 0 0 4px rgba(198,40,40,0.14);
         }
+        /* Pickup time validity is computed in JS against the live
+           server-synced clock (a dynamic "no past times" rule that native
+           min/max + :invalid can't fully express), so it's surfaced via a
+           JS-toggled .invalid class on the pill rather than :has(:invalid). */
+        .pickup-input-group.invalid {
+            border-color: var(--danger);
+        }
+        .pickup-input-group.invalid:focus-within {
+            box-shadow: 0 2px 4px rgba(59,15,19,0.05) inset, 0 0 0 4px rgba(198,40,40,0.14);
+        }
+        #pickup-time-group.collapsed { display: none; }
+        .pickup-time-error {
+            font-size: var(--text-caption2);
+            color: var(--danger);
+            font-weight: 600;
+            display: none;
+        }
+        .pickup-time-error.visible { display: block; }
         .phone-valid-icon {
             position: absolute;
             right: 12px;
@@ -1438,7 +1464,7 @@
            The border becomes semi-transparent on glass so it blends with
            whatever is behind the pill rather than cutting across it. */
         @supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
-            html.glass-enabled .phone-input-group {
+            html.glass-enabled .phone-input-group, html.glass-enabled .pickup-input-group {
                 background: rgba(247, 243, 232, 0.45);
                 -webkit-backdrop-filter: blur(8px) saturate(1.4);
                 backdrop-filter: blur(8px) saturate(1.4);
@@ -1447,7 +1473,7 @@
                     0 2px 4px rgba(59,15,19,0.05) inset,
                     0 1px 0 rgba(255,255,255,0.35) inset;  /* specular highlight on top edge */
             }
-            html.glass-enabled[data-theme-mode="dark"] .phone-input-group {
+            html.glass-enabled[data-theme-mode="dark"] .phone-input-group, html.glass-enabled[data-theme-mode="dark"] .pickup-input-group {
                 background: var(--phone-glass-fill);
                 -webkit-backdrop-filter: blur(8px) saturate(1.6);
                 backdrop-filter: blur(8px) saturate(1.6);
@@ -1456,14 +1482,14 @@
                     0 2px 4px rgba(0,0,0,0.18) inset,
                     0 1px 0 rgba(255,255,255,0.06) inset;
             }
-            html.glass-enabled .phone-input-group:focus-within {
+            html.glass-enabled .phone-input-group:focus-within, html.glass-enabled .pickup-input-group:focus-within {
                 background: rgba(255, 252, 242, 0.62);     /* --surface at 62% — brighter on focus */
                 box-shadow:
                     0 2px 4px rgba(59,15,19,0.05) inset,
                     0 1px 0 rgba(255,255,255,0.45) inset,
                     0 0 0 4px var(--focus-glow);
             }
-            html.glass-enabled[data-theme-mode="dark"] .phone-input-group:focus-within {
+            html.glass-enabled[data-theme-mode="dark"] .phone-input-group:focus-within, html.glass-enabled[data-theme-mode="dark"] .pickup-input-group:focus-within {
                 background: rgba(30, 45, 36, 0.68);
                 box-shadow:
                     0 2px 4px rgba(0,0,0,0.22) inset,
@@ -1471,7 +1497,7 @@
                     0 0 0 4px var(--focus-glow);
             }
             @media (prefers-reduced-motion: no-preference) {
-                html.glass-enabled .phone-input-group {
+                html.glass-enabled .phone-input-group, html.glass-enabled .pickup-input-group {
                     transition: var(--transition), box-shadow 0.22s ease,
                                 backdrop-filter 0.22s ease, -webkit-backdrop-filter 0.22s ease;
                 }
@@ -2385,6 +2411,21 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                         </div>
                         <span id="cust-phone-hint" class="sr-only">Enter a 10 digit phone number. This will be used to send your order via WhatsApp.</span>
                     </div>
+                    <div class="form-group" id="pickup-time-group">
+                        <label for="cust-pickup-time">Pickup Time * <span class="field-hint">— when you'll collect at the counter</span></label>
+                        <div class="pickup-input-group" id="pickup-input-group">
+                            <div class="pdt-field">
+                                <label for="cust-pickup-date" class="pdt-label">Date</label>
+                                <input type="text" id="cust-pickup-date" class="pickup-date-input" readonly aria-label="Pickup date — always today, not editable" value="">
+                            </div>
+                            <span class="phone-divider" aria-hidden="true"></span>
+                            <div class="field-wrap">
+                                <input type="time" id="cust-pickup-time" required aria-describedby="pickup-time-hint pickup-time-error" autocomplete="off">
+                            </div>
+                        </div>
+                        <span id="pickup-time-hint" class="field-hint">Today only, between <span id="pickup-time-window"></span> — please pick a time that hasn't already passed.</span>
+                        <span id="pickup-time-error" class="pickup-time-error" role="alert" aria-live="assertive"></span>
+                    </div>
                     <div class="address-fields" id="address-fields">
                         <div class="form-group">
                             <label for="cust-door">Door / Flat No *</label>
@@ -3070,6 +3111,44 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             return (CATEGORY_WINDOWS[categoryName] && CATEGORY_WINDOWS[categoryName].deliveryWindow) || null;
         }
 
+        // ── Self-Pickup time slot ────────────────────────────────────────
+        // Customer-selectable pickup time, validated against LiveClock's
+        // server-synced clock (never the raw device clock — a phone with a
+        // wrong system time must not be able to "select" an already-past
+        // slot just because its own clock disagrees with reality). The
+        // pickup date itself is not selectable: pickup is always for
+        // *today*, shown read-only next to the time field.
+        function minutesToHHMM(mins) {
+            const clamped = Math.max(0, Math.min(23 * 60 + 59, mins));
+            const h = Math.floor(clamped / 60);
+            const m = clamped % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        }
+
+        function getPickupTimeBounds() {
+            const { hours, minutes } = LiveClock.istParts();
+            const nowMins = hours * 60 + minutes;
+            const openMins = OPEN_HOUR * 60;
+            const closeMins = CLOSE_HOUR * 60;
+
+            // Native <input type="time"> is minute-granular, so "right now"
+            // itself is rounded up by one minute — otherwise the exact
+            // current minute could validate at selection time and then
+            // read as "past" a moment later purely from the clock ticking
+            // forward, which would fail the "prompt until proper time"
+            // requirement for no real reason.
+            const earliestMins = Math.min(nowMins + 1, closeMins);
+            const minMins = Math.max(earliestMins, openMins);
+
+            return {
+                minMins,
+                maxMins: closeMins,
+                minStr: minutesToHHMM(minMins),
+                maxStr: minutesToHHMM(closeMins),
+                isPastClosing: nowMins >= closeMins
+            };
+        }
+
         const STANDARD_ITEM_DELIVERY_MIN = "10:00";
         const STANDARD_ITEM_DELIVERY_MAX = "19:00";
 
@@ -3305,6 +3384,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 this.renderMenu();
                 this.updateTimestamp();
                 this.updateTodayDateBadge();
+                this.updatePickupWindow();
                 this.updateKitchenStatus();
                 this.renderAnnouncement();
                 this.bindEventHandlers();
@@ -3319,6 +3399,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 const refreshAfterResync = () => {
                     this.updateKitchenStatus();
                     this.updateTodayDateBadge();
+                    this.updatePickupWindow();
                     this.renderCategories();
                     this.renderMenu();
                     this.applyOrderTypeAvailability();
@@ -3345,6 +3426,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 const refreshDisplayNow = () => {
                     this.updateTimestamp();
                     this.updateTodayDateBadge();
+                    this.updatePickupWindow();
                     this.updateKitchenStatus();
                     this.renderMenuIfChanged();
                     updateWatermark();
@@ -3360,7 +3442,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 // boundary). renderMenuIfChanged() does the same cheap
                 // status computation but only touches the DOM when the
                 // rendered output would actually differ.
-                setInterval(() => { this.updateTimestamp(); this.updateTodayDateBadge(); this.updateKitchenStatus(); this.renderMenuIfChanged(); updateWatermark(); }, 15000);
+                setInterval(() => { this.updateTimestamp(); this.updateTodayDateBadge(); this.updatePickupWindow(); this.updateKitchenStatus(); this.renderMenuIfChanged(); updateWatermark(); }, 15000);
                 setInterval(() => { LiveClock.sync().then(refreshAfterResync); }, 5 * 60 * 1000);
 
                 document.addEventListener("visibilitychange", () => {
@@ -3742,6 +3824,14 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 document.getElementById("row-delivery-fee").style.display = isPickup ? "none" : "table-row";
                 document.getElementById("input-delivery-fee").disabled = isPickup;
 
+                document.getElementById("pickup-time-group").classList.toggle("collapsed", !isPickup);
+                document.getElementById("cust-pickup-time").required = isPickup;
+                // Re-check (silently) rather than force-prompt on a mere
+                // type switch — a Delivery→Pickup switch should just show
+                // the current window state, not immediately scold the
+                // customer before they've touched the field.
+                this.validatePickupTime({ silent: true });
+
                 this.syncTotals();
             },
 
@@ -3886,6 +3976,87 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 const full = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' });
                 textEl.textContent = short;
                 if (tabBtn) tabBtn.setAttribute("aria-label", `Today's Order Menu — ${full}`);
+            },
+
+            // Keeps the read-only pickup date fresh and the live time
+            // window (min/max + hint copy) in sync with LiveClock. Called
+            // on init, after every resync, and on the same 15s repaint
+            // tick as the other clock-driven UI — see UIEngine.init().
+            updatePickupWindow() {
+                const dateInput = document.getElementById("cust-pickup-date");
+                const timeInput = document.getElementById("cust-pickup-time");
+                const windowLabel = document.getElementById("pickup-time-window");
+                if (!dateInput || !timeInput) return;
+
+                const d = new Date(LiveClock.nowMs());
+                dateInput.value = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
+
+                const bounds = getPickupTimeBounds();
+                timeInput.min = bounds.minStr;
+                timeInput.max = bounds.maxStr;
+                if (windowLabel) windowLabel.textContent = `${formatHHMM(bounds.minStr)} – ${formatHHMM(bounds.maxStr)}`;
+
+                // Silent re-check: if a previously valid selection has since
+                // slipped into the past while the sheet sat open, reflect
+                // that in the visual state without interrupting the
+                // customer with a modal — the loud prompt is reserved for
+                // an actual selection attempt or the final submit check.
+                this.validatePickupTime({ silent: true });
+            },
+
+            // Returns true only when the pickup time is a real, still-
+            // upcoming slot within today's shop hours. Surfaces the result
+            // three ways at once: a custom validity message (native form
+            // reporting), a visual invalid state on the pill, and — unless
+            // silenced for a background tick — a blocking prompt that
+            // clears the bad value so the customer must actively choose
+            // again, exactly as long as the choice stays invalid.
+            validatePickupTime({ silent = false, focus = false } = {}) {
+                const pill = document.getElementById("pickup-input-group");
+                const timeInput = document.getElementById("cust-pickup-time");
+                const errorEl = document.getElementById("pickup-time-error");
+                if (!timeInput) return true;
+
+                if (POSState.orderType !== "Pickup") {
+                    timeInput.setCustomValidity("");
+                    if (pill) pill.classList.remove("invalid");
+                    if (errorEl) { errorEl.classList.remove("visible"); errorEl.textContent = ""; }
+                    return true;
+                }
+
+                const bounds = getPickupTimeBounds();
+                const val = timeInput.value;
+                let message = "";
+
+                if (bounds.isPastClosing) {
+                    message = `We're closed for today — pickup isn't available after ${formatHHMM(bounds.maxStr)}.`;
+                } else if (!val) {
+                    message = "Please select a pickup time.";
+                } else if (val < bounds.minStr) {
+                    message = "That time has already passed. Please choose an upcoming time.";
+                } else if (val > bounds.maxStr) {
+                    message = `Please choose a time before we close (${formatHHMM(bounds.maxStr)}).`;
+                }
+
+                const isValid = !message;
+                timeInput.setCustomValidity(isValid ? "" : message);
+                if (pill) pill.classList.toggle("invalid", !isValid);
+                if (errorEl) {
+                    errorEl.textContent = message;
+                    errorEl.classList.toggle("visible", !isValid);
+                }
+
+                if (!isValid && !silent) {
+                    this.alertModal("Pickup time needed", message);
+                    // Force a fresh, explicit selection rather than quietly
+                    // reverting to whatever was there before — the customer
+                    // keeps getting prompted until a genuinely valid time
+                    // is chosen.
+                    timeInput.value = "";
+                    if (focus) timeInput.focus();
+                }
+
+                return isValid;
             },
 
             showToast(message, type = "info") {
@@ -4123,6 +4294,14 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
 
                 document.getElementById("cust-country-code").addEventListener("input", () => {
                     updateWatermark();
+                });
+
+                // Validate the instant a time is picked (not just on final
+                // submit) — an immediately-past selection gets caught and
+                // the customer is re-prompted right away, per "prompt until
+                // proper time selected".
+                document.getElementById("cust-pickup-time").addEventListener("change", () => {
+                    this.validatePickupTime({ focus: true });
                 });
 
                 // Tap-to-edit: the field is readonly by default (see HTML),
@@ -4506,6 +4685,17 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                         return false;
                     }
                 }
+                if (POSState.orderType === "Pickup") {
+                    // Re-validate against the live clock at submit time too
+                    // — a slot picked minutes ago (while the customer kept
+                    // browsing the menu) may have slipped into the past by
+                    // now. UIEngine.validatePickupTime already prompts and
+                    // clears the field on failure.
+                    UIEngine.updatePickupWindow();
+                    if (!UIEngine.validatePickupTime({ focus: true })) {
+                        return false;
+                    }
+                }
 
                 if (POSState.orderMode === "Subscription") {
                     const bounds = getSubscriptionDateBounds();
@@ -4547,6 +4737,9 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 // backend, and any dial-out link should use. The 5+5
                 // grouping is purely a display/typing convenience.
                 const phone = phoneDisplay.replace(/\s/g, "");
+                const isPickup = POSState.orderType === "Pickup";
+                const pickupTime = isPickup ? document.getElementById("cust-pickup-time").value : "";
+                const pickupDateEl = document.getElementById("cust-pickup-date");
                 return {
                     name: document.getElementById("cust-name").value.trim(),
                     countryCode,
@@ -4555,7 +4748,10 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     door: document.getElementById("cust-door").value.trim(),
                     apart: document.getElementById("cust-apart").value,
                     notes: document.getElementById("cust-notes").value.trim(),
-                    deliveryReason: POSState.orderType === "Delivery" ? document.getElementById("cust-delivery-reason").value : ""
+                    deliveryReason: POSState.orderType === "Delivery" ? document.getElementById("cust-delivery-reason").value : "",
+                    pickupTime,
+                    pickupTimeDisplay: pickupTime ? formatHHMM(pickupTime) : "",
+                    pickupDateDisplay: (isPickup && pickupDateEl) ? pickupDateEl.value : ""
                 };
             },
 
@@ -4576,7 +4772,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     (POSState.orderMode === "Subscription" ? " (Subscribe My Item)" : "");
                 document.getElementById("print-cust-info").innerHTML = `<strong>${customer.name}</strong> (${customer.fullPhone})<br>
                        Flat/Door: ${customer.door}${customer.apart ? ', ' + customer.apart : ''}
-                       ${isPickup ? '<br>Self Pickup at Counter' : (customer.deliveryReason ? `<br>Delivery Reason: ${customer.deliveryReason}` : '')}`;
+                       ${isPickup ? `<br>Self Pickup at Counter${customer.pickupTimeDisplay ? ` — ${customer.pickupDateDisplay} at ${customer.pickupTimeDisplay}` : ''}` : (customer.deliveryReason ? `<br>Delivery Reason: ${customer.deliveryReason}` : '')}`;
 
                 const body = document.getElementById("print-items-body");
                 body.innerHTML = invoice.itemsList.map(item => {
@@ -4616,7 +4812,10 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 const invoice = this.compileInvoiceData();
                 const isPickup = POSState.orderType === "Pickup";
                 const isRecurring = invoice.isRecurring;
-                const orderTimestamp = new Date(Date.now()).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
+                // Server-synced LiveClock, not the raw device clock — a
+                // phone with a wrong system time shouldn't be able to send
+                // a mismatched timestamp on its own order.
+                const orderTimestamp = new Date(LiveClock.nowMs()).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
 
                 const LINE = `━━━━━━━━━━━━━━━━━━\n`;
 
@@ -4638,8 +4837,20 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 text += `📍 *Address:*   ${customer.door}${customer.apart ? ', ' + customer.apart : ''}\n`;
                 if (isPickup) {
                     text += `   I will collect my order at your counter.\n`;
+                    if (customer.pickupTimeDisplay) {
+                        text += `🕒 *Pickup Time:*   ${customer.pickupDateDisplay} at ${customer.pickupTimeDisplay}\n`;
+                    }
                 }
-                if (customer.notes) text += `📝 *Notes:* ${customer.notes}\n`;
+                // Notes line also carries the requested pickup slot, so it
+                // reads clearly even if the kitchen glances at Notes alone.
+                {
+                    const notesParts = [];
+                    if (isPickup && customer.pickupTimeDisplay) {
+                        notesParts.push(`Pickup requested for ${customer.pickupDateDisplay}, ${customer.pickupTimeDisplay}`);
+                    }
+                    if (customer.notes) notesParts.push(customer.notes);
+                    if (notesParts.length) text += `📝 *Notes:* ${notesParts.join(' — ')}\n`;
+                }
 
                 if (isRecurring) {
                     text += `🔁 *This is a SUBSCRIBE MY ITEM order*\n`;
