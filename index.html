@@ -2660,6 +2660,54 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             blink: true
         };
 
+        // ── Scheduled store closure ─────────────────────────────────────
+        // Replaces the old approach of hardcoding "store off" directly in
+        // the open/close logic. Set enabled:true and fill in a date range
+        // (inclusive, IST, "YYYY-MM-DD") plus a customer-facing reason to
+        // take the whole store offline for that window — e.g. a festival
+        // holiday, maintenance, or a family emergency. While active:
+        //   • The announcement bar shows a professional closure notice
+        //     with the dates and reason (not dismissible for the duration).
+        //   • The kitchen status board/hero chip show "Closed" with the
+        //     reason and reopen date instead of the normal hours message.
+        //   • Every menu category is frozen (browsable, not orderable),
+        //     regardless of individual category time windows.
+        //   • The Place Order / WhatsApp buttons are disabled and blocked.
+        // To reopen early, just set enabled back to false.
+        const STORE_CLOSURE = {
+            enabled: true,
+            fromDate: "2026-08-27",   // YYYY-MM-DD, inclusive, IST
+            toDate: "2026-08-28",     // YYYY-MM-DD, inclusive, IST
+            reason: "Vedic Rituals & Family Event"  // optional, shown to customers
+        };
+
+        function formatClosureDate(dateStr) {
+            const d = new Date(`${dateStr}T00:00:00Z`);
+            if (isNaN(d.getTime())) return dateStr;
+            return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+        }
+
+        function getStoreClosureStatus() {
+            if (!STORE_CLOSURE || !STORE_CLOSURE.enabled) {
+                return { active: false };
+            }
+            const { year, month, date } = LiveClock.istParts();
+            const todayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+            const { fromDate, toDate, reason } = STORE_CLOSURE;
+
+            // Plain "YYYY-MM-DD" strings compare correctly lexicographically.
+            const active = todayStr >= fromDate && todayStr <= toDate;
+            return {
+                active,
+                fromDate,
+                toDate,
+                reason: reason || "Temporarily closed",
+                fromDateLabel: formatClosureDate(fromDate),
+                toDateLabel: formatClosureDate(toDate),
+                isLastDay: todayStr === toDate
+            };
+        }
+
         function categoryIcon(cat) {
             const icons = {
                 "Dinner Special": "🌙", "Sandwich": "🥪", "Premium Sandwich": "🥪",
@@ -3123,6 +3171,24 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             }
         };
 
+        const StoreClosureUI = {
+            applyToUI(closure) {
+                const status = closure || getStoreClosureStatus();
+                const orderBtn = document.getElementById("trigger-whatsapp");
+                const helpBtn = document.getElementById("call-via-whatsapp-btn");
+                if (orderBtn) {
+                    orderBtn.disabled = status.active;
+                    orderBtn.title = status.active
+                        ? `Temporarily closed until ${status.toDateLabel} (${status.reason}).`
+                        : "";
+                }
+                // The "help via WhatsApp" contact button stays enabled even
+                // during a closure — customers should still be able to
+                // reach staff directly, just not auto-place an order.
+                if (helpBtn) helpBtn.disabled = false;
+            }
+        };
+
         const CATEGORY_WINDOWS = {
             "Breakfast":      { start: "07:00", end: "10:00" },
             "Lunch Special":  { start: "12:30", end: "14:00" },
@@ -3513,6 +3579,25 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 const bar = document.getElementById("announcement-bar");
                 const iconEl = document.getElementById("announcement-icon");
                 const textEl = document.getElementById("announcement-text");
+                const closeBtn = document.getElementById("announcement-close");
+
+                // A scheduled closure always takes priority over the regular
+                // marketing/info ANNOUNCEMENT, and stays visible (not
+                // dismissible) for the whole closure window so customers
+                // can't miss it and try to order anyway.
+                const closure = getStoreClosureStatus();
+                if (closure.active) {
+                    bar.className = "announcement-bar visible type-urgent";
+                    iconEl.textContent = "🚧";
+                    iconEl.classList.remove("blinking");
+                    const dateRange = closure.fromDate === closure.toDate
+                        ? closure.fromDateLabel
+                        : `${closure.fromDateLabel} – ${closure.toDateLabel}`;
+                    textEl.innerHTML = `We are temporarily closed from <strong>${dateRange}</strong> (${closure.reason}). Online ordering is paused during this time — we appreciate your patience and look forward to serving you again soon.`;
+                    if (closeBtn) closeBtn.style.display = "none";
+                    return;
+                }
+                if (closeBtn) closeBtn.style.display = "";
 
                 if (!ANNOUNCEMENT || !ANNOUNCEMENT.enabled || !ANNOUNCEMENT.text) {
                     bar.classList.remove("visible");
@@ -3548,15 +3633,30 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 const totalMins = hours * 60 + minutes;
                 const openMins  = OPEN_HOUR  * 60;
                 const closeMins = CLOSE_HOUR * 60;
-                const isOpen = totalMins >= openMins && totalMins < closeMins;
+                let isOpen = totalMins >= openMins && totalMins < closeMins;
                 const minsToClose = closeMins - totalMins;
                 const isClosingSoon = isOpen && minsToClose <= 60;
 
                 const board = document.getElementById("status-board");
                 const dot   = document.getElementById("kitchen-dot");
                 const text  = document.getElementById("kitchen-status-text");
+                const heroChipEarly = document.getElementById("hero-kitchen-chip");
 
                 board.classList.remove("status-closing", "status-closed");
+
+                const closure = getStoreClosureStatus();
+                StoreClosureUI.applyToUI(closure);
+                if (closure.active) {
+                    isOpen = false;
+                    dot.className = "status-dot closed";
+                    board.classList.add("status-closed");
+                    const dateRange = closure.fromDate === closure.toDate
+                        ? closure.fromDateLabel
+                        : `${closure.fromDateLabel} – ${closure.toDateLabel}`;
+                    text.textContent = `Temporarily closed (${closure.reason}) — reopening after ${closure.toDateLabel}. See our announcement above for details: ${dateRange}.`;
+                    if (heroChipEarly) heroChipEarly.textContent = "🔴 Temporarily Closed";
+                    return;
+                }
 
                 if (!isOpen) {
                     dot.className = "status-dot closed";
@@ -3636,7 +3736,9 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     const shouldCollapse = isMobile && !expandedTitles.has(title);
 
                     const windowStatus = getCategoryWindowStatus(items[0].category);
-                    const isCategoryDisabled = ENFORCE_CATEGORY_WINDOW && !windowStatus.isOpenNow && POSState.orderMode !== "Subscription";
+                    const closure = getStoreClosureStatus();
+                    const isCategoryDisabled = closure.active
+                        || (ENFORCE_CATEGORY_WINDOW && !windowStatus.isOpenNow && POSState.orderMode !== "Subscription");
 
                     card.className = `category-card${shouldCollapse ? ' collapsed' : ''}${isCategoryDisabled ? ' category-frozen' : ''}`;
                     card.style.setProperty('--card-accent', categoryAccentColor(items[0].category));
@@ -3655,7 +3757,9 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                         ? `<p class="category-window-note">ℹ️ ${windowStatus.note}</p>`
                         : '';
                     const frozenBannerHTML = isCategoryDisabled
-                        ? `<div class="frozen-banner">🔒 Ordering closed right now — items shown for reference only</div>`
+                        ? (closure.active
+                            ? `<div class="frozen-banner">🔒 Temporarily closed (${closure.reason}) until ${closure.toDateLabel} — items shown for reference only</div>`
+                            : `<div class="frozen-banner">🔒 Ordering closed right now — items shown for reference only</div>`)
                         : '';
 
                     const helpWhatsAppURL = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I need some help placing my order.")}`;
@@ -3727,7 +3831,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             computeMenuSignature() {
                 const cats = [...new Set(getMenuData().map(i => i.category))];
                 const cart = POSState.getCart();
-                let sig = `${POSState.orderMode}|${POSState.activeCategory}|${POSState.searchQuery}`;
+                let sig = `${POSState.orderMode}|${POSState.activeCategory}|${POSState.searchQuery}|closure:${getStoreClosureStatus().active}`;
                 for (const cat of cats) {
                     const ws = getCategoryWindowStatus(cat);
                     // minutesToClose only matters (and only ticks) while
@@ -4951,6 +5055,18 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             },
 
             sendWhatsApp() {
+                const closure = getStoreClosureStatus();
+                if (closure.active) {
+                    const dateRange = closure.fromDate === closure.toDate
+                        ? closure.fromDateLabel
+                        : `${closure.fromDateLabel} – ${closure.toDateLabel}`;
+                    UIEngine.alertModal(
+                        "We're temporarily closed",
+                        `Online ordering is paused from ${dateRange} (${closure.reason}). We'll be back to serve you after ${closure.toDateLabel} — thank you for your patience! For urgent queries, please WhatsApp us at +91 78453 87741.`
+                    );
+                    return;
+                }
+
                 if (!this.validateInputs()) return;
 
                 if (DailyOrderLimiter.isBlocked()) {
