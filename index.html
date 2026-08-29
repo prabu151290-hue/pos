@@ -1653,6 +1653,23 @@
             font-size: var(--text-caption2); color: var(--text-muted);
             text-align: center; line-height: 1.65; max-width: 260px;
         }
+        /* UPI links — always styled as hyperlinks; href only set on mobile */
+        .upi-link {
+            color: #0078D4; text-decoration: underline;
+            text-decoration-color: rgba(0,120,212,0.4);
+            text-underline-offset: 3px; cursor: pointer;
+            transition: color 0.18s ease, text-decoration-color 0.18s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Mobile: show tappable affordance */
+        .upi-link[href]:hover,
+        .upi-link[href]:focus-visible {
+            color: #005A9E;
+            text-decoration-color: #005A9E;
+        }
+        .upi-link[href]:active { opacity: 0.7; }
+        /* Desktop: no href — looks like a hyperlink color but non-interactive */
+        .upi-link:not([href]) { cursor: default; pointer-events: none; }
         .qr-amount-tag {
             margin-top: var(--space-3);
             display: flex; align-items: center; justify-content: space-between;
@@ -2524,13 +2541,13 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                         <div class="upi-pay-label">Pay via UPI</div>
                         <div class="upi-detail-row">
                             <span class="upi-detail-key">UPI ID</span>
-                            <span class="upi-detail-val" id="upi-id-display">prabhunandhu-2@oksbi</span>
+                            <a class="upi-detail-val upi-link" id="upi-id-link" aria-label="Pay via UPI ID prabhunandhu-2@oksbi">prabhunandhu-2@oksbi</a>
                         </div>
                         <div class="upi-detail-row">
                             <span class="upi-detail-key">Mobile</span>
-                            <span class="upi-detail-val">9042020964</span>
+                            <a class="upi-detail-val upi-link" id="upi-mobile-link" aria-label="Pay via UPI mobile number 9042020964">9042020964</a>
                         </div>
-                        <p class="upi-apps-hint">Open PhonePe, GPay, Paytm or any UPI app → Send money → Enter UPI ID or mobile number above</p>
+                        <p class="upi-apps-hint" id="upi-apps-hint">Open PhonePe, GPay, Paytm or any UPI app → Send money → Enter UPI ID or mobile number above</p>
                     </div>
                 </div>
                 <div class="qr-amount-tag zero" id="qr-amount-tag">
@@ -5020,6 +5037,61 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             // without an on/off flip if a lighter touch is wanted later.
             document.documentElement.classList.add("glass-enabled"); // ON
             // ── end glass flag ────────────────────────────────────────────
+
+            // ── UPI payment links — mobile-only deep-links ────────────────
+            // On a mobile/touch device the UPI ID and mobile number become
+            // tappable links that hand off directly to the installed UPI app
+            // (PhonePe, GPay, Paytm, etc.) using the standard upi:// scheme.
+            // On desktop the <a> elements keep their hyperlink colour styling
+            // but have no href, so they render as styled text and are not
+            // clickable (pointer-events: none via CSS guards the :not([href])
+            // selector). The amount is wired live so tapping always reflects
+            // the current cart total (falls back to 0 when cart is empty).
+            (function initUpiLinks() {
+                const idLink     = document.getElementById("upi-id-link");
+                const mobLink    = document.getElementById("upi-mobile-link");
+                const hintEl     = document.getElementById("upi-apps-hint");
+                if (!idLink || !mobLink) return;
+
+                const isMobile = CallEngine.isMobileDevice();
+
+                if (isMobile) {
+                    // Resolve the current cart total at tap-time so the amount
+                    // in the deep-link always matches what the customer owes.
+                    function buildUpiHref(pa) {
+                        let amount = 0;
+                        try {
+                            const inv = POSState.buildInvoice();
+                            amount = inv && inv.grandTotal > 0 ? inv.grandTotal : 0;
+                        } catch (_) {}
+                        const amtParam = amount > 0 ? `&am=${amount.toFixed(2)}&cu=INR` : "";
+                        const tnParam  = `&tn=${encodeURIComponent("Order " + POSState.orderId)}`;
+                        const pnParam  = `&pn=${encodeURIComponent("AMRUTHADHAARANAM")}`;
+                        return `upi://pay?pa=${encodeURIComponent(pa)}${pnParam}${amtParam}${tnParam}`;
+                    }
+
+                    // UPI ID link → upi://pay?pa=<vpa>
+                    idLink.setAttribute("href", buildUpiHref(UPI_VPA));
+                    idLink.setAttribute("rel", "noopener");
+                    // Refresh amount each time the user taps (amount may have changed)
+                    idLink.addEventListener("click", function () {
+                        this.setAttribute("href", buildUpiHref(UPI_VPA));
+                    });
+
+                    // Mobile number link → upi://pay?pa=<mobile>@upi  (generic VPA)
+                    const mobileVpa = "9042020964@upi";
+                    mobLink.setAttribute("href", buildUpiHref(mobileVpa));
+                    mobLink.setAttribute("rel", "noopener");
+                    mobLink.addEventListener("click", function () {
+                        this.setAttribute("href", buildUpiHref(mobileVpa));
+                    });
+
+                    if (hintEl) hintEl.textContent = "Tap UPI ID or mobile number above to open your UPI app instantly.";
+                }
+                // Desktop: no href set — CSS :not([href]) rule makes them non-clickable
+                // but they retain the hyperlink colour, satisfying the requirement.
+            })();
+            // ── end UPI links ─────────────────────────────────────────────
         });
 
         function escapeXML(str) {
