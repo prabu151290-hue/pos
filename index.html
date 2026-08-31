@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="regular" data-theme-mode="light" class="glass-enabled">
+<html lang="en" data-theme="berry-mousse" data-theme-mode="dark" class="glass-enabled">
 <head>
     <script>
         /* Applied synchronously, before first paint, to avoid a flash of the
@@ -9,12 +9,14 @@
         (function () {
             try {
                 var saved = localStorage.getItem("adTheme");
-                var validThemes = ["berry-mousse", "regular"];
-                var darkThemes = ["berry-mousse"];
+                var validThemes = ["berry-mousse", "aurora-glass"];
+                var darkThemes = ["berry-mousse", "aurora-glass"];
                 if (saved === "dark" || saved === "light") { saved = null; } // legacy toggle value — ignore, fall through to system pref
                 if (!saved || validThemes.indexOf(saved) === -1) {
-                    var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-                    saved = prefersDark ? "berry-mousse" : "regular";
+                    // Regular (the only light-mode flavor) has been removed —
+                    // both remaining flavors are dark, so there's no more
+                    // light/dark branch here, just a fixed fallback.
+                    saved = "berry-mousse";
                 }
                 document.documentElement.setAttribute("data-theme", saved);
                 document.documentElement.setAttribute("data-theme-mode", darkThemes.indexOf(saved) !== -1 ? "dark" : "light");
@@ -40,8 +42,8 @@
     <style>
         :root {
             /* ═══════════════════════════════════════════════════════════════
-               THEME SYSTEM — "Flavor Palette" (2 selectable themes: Regular,
-               Berry Mousse)
+               THEME SYSTEM — "Flavor Palette" (2 selectable themes: Berry
+               Mousse, Aurora)
                Apple HIG × Microsoft Fluent Design refinement pass.
                Color tokens unchanged. Structural tokens elevated:
                — Radius stepped up to Apple's iOS 17 card geometry
@@ -50,8 +52,8 @@
                — Focus ring uses 3px offset (WCAG 2.5.8 + Apple guideline)
                ═══════════════════════════════════════════════════════════════ */
 
-            /* ---- Base fallback tokens (overridden by [data-theme="regular"]
-               / [data-theme="berry-mousse"] below) ---- */
+            /* ---- Base fallback tokens (overridden by [data-theme="berry-mousse"]
+               / [data-theme="aurora-glass"] below) ---- */
             --primary: #A85C2E;
             --primary-deep: #6B3714;
             --gold-mid: #D9A03E;
@@ -159,36 +161,6 @@
             --focus-glow: rgba(194, 92, 130, 0.28);
             --focus-ring: 0 0 0 3px rgba(194, 92, 130, 0.32);
             --phone-glass-fill: rgba(36, 16, 25, 0.6);
-        }
-
-        /* ── Regular — light mode. Clean, brand-neutral pairing: Microsoft
-           Fluent blue as the primary action color against a crisp white
-           surface, with a bubblegum-pink accent for highlights/badges. A
-           calmer, corporate-friendly alternative to the food-flavor set
-           above — no warm/cocoa undertone, just blue + white + a pink pop. ── */
-        [data-theme="regular"] {
-            --primary: #0078D4;
-            --primary-deep: #005A9E;
-            --gold-mid: #FF6FB5;
-            --gold-bright: #FFA5D2;
-            --gold-deep: #E0399E;
-            --background: #F3F7FC;
-            --surface: #FFFFFF;
-            --accent: #FF6FB5;
-            --success: #16A34A;
-            --danger: #D13438;
-            --warning: #C99400;
-            --text-main: #201F1E;
-            --text-muted: #616161;
-            --border: #E1E6EC;
-            --heading-color: var(--primary);
-            --shadow:      0 1px 3px rgba(0,45,90,0.07), 0 4px 14px rgba(0,45,90,0.10);
-            --shadow-lift: 0 2px 6px rgba(0,45,90,0.08), 0 14px 34px rgba(0,45,90,0.16), 0 1px 0 rgba(255,255,255,0.6) inset;
-            --shadow-deep: 0 4px 12px rgba(0,45,90,0.10), 0 24px 48px rgba(0,45,90,0.20);
-            --emboss-raised:  0 1px 0 rgba(255,255,255,0.8) inset, 0 2px 8px rgba(0,45,90,0.08);
-            --emboss-pressed: 0 1px 0 rgba(0,0,0,0.04) inset, 0 2px 4px rgba(0,45,90,0.12) inset;
-            --focus-glow: rgba(0, 120, 212, 0.20);
-            --focus-ring: 0 0 0 3px rgba(0, 120, 212, 0.26);
         }
 
         [data-theme-mode="dark"] body {
@@ -2024,23 +1996,6 @@
    own primary are touched. Everything else (typography, radius, shadow
    system) is untouched. */
 
-/* Regular — was flat MS-blue + a disconnected pink + neutral grey UI.
-   Now: a punchier Apple system blue, a hotter pink, and a border/bg that
-   are genuinely tints of those two — this is the fix for your screenshot. */
-[data-theme="regular"] {
-    --primary: #0A84FF;
-    --primary-deep: #0055D4;
-    --gold-mid: #FF3D9A;
-    --gold-bright: #FF7AC6;
-    --gold-deep: #D6007F;
-    --background: #EEF3FF;
-    --surface: #FFFFFF;
-    --accent: #FF3D9A;
-    --border: #CFE0FF;
-    --focus-glow: rgba(10, 132, 255, 0.22);
-    --focus-ring: 0 0 0 3px rgba(10, 132, 255, 0.28);
-}
-
 /* Base fallback — border/gold pulled up in saturation so it doesn't wash
    out next to the new gem surfaces below. */
 :root {
@@ -2309,6 +2264,421 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
     .category-card { content-visibility: auto; contain-intrinsic-size: 0 480px; }
     .menu-item { content-visibility: auto; contain-intrinsic-size: 0 220px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SIGNATURE GLASS — "BEAT-APPLE" EDITION
+   ───────────────────────────────────────────────────────────────────────
+   WHY THIS GOES FURTHER THAN APPLE'S OWN MATERIAL
+   Apple's system blur (UIVisualEffectMaterial / macOS vibrancy) is a
+   *static* frosted layer: one blur radius, one saturation curve, applied
+   identically everywhere, with no reaction to the person actually looking
+   at it. Real glass and liquid never behave that way — they catch light
+   that moves. Three things below borrow from how physical glass behaves,
+   not from how any OS renders it flat:
+
+     1. GRAIN — a near-invisible noise layer over the whole canvas. Every
+        real frosted material has micro-grain; a flat CSS blur() doesn't,
+        which is why big blurred areas of solid color can look slightly
+        "plasticky" up close. One tiny page-wide texture fixes every glass
+        surface at once, for the cost of a single 1×1 compositor layer.
+     2. TWO-TONE BEVEL EDGE — real cut glass catches a bright highlight on
+        the edge facing the light and a soft shadow on the edge away from
+        it. Every major panel below gets that as four independently-toned
+        border sides instead of one flat border color — cheap (no new
+        paint layer, just border-*-color) and it reads as a genuine bevel
+        rather than a drawn outline.
+     3. CURSOR-REACTIVE SPECULAR HIGHLIGHT — the biggest departure from
+        Apple's static material. A soft light glints across category
+        cards, menu-item cards, the sidebar, and the search box as the
+        pointer moves over them (via --sx/--sy custom properties a small
+        script updates on pointermove, rAF-throttled). This is the "liquid
+        glass" behavior visionOS demos in 3D space — approximated here in
+        a 2D web page. It's additive to every existing background/shadow
+        rule (full values are restated below, not just the new layer, so
+        nothing upstream is silently lost), gated behind the same
+        `hover: hover` + `pointer: fine` check the script uses, so touch
+        devices simply keep today's static bloom — no regression, no
+        wasted battery on phones.
+
+   Everything here reads var(--glass-blur) / var(--glass-intensity), so it
+   automatically turns off exactly where the existing mobile-performance
+   pass already zeroes those tokens — no separate mobile override needed.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. GRAIN — one page-wide texture, not per-card ─────────────────── */
+body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 140px 140px;
+}
+[data-theme-mode="dark"] body::before { opacity: 0.07; mix-blend-mode: soft-light; }
+@media (max-width: 768px) { body::before { display: none; } }
+
+/* ── 2. TWO-TONE BEVEL EDGE — light source from the top-left, matching
+   the corner-gloss-bloom every card already uses. Independent of
+   box-shadow/background, so it layers over whatever those already do. ── */
+.category-card,
+html.glass-enabled .menu-item,
+html.glass-enabled .sidebar,
+html.glass-enabled .search-input,
+html.glass-enabled .modal-box,
+html.glass-enabled .theme-picker-panel,
+.pill {
+    border-top-color: color-mix(in srgb, white 55%, var(--border) 45%) !important;
+    border-left-color: color-mix(in srgb, white 42%, var(--border) 58%) !important;
+    border-bottom-color: color-mix(in srgb, black 14%, var(--border) 86%) !important;
+    border-right-color: color-mix(in srgb, black 9%, var(--border) 91%) !important;
+}
+[data-theme-mode="dark"] .category-card,
+html.glass-enabled[data-theme-mode="dark"] .menu-item,
+html.glass-enabled[data-theme-mode="dark"] .sidebar,
+html.glass-enabled[data-theme-mode="dark"] .search-input,
+html.glass-enabled[data-theme-mode="dark"] .modal-box,
+html.glass-enabled[data-theme-mode="dark"] .theme-picker-panel,
+[data-theme-mode="dark"] .pill {
+    border-top-color: color-mix(in srgb, var(--gold-bright) 40%, var(--border) 60%) !important;
+    border-left-color: color-mix(in srgb, var(--gold-bright) 26%, var(--border) 74%) !important;
+    border-bottom-color: color-mix(in srgb, black 45%, var(--border) 55%) !important;
+    border-right-color: color-mix(in srgb, black 32%, var(--border) 68%) !important;
+}
+
+/* ── 3. CRISPER GLASS RECIPE — a touch more contrast/brightness than a
+   plain blur+saturate so panels stay legible and vivid instead of
+   reading "milky," the usual tell of an over-blurred glass panel. ──── */
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    html.glass-enabled .sidebar,
+    html.glass-enabled .search-input,
+    html.glass-enabled .modal-box,
+    html.glass-enabled .theme-picker-panel,
+    html.glass-enabled .menu-item,
+    .category-card {
+        -webkit-backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.8) contrast(1.06) brightness(1.02);
+        backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.8) contrast(1.06) brightness(1.02);
+    }
+}
+
+/* ── 4. CURSOR-REACTIVE SPECULAR HIGHLIGHT ────────────────────────────
+   --sx/--sy are percentages a small script sets on pointermove (see the
+   script block near the end of <body>); they default to the same
+   top-left glint every card already shows at rest, so nothing changes
+   for touch devices or before the first pointer move. Each rule below
+   restates that element's FULL existing background so the new radial
+   layer sits on top without discarding the gradient already there. ── */
+.category-card {
+    --sx: 20%; --sy: 15%;
+    background:
+        radial-gradient(260px circle at var(--sx) var(--sy), rgba(255,255,255,0.30), transparent 60%),
+        linear-gradient(155deg,
+            color-mix(in srgb, var(--card-accent-themed) 48%, var(--surface) 52%) 0%,
+            color-mix(in srgb, var(--card-accent-themed) 82%, var(--surface) 18%) 45%,
+            color-mix(in srgb, var(--card-accent-themed) 65%, var(--primary-deep) 35%) 100%
+        );
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    html.glass-enabled .menu-item {
+        --sx: 20%; --sy: 10%;
+        background:
+            radial-gradient(220px circle at var(--sx) var(--sy),
+                color-mix(in srgb, var(--card-accent-themed, var(--card-accent, var(--primary))) 30%, white 70%),
+                transparent 62%),
+            color-mix(in srgb, var(--surface) 78%, transparent);
+    }
+    html.glass-enabled .sidebar {
+        --sx: 50%; --sy: 0%;
+        background:
+            radial-gradient(360px circle at var(--sx) var(--sy), rgba(255,255,255,0.10), transparent 65%),
+            color-mix(in srgb, var(--surface) 72%, transparent);
+    }
+    html.glass-enabled .search-input:not(:focus) {
+        --sx: 15%; --sy: 0%;
+        background:
+            radial-gradient(180px circle at var(--sx) var(--sy), rgba(255,255,255,0.28), transparent 60%),
+            color-mix(in srgb, var(--surface) 66%, transparent);
+    }
+}
+@media (max-width: 768px) {
+    /* Cursor tracking is a mouse-only wow moment (see the script's own
+       pointer:fine gate); on touch, drop straight back to the plain
+       tinted fallback the existing mobile-performance pass already uses,
+       rather than paying for a radial-gradient layer that never moves. */
+    html.glass-enabled .menu-item { background: color-mix(in srgb, var(--surface) 92%, transparent) !important; }
+    .category-card { background: linear-gradient(155deg, color-mix(in srgb, var(--card-accent-themed) 48%, var(--surface) 52%) 0%, color-mix(in srgb, var(--card-accent-themed) 82%, var(--surface) 18%) 45%, color-mix(in srgb, var(--card-accent-themed) 65%, var(--primary-deep) 35%) 100%) !important; }
+}
+
+/* ── 5. SPRING-LOADED PRESS FEEDBACK — Apple's own material barely
+   compresses on tap; a slightly more physical press (scale down + inset
+   shadow deepens) reads as more "alive" glass without adding motion that
+   prefers-reduced-motion would need to strip out (it's a tap-duration
+   micro-transform, not a running animation). ─────────────────────────── */
+.btn-primary:active, .pill:active, .qty-btn:active, .mode-tab:active {
+    transform: scale(0.96);
+    filter: brightness(0.97);
+    transition: transform 0.08s ease, filter 0.08s ease;
+}
+.menu-item:active { transform: translateY(-1px) scale(0.99); }
+@media (prefers-reduced-motion: reduce) {
+    .btn-primary:active, .pill:active, .qty-btn:active, .mode-tab:active, .menu-item:active { transform: none; }
+}
+/* ═══════════════════════════════════════════════════════════════════════
+   AURORA GLASS — a third flavor, layered on top of everything above
+   without touching Berry Mousse. Five principles:
+     1. Chromatic depth   — 5 stacked radial gradients + drifting orbs
+     2. Per-surface tint  — each glass panel absorbs its own hue
+     3. Triple-layer inset — top highlight / bottom shade / diagonal sheen
+     4. Gradient type     — purple → blue → green on key numbers/headings
+     5. Staggered entrance — panels assemble in on load, not just on hover
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-theme="aurora-glass"] {
+    --primary: #8B5CF6;
+    --primary-deep: #4C1D95;
+    --gold-mid: #22D3EE;      /* reused slot → drives .glass-orb--b */
+    --gold-bright: #67E8F9;
+    --gold-deep: #0E7490;
+    --background: #0B0A16;
+    --surface: #171532;
+    --accent: #F472B6;        /* reused slot → drives .glass-orb--c */
+    --success: #34D399;
+    --danger: #FB7185;
+    --warning: #FBBF24;
+    --text-main: #EDEBFF;
+    --text-muted: #A79FD1;
+    --border: #322C5C;
+    --heading-color: var(--primary);
+    --focus-glow: rgba(139, 92, 246, 0.28);
+    --focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.35);
+
+    /* five named hues, kept distinct from --primary/--accent above so
+       each surface below can claim its own identity rather than all
+       converging on violet */
+    --aurora-violet: #8B5CF6;
+    --aurora-cyan: #22D3EE;
+    --aurora-pink: #F472B6;
+    --aurora-green: #34D399;
+    --aurora-blue: #60A5FA;
+}
+
+/* ── 1. Chromatic depth — five radial auroras stacked behind the page,
+   plus the existing three .glass-orb blobs (already themed via
+   --primary/--gold-mid/--accent above) breathing on top of them. ──── */
+[data-theme="aurora-glass"] body {
+    background-color: var(--background);
+    background-attachment: fixed;
+    background-image:
+        radial-gradient(ellipse 55% 45% at 8% 6%,   color-mix(in srgb, var(--aurora-violet) 55%, transparent) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 42% at 92% 14%, color-mix(in srgb, var(--aurora-cyan) 48%, transparent) 0%, transparent 60%),
+        radial-gradient(ellipse 48% 44% at 88% 92%, color-mix(in srgb, var(--aurora-pink) 45%, transparent) 0%, transparent 60%),
+        radial-gradient(ellipse 52% 46% at 6% 94%,  color-mix(in srgb, var(--aurora-green) 40%, transparent) 0%, transparent 62%),
+        radial-gradient(ellipse 60% 55% at 50% 50%, color-mix(in srgb, var(--aurora-blue) 22%, transparent) 0%, transparent 70%);
+}
+[data-theme="aurora-glass"] html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
+[data-theme="aurora-glass"] .glass-orb--a { opacity: 0.5; }
+[data-theme="aurora-glass"] .glass-orb--b { opacity: 0.42; }
+[data-theme="aurora-glass"] .glass-orb--c { opacity: 0.38; }
+@keyframes auroraDrift4 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-4vw, 5vw) scale(1.06); } }
+
+/* ── 2 + 3. Per-surface tinting + triple-layer inset shading, applied to
+   the panels category-card doesn't already cover: the order sidebar
+   (violet), the search field (cyan), and any open modal (pink). Each
+   gets: a bright top-edge inset (the light catching the glass' upper
+   rim), a dark bottom-edge inset (the glass' own shadowed underside),
+   and a diagonal ::before sheen standing in for refracted light. ──── */
+[data-theme="aurora-glass"] html.glass-enabled .sidebar,
+[data-theme="aurora-glass"] html.glass-enabled .search-input,
+[data-theme="aurora-glass"] html.glass-enabled .modal-box {
+    position: relative;
+    isolation: isolate;
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.18) inset,
+        0 -1px 0 rgba(0,0,0,0.35) inset,
+        var(--shadow-lift);
+}
+[data-theme="aurora-glass"] html.glass-enabled .sidebar {
+    background: color-mix(in srgb, var(--aurora-violet) 16%, var(--surface) 84%) !important;
+    border-color: color-mix(in srgb, var(--aurora-violet) 45%, var(--border)) !important;
+}
+[data-theme="aurora-glass"] html.glass-enabled .search-input {
+    background: color-mix(in srgb, var(--aurora-cyan) 14%, var(--surface) 86%) !important;
+    border-color: color-mix(in srgb, var(--aurora-cyan) 45%, var(--border)) !important;
+}
+[data-theme="aurora-glass"] html.glass-enabled .modal-box {
+    background: color-mix(in srgb, var(--aurora-pink) 14%, var(--surface) 86%) !important;
+    border-color: color-mix(in srgb, var(--aurora-pink) 45%, var(--border)) !important;
+}
+[data-theme="aurora-glass"] html.glass-enabled .sidebar::before,
+[data-theme="aurora-glass"] html.glass-enabled .search-input::before,
+[data-theme="aurora-glass"] html.glass-enabled .modal-box::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.16) 0%, transparent 42%);
+    pointer-events: none;
+    z-index: 1;
+}
+/* Menu items pick up a faint green cast — "fresh" reads as the food
+   surface's own identity, distinct from the violet sidebar around it. */
+[data-theme="aurora-glass"] html.glass-enabled .menu-item {
+    background: color-mix(in srgb, var(--aurora-green) 8%, var(--surface) 92%) !important;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.14) inset, 0 -1px 0 rgba(0,0,0,0.3) inset, var(--shadow);
+}
+/* category-card already carries its own hue via --card-accent-themed
+   (see section 1 above) and already has a triple-layer inset — this
+   just lifts its edge highlight to Aurora's brighter glass level. */
+[data-theme="aurora-glass"] .category-card {
+    box-shadow:
+        inset 1.5px 1.5px 0 rgba(255,255,255,0.30),
+        inset -1px -2px 6px rgba(0,0,0,0.35),
+        0 1px 3px rgba(0,0,0,0.25),
+        0 10px 26px color-mix(in srgb, var(--card-accent-themed) 30%, transparent);
+}
+
+/* ── 4. Gradient typography — purple → blue → green, reserved for the
+   header title and the numbers that matter: the grand total and the
+   QR payment amount. ─────────────────────────────────────────────── */
+[data-theme="aurora-glass"] .header-center h1,
+[data-theme="aurora-glass"] .totals-table tr.grand-total td,
+[data-theme="aurora-glass"] .qr-amount-value {
+    background: linear-gradient(90deg, var(--aurora-violet) 0%, var(--aurora-blue) 50%, var(--aurora-green) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: none;
+}
+[data-theme="aurora-glass"] .totals-table tr.grand-total { border-top-color: color-mix(in srgb, var(--aurora-blue) 60%, var(--border)); }
+
+/* ── 5. Staggered entrance — category cards and menu items assemble in
+   on load rather than simply appearing, each a beat behind the last. ─ */
+@keyframes auroraAssemble {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+[data-theme="aurora-glass"] .category-card,
+[data-theme="aurora-glass"] .menu-item {
+    animation: auroraAssemble 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+[data-theme="aurora-glass"] .category-card:nth-of-type(1)  { animation-delay: 0.03s; }
+[data-theme="aurora-glass"] .category-card:nth-of-type(2)  { animation-delay: 0.08s; }
+[data-theme="aurora-glass"] .category-card:nth-of-type(3)  { animation-delay: 0.13s; }
+[data-theme="aurora-glass"] .category-card:nth-of-type(4)  { animation-delay: 0.18s; }
+[data-theme="aurora-glass"] .category-card:nth-of-type(5)  { animation-delay: 0.23s; }
+[data-theme="aurora-glass"] .category-card:nth-of-type(n+6) { animation-delay: 0.26s; }
+[data-theme="aurora-glass"] .menu-item:nth-of-type(1)  { animation-delay: 0.04s; }
+[data-theme="aurora-glass"] .menu-item:nth-of-type(2)  { animation-delay: 0.08s; }
+[data-theme="aurora-glass"] .menu-item:nth-of-type(3)  { animation-delay: 0.12s; }
+[data-theme="aurora-glass"] .menu-item:nth-of-type(4)  { animation-delay: 0.16s; }
+[data-theme="aurora-glass"] .menu-item:nth-of-type(5)  { animation-delay: 0.20s; }
+[data-theme="aurora-glass"] .menu-item:nth-of-type(n+6) { animation-delay: 0.22s; }
+/* A row of applied-discount also "sweeps in" — a thin gradient fill
+   that draws left-to-right, the same intent as a progress bar filling. */
+[data-theme="aurora-glass"] .totals-table tr.row-discount.visible td {
+    position: relative;
+    animation: auroraAssemble 0.4s ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+    [data-theme="aurora-glass"] .category-card,
+    [data-theme="aurora-glass"] .menu-item,
+    [data-theme="aurora-glass"] .totals-table tr.row-discount.visible td {
+        animation: none;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   AURORA GLASS — GLARE TRIM
+   ───────────────────────────────────────────────────────────────────────
+   At full strength the five stacked auroras, the orb layer, the cursor
+   specular glint, and the global "crisper glass" saturate/contrast/
+   brightness boost all compound on top of each other — reads as
+   blinding/overexposed rather than premium. Everything below re-declares
+   the same selectors (source order wins the tie), just turned down to a
+   comfortable viewing level. Identity (five hues, layered glass, gradient
+   type) is untouched — only intensity changes. ═══════════════════════ */
+
+/* 1. Background auroras — halved opacity so the page reads as a soft
+   glow behind the glass instead of five competing spotlights. */
+[data-theme="aurora-glass"] body {
+    background-image:
+        radial-gradient(ellipse 55% 45% at 8% 6%,   color-mix(in srgb, var(--aurora-violet) 28%, transparent) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 42% at 92% 14%, color-mix(in srgb, var(--aurora-cyan) 24%, transparent) 0%, transparent 60%),
+        radial-gradient(ellipse 48% 44% at 88% 92%, color-mix(in srgb, var(--aurora-pink) 22%, transparent) 0%, transparent 60%),
+        radial-gradient(ellipse 52% 46% at 6% 94%,  color-mix(in srgb, var(--aurora-green) 18%, transparent) 0%, transparent 62%),
+        radial-gradient(ellipse 60% 55% at 50% 50%, color-mix(in srgb, var(--aurora-blue) 10%, transparent) 0%, transparent 70%);
+}
+
+/* 2. Drifting orbs — same drift, dimmer light. */
+[data-theme="aurora-glass"] html.glass-enabled .glass-orbs { opacity: calc(0.55 * var(--glass-intensity)); }
+[data-theme="aurora-glass"] .glass-orb--a { opacity: 0.26; }
+[data-theme="aurora-glass"] .glass-orb--b { opacity: 0.20; }
+[data-theme="aurora-glass"] .glass-orb--c { opacity: 0.18; }
+
+/* 3. Crisper-glass recipe, re-tuned for Aurora specifically — the
+   page-wide saturate(1.8)/contrast(1.06)/brightness(1.02) boost was
+   written for calmer palettes; against Aurora's already-vivid hues it
+   pushes panels into overexposed territory, so Aurora gets a gentler
+   version instead. */
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    [data-theme="aurora-glass"] html.glass-enabled .sidebar,
+    [data-theme="aurora-glass"] html.glass-enabled .search-input,
+    [data-theme="aurora-glass"] html.glass-enabled .modal-box,
+    [data-theme="aurora-glass"] html.glass-enabled .menu-item,
+    [data-theme="aurora-glass"] .category-card {
+        -webkit-backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.25) contrast(1.0) brightness(1.0);
+        backdrop-filter: blur(calc(var(--glass-blur) * var(--glass-intensity))) saturate(1.25) contrast(1.0) brightness(1.0);
+    }
+}
+
+/* 4. Panel sheen + edge insets — the diagonal refraction sheen and the
+   bright top-edge inset were tuned for a neutral background; on Aurora's
+   own colored tint they read as a hot white flare, so both come down. */
+[data-theme="aurora-glass"] html.glass-enabled .sidebar,
+[data-theme="aurora-glass"] html.glass-enabled .search-input,
+[data-theme="aurora-glass"] html.glass-enabled .modal-box {
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.10) inset,
+        0 -1px 0 rgba(0,0,0,0.30) inset,
+        var(--shadow-lift);
+}
+[data-theme="aurora-glass"] html.glass-enabled .sidebar::before,
+[data-theme="aurora-glass"] html.glass-enabled .search-input::before,
+[data-theme="aurora-glass"] html.glass-enabled .modal-box::before {
+    background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 42%);
+}
+
+/* 5. Category card — softer inset bevel. The cursor-reactive white glint
+   (inherited from the shared "signature glass" rules) is switched off
+   entirely for Aurora: no radial-gradient glint layer, no --sx/--sy
+   tracking, just the flat themed panel gradient at rest and on hover. */
+[data-theme="aurora-glass"] .category-card {
+    background:
+        linear-gradient(155deg,
+            color-mix(in srgb, var(--card-accent-themed) 48%, var(--surface) 52%) 0%,
+            color-mix(in srgb, var(--card-accent-themed) 82%, var(--surface) 18%) 45%,
+            color-mix(in srgb, var(--card-accent-themed) 65%, var(--primary-deep) 35%) 100%
+        );
+    box-shadow:
+        0 1px 3px rgba(0,0,0,0.22),
+        0 10px 26px color-mix(in srgb, var(--card-accent-themed) 18%, transparent);
+}
+/* Same flat, solid look on hover — no bright white inset highlight. */
+[data-theme="aurora-glass"] .category-card:hover {
+    box-shadow:
+        0 2px 5px rgba(0,0,0,0.20),
+        0 16px 32px color-mix(in srgb, var(--card-accent-themed) 30%, transparent),
+        0 4px 8px rgba(0,0,0,0.18);
+}
+/* The corner gloss bloom and the diagonal specular sweep (the two other
+   white-highlight effects inherited from the shared card styling) are
+   switched off for Aurora too, so the card reads as a flat solid panel
+   in every state instead of a glossy/bright one. */
+[data-theme="aurora-glass"] .category-card::before,
+[data-theme="aurora-glass"] .category-card::after {
+    display: none;
+}
+@media (max-width: 768px) {
+    [data-theme="aurora-glass"] .category-card {
+        background: linear-gradient(155deg, color-mix(in srgb, var(--card-accent-themed) 48%, var(--surface) 52%) 0%, color-mix(in srgb, var(--card-accent-themed) 82%, var(--surface) 18%) 45%, color-mix(in srgb, var(--card-accent-themed) 65%, var(--primary-deep) 35%) 100%) !important;
+    }
+}
+/* ═══════════════════════════════════════════════════════════════════════ */
     </style>
 </head>
 <body>
@@ -2371,6 +2741,25 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 </div>
             </section>
 
+            <!-- Flat-price notice banner -->
+            <div style="
+                background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
+                border: 1.5px solid #ffcc02;
+                border-radius: 16px;
+                padding: 14px 20px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                box-shadow: 0 2px 10px rgba(255,180,0,0.12);
+            " role="note" aria-label="Flat pricing notice">
+                <span style="font-size:1.9rem;line-height:1;flex-shrink:0;">🏷️</span>
+                <div>
+                    <strong style="font-size:1.05rem;color:#7a4a00;display:block;margin-bottom:2px;">Simple Flat Pricing — ₹99 per item</strong>
+                    <span style="font-size:0.9rem;color:#a06000;line-height:1.45;">Every item on our menu is priced at a flat <strong>₹99</strong> per piece — regardless of which item you choose. Pick your favourites and the total is simply <strong>₹99 × quantity</strong>. No complicated pricing, just great food!</span>
+                </div>
+            </div>
+
             <div class="mode-tabs" id="mode-tabs" role="group" aria-label="Ordering mode">
                 <button type="button" class="mode-tab active" data-mode="Instant" aria-pressed="true">
                     <span>⚡ Today's Order Menu</span>
@@ -2397,7 +2786,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 <div class="theme-picker" id="theme-picker">
                     <button id="btn-theme" class="theme-picker-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="theme-picker-panel" aria-label="Change theme">
                         <span class="tp-swatch-dot" aria-hidden="true"></span>
-                        <span id="theme-label">Regular</span>
+                        <span id="theme-label">Berry Mousse</span>
                         <span class="tp-chevron" aria-hidden="true">▾</span>
                     </button>
                     <div class="theme-picker-panel" id="theme-picker-panel" role="menu" aria-label="Choose a theme">
@@ -2508,7 +2897,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                         <td class="text-right" id="summary-total-qty">0</td>
                     </tr>
                     <tr>
-                        <td>Subtotal</td>
+                        <td>Subtotal <span style="font-size:0.78em;color:var(--text-muted);">(₹99 × qty)</span></td>
                         <td class="text-right" id="summary-subtotal">₹0.00</td>
                     </tr>
                     <tr class="row-discount" id="row-discount">
@@ -2638,7 +3027,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             <thead>
                 <tr>
                     <th>Item Description</th>
-                    <th class="text-right" style="width:15mm;">Qty x Price</th>
+                    <th class="text-right" style="width:18mm;">Qty × ₹99</th>
                     <th class="text-right" style="width:15mm;">Amt</th>
                 </tr>
             </thead>
@@ -2672,8 +3061,8 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
         const ANNOUNCEMENT = {
             enabled: true,
             type: "offer",
-            icon: "🎉",
-            text: "Announcement: <strong>Introducing Mac & Cheese Pasta with fresh olives and jalapenos . Order now! </strong> !",
+            icon: "🏷️",
+            text: "🎉 <strong>Flat ₹99 per item!</strong> — Every item on our menu is priced at a simple, flat ₹99 per piece. No surprises, just great food!",
             blink: true
         };
 
@@ -2778,11 +3167,9 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
         const MENU_DATA_BY_MODE = {
 
         Instant: [
-                  { id: "ds1", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti 5 pcs", price: 125 },
-                  { id: "ds2", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Gravy of the Day 250ml", price: 100 },             
-                  { id: "ds3", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti (1 pc)", price: 25 },
-                  { id: "ds4", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Plain Roti (1 pc)", price: 20 },
-                  { id: "ds5", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Plain Roti (5pcs)", price: 99 },
+                  { id: "ds1", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti 4 pcs", price: 99 },
+                  { id: "ds2", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Gravy of the Day 250ml", price: 99 },             
+                  { id: "ds3", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Plain Roti 5pcs", price: 99 },
               //    { id: "ds6", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Gravy of the day 500ml OFFER PACK(Free 2 butter roti's) ", price: 199 },
               //  { id: "ds7", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Plain Roti (5pcs)", price: 99 },
             
@@ -2812,48 +3199,37 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
      //       { id: "sp11", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Nutella Banana Sandwich(Worth 149)", price: 99 },
      //       { id: "sp12", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Extra Cheese (Add-On)", price: 20 },
             
-            { id: "m1", category: "Maggi", title: "🍜 Maggi Corner", name: "Plain Maggi", price: 50 },
-            { id: "m2", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Maggi", price: 60 },
-            { id: "m3", category: "Maggi", title: "🍜 Maggi Corner", name: "Butter Maggi", price: 60 },
-            { id: "m4", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Butter Maggi", price: 60 },
-            { id: "m5", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Cheese Maggi", price: 70 },
-            { id: "m6", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Paneer Cheese Maggi", price: 75 },
-            { id: "m7", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Cheese Butter Maggi", price: 80 },
-            { id: "m8", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Cheese Butter Paneer Maggi", price: 99, popular: true },
-            { id: "m9", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Hakka Noodles", price: 149 },
-            { id: "m9", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Hakka Noodles", price: 149 },
-            
+            { id: "m1", category: "Maggi", title: "🍜 Maggi Corner", name: "Plain Maggi 500ml box", price: 99 },
+            { id: "m2", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Maggi 500ml box", price: 99 },
+            { id: "m3", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Strong Cheese Maggi with olives and jalapenos 250ml box", price: 99 },
        //     { id: "m10", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Cheese Butter Maggi", price: 80 },
             
-            { id: "p1", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Cheesy Corn Penne Pasta", price: 149, popular: true },
-            { id: "p2", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Veg Fusilli Pasta", price: 149 },
-            { id: "p3", category: "Pasta", title: "🍝 Pasta Corner", name: "Veggy Sweet Spice Red Sauce Shell Pasta", price: 149 },
-            { id: "p4", category: "Pasta", title: "🍝 Pasta Corner", name: "Masala Macaroni Pasta", price: 149 },
-            { id: "p5", category: "Pasta", title: "🍝 Pasta Corner", name: "Mac & Cheese with Cheese layer on top Pasta", price: 149 },
+            { id: "p1", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Cheesy Corn Penne Pasta", price: 99, popular: true },
+            { id: "p2", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Veg Fusilli Pasta", price: 99 },
+            { id: "p3", category: "Pasta", title: "🍝 Pasta Corner", name: "Veggy Sweet Spice Red Sauce Shell Pasta", price: 99 },
+            { id: "p4", category: "Pasta", title: "🍝 Pasta Corner", name: "Masala Macaroni Pasta", price: 99 },
+            { id: "p5", category: "Pasta", title: "🍝 Pasta Corner", name: "Mac & Cheese with Cheese layer on top Pasta", price: 99 },
           //  { id: "p5", category: "Pasta", title: "🍝 Pasta Corner", name: "Cold Pasta (by choice of your pasta) Salad with Olives Jalapenos Paneer Tomato Onion Capsicum Cheese mayonaise tossed with olive oil and fresh lemon juice", price: 199 },
-            { id: "p6", category: "Pasta", title: "🍝 Pasta Corner", name: "Extra one Cheese Slice", price: 20 },
-           
 
-            { id: "j1", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Watermelon Mint Cooler 250ml", price: 60 },
-            { id: "j2", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Watermelon Juice 250ml", price: 60 },
-            { id: "j3", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Lemon Mint Cooler 250ml", price: 60 },
-            { id: "j4", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Sabja Mint Lime Juice", price: 75 },
-            { id: "j5", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Original & Natural Mint Mojito 500ml", price: 120, popular: true },
+            { id: "j1", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Watermelon Mint Cooler 500ml", price: 99 },
+            { id: "j2", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Watermelon Juice 500ml", price: 99 },
+            { id: "j3", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Lemon Mint Cooler 500ml", price: 99 },
+            { id: "j4", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Sabja Mint Lime Juice 500ml", price: 99 },
+            { id: "j5", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Original & Natural Mint Mojito 500ml", price: 99, popular: true },
 
-            { id: "d1", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Lassi", price: 99 },
-            { id: "d2", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Regular Rosemilk", price: 99 },
-            { id: "d3", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Sabja Rosemilk", price: 99 },
-           // { id: "d4", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Royal Vanilla Rosemilk", price: 99 },
-            { id: "d5", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Banana Milkshake", price: 99 },
-            { id: "d6", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Choco Banana Milkshake", price: 99, popular: true },
-            { id: "d7", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Starwberry Banana Milkshake", price: 99, popular: true },
-            { id: "d8", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Fresh Coconut Milk (1 Ltr)", price: 125 },
+            { id: "d1", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Lassi 500ml", price: 99 },
+            { id: "d2", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Regular Rosemilk 500ml", price: 99 },
+            { id: "d3", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Sabja Rosemilk 500ml", price: 99 },
+            { id: "d5", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Banana Milkshake 500ml", price: 99 },
+            { id: "d6", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Choco Banana Milkshake 500ml", price: 99, popular: true },
+            { id: "d7", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Strawberry Banana Milkshake 250ml", price: 99, popular: true },
+          //  { id: "d8", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Fresh Coconut Milk (1 Ltr)", price: 125 },
             
         //     { id: "co1", category: "Combos", title: "🎁 Combos & Offers", name: "BUY 2 sets Premium Biscoff Cheese Butter grilled sandwich worth 350:", price: 150 },
 
-              { id: "wf1", category: "Waffle Sandwich", title: "🧇 Waffle Sandwich Corner", name: "Vannila Waffle Sandwich with choclate and sprinkles Worth 180 NOW AT OFFER ", price: 99 },
-              { id: "wf2", category: "Waffle Sandwich", title: "🧇 Waffle Sandwich Corner", name: "Vannila Waffle Sandwich with Bubble Gum and sprinkles Worth 180 NOW AT OFFER ", price: 99 },
-              { id: "wf3", category: "Waffle Sandwich", title: "🧇 Waffle Sandwich Corner", name: "Vannila Waffle Sandwich with Redvelvette and Cheese Worth 180 NOW AT OFFER ", price: 99 },
+              { id: "wf1", category: "Waffle Sandwich", title: "🧇 Waffle Sandwich Corner", name: "Vanilla Waffle Sandwich with Chocolate & Sprinkles", price: 99 },
+              { id: "wf2", category: "Waffle Sandwich", title: "🧇 Waffle Sandwich Corner", name: "Vanilla Waffle Sandwich with Bubble Gum & Sprinkles", price: 99 },
+              { id: "wf3", category: "Waffle Sandwich", title: "🧇 Waffle Sandwich Corner", name: "Vanilla Waffle Sandwich with Red Velvet & Cheese", price: 99 },
               
       //       { id: "X1", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Spicy Veg chunks Butter Grilled Sandwich", price: 149 },
       //       { id: "X2", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Spicy Veg chunks with Fresh Paneer and Oregano and Basil sprinkled Butter grilled Sandwich", price: 149 },
@@ -2861,77 +3237,20 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
       //       { id: "X4", category: "Xtra Delights", title: "✨ Xtra Delight Specials", name: "TRIPLE CHEESE Double layererd Hot Redchilli paste marinated Fresh Corn and Paneer with Italian Herbs Butter Grilled Sandwich", price: 149 },
        //     { id: "X5", category: "Xtra Delights", title: "Xtra Delight Specials", name: "DOUBLE CHEESE TRIPLE layererd Corn Tomato Jalepinos Black olives Capsicum with American mustard sauce Butter Grilled Sandwich", price: 75 },
 
-             { id: "w1", category: "Wraps", title: "🌯 Wraps", name: "Spicy Veggies Wrap", price: 149 },
-             { id: "w2", category: "Wraps", title: "🌯 Wraps", name: "Veg Spicy Paneer Wrap", price: 149 },
-             { id: "w3", category: "Wraps", title: "🌯 Wraps", name: "Veg Wrap with Aloo patty and Paneer", price: 175 } ,
-             { id: "w4", category: "Wraps", title: "🌯 Wraps", name: "Wrap with raw veggies(Lettuce olives capsicum onion cucumber jalapenos) mixed with Extra virgin olive oil Himalayan salt and lemon juice", price: 149 },
-
-            { id: "cs1", category: "Cold Salads", title: "🥗 Cold Salads", name: "fusili creamy pasta with capsicum, cucumber, corn, olives, jalepenos, onions mixed with olive oil (500ml box) added with compliment of 2pcs Butter and olive oil Grilled Bread", price: 175 },
+             { id: "w1", category: "Wraps", title: "🌯 Wraps", name: "Spicy Veggies Wrap", price: 99 },
+             { id: "w2", category: "Wraps", title: "🌯 Wraps", name: "Veg Spicy Paneer Wrap", price: 99 },
+            // { id: "w3", category: "Wraps", title: "🌯 Wraps", name: "Veg Wrap with Aloo patty", price: 99 } ,
+             { id: "w3", category: "Wraps", title: "🌯 Wraps", name: "Wrap with raw veggies(Lettuce olives capsicum onion cucumber jalapenos) mixed with Extra virgin olive oil Himalayan salt and lemon juice", price: 99 },
+             { id: "w4", category: "Wraps", title: "🌯 Wraps", name: "Desi Indian Veg Paneer wrap", price: 99 } ,
+             
+            { id: "cs1", category: "Cold Salads", title: "🥗 Cold Salads", name: "fusili creamy pasta with capsicum, cucumber, corn, olives, jalepenos, onions mixed with olive oil (500ml box) added with compliment of 2pcs Butter and olive oil Grilled Bread", price: 99 },
 
             { id: "sn1", category: "Snacks Special", title: "😋 Evening Snack Special", name: "Aloo Tikki 2 pcs with Sauce & Mayonnaise", price: 99 },
-            { id: "sn1", category: "Snacks Special", title: "😋 Evening Snack Special", name: "FRUIT SALAD WITH FRESH CREAM & BROWN SUGAR SPRINKLED & dropped with strawberry choclate sauces", price: 129 },            
+           // { id: "sn1", category: "Snacks Special", title: "😋 Evening Snack Special", name: "Fruit Salad with Fresh Cream, Brown Sugar & Strawberry Chocolate Sauce", price: 99 },            
         ],
 
         Subscription: [
-                { id: "sub-ds1", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti 3pcs with 200ml gravy", price: 125 },
-                { id: "sub-ds2", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Thaalicha Special Curdrice 250ml", price: 80 },
-
-      //      { id: "sub-s1", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Bombay Raw Veg Green Chutney Sandwich", price: 99 },
-      //      { id: "sub-s2", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Onion, Tomato & Cucumber with Green Chutney", price: 75 },
-      //      { id: "sub-s3", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Minced Veg Spicy Paneer with Butter Grilled Sandwich", price: 99 },
-      //      { id: "sub-s4", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Bread Butter Jam", price: 75 },
-      //      { id: "sub-s5", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Chilli Cheese Sandwich", price: 75 },
-      //      { id: "sub-s6", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Veg Mayo Sandwich", price: 75 },
-      //      { id: "sub-s7", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Corn Cheese Sandwich", price: 75 },
-      //      { id: "sub-s8", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Cucumber Cheese Sandwich", price: 75 },
-      //      { id: "sub-s9", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Paneer Corn cheese sandwich", price: 149 },
-      //      { id: "sub-s10", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple layer corn cheese sandwich with italian herbs", price: 120 },
-      //       { id: "sub-s11", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Extra Cheese (Add-On)", price: 20 },
-
-       //     { id: "sub-sp1", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled MilkChocolate Strawberry Sandwich(Worth 175) ", price: 75 },
-       //     { id: "sub-sp2", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Deadly Chocolate with Cheese Sandwich(Worth 175)", price: 75 },
-       //     { id: "sub-sp3", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Choclate Coffee Sandwich(Worth 175)", price: 75 },
-       //     { id: "sub-sp4", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Caramel Coffee choclate Sandwich(Worth 175)", price: 75 },
-       //     { id: "sub-sp5", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Redvelvet Cheese Sandwich(Worth 175)", price: 75 },
-       //     { id: "sub-sp6", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Strawberry White Choclate Sandwich(Worth 175)", price: 75 },
-       //     { id: "sub-sp7", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Crunchy Hazelnut Sandwich(Worth 175)", price: 75 },
-       //     { id: "sub-sp8", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Cheesy Biscoff Sandwich(Worth 175)", price: 75 },
-       //     { id: "sub-sp9", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Cheesy Strawberry Sandwich (Worth 175)", price: 75 },
-       //     { id: "sub-sp10", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Nutella Sandwich", price: 99, popular: true },
-       //     { id: "sub-sp11", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Nutella Banana Sandwich(Worth 149)", price: 99 },
-       //     { id: "sub-sp12", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Extra Cheese (Add-On)", price: 20 },
-
-            { id: "sub-m1", category: "Maggi", title: "🍜 Maggi Corner", name: "Plain Maggi", price: 50 },
-            { id: "sub-m2", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Maggi", price: 60 },
-            { id: "sub-m3", category: "Maggi", title: "🍜 Maggi Corner", name: "Butter Maggi", price: 60 },
-            { id: "sub-m4", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Butter Maggi", price: 60 },
-            { id: "sub-m5", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Cheese Maggi", price: 70 },
-            { id: "sub-m6", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Paneer Cheese Maggi", price: 75 },
-            { id: "sub-m7", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Cheese Butter Maggi", price: 80 },
-            { id: "sub-m8", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Cheese Butter Paneer Maggi", price: 99, popular: true },
-
-            { id: "sub-p1", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Cheesy Corn Penne Pasta", price: 99, popular: true },
-            { id: "sub-p2", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Veg Fusilli Pasta", price: 99 },
-            { id: "sub-p3", category: "Pasta", title: "🍝 Pasta Corner", name: "Veggy Sweet Spice Red Sauce Shell Pasta", price: 99 },
-            { id: "sub-p4", category: "Pasta", title: "🍝 Pasta Corner", name: "Masala Macaroni Pasta", price: 99 },
-
-            { id: "sub-j1", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Watermelon Mint Cooler 250ml", price: 60 },
-            { id: "sub-j2", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Watermelon Juice 250ml", price: 60 },
-            { id: "sub-j3", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Lemon Mint Cooler 250ml", price: 60 },
-            { id: "sub-j4", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Sabja Mint Lime Juice", price: 75 },
-            { id: "sub-j5", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Original & Natural Mint Mojito 500ml", price: 120, popular: true },
-
-            { id: "sub-d1", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Lassi", price: 75 },
-            { id: "sub-d2", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Regular Rosemilk", price: 99 },
-            { id: "sub-d3", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Sabja Rosemilk", price: 99 },
-            { id: "sub-d4", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Royal Vanilla Rosemilk", price: 99 },
-            { id: "sub-d5", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Banana Milkshake", price: 99 },
-            { id: "sub-d6", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Choco Banana Milkshake", price: 99, popular: true },
-            { id: "sub-d7", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Fresh Coconut Milk (1 Ltr)", price: 125 },
-
-           //   { id: "sub-es1", category: "Evening Snacks", title: "🌆 Delightful Evening Snacks", name: "Snack of the Day", price: 50 }
-
-        ]
+                      ]
 
         };
 
@@ -3347,6 +3666,9 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
             return `🔁 ${repeatLabel} · ${fmtDate(sched.from)} – ${fmtDate(sched.to)}${timeText}${cycleText}`;
         }
 
+        // Flat pricing — every item costs ₹99 regardless of which item it is.
+        const FLAT_ITEM_PRICE = 99;
+
         // Delivery fee rules: ₹15 for Sidharth Dhakshin Apts (the primary
         // serviced community), ₹25 for every other apartment/villa, and
         // waived entirely once the order subtotal clears ₹499 — in that
@@ -3372,7 +3694,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 const qty = cart[id];
                 if (qty > 0) {
                     const item = getMenuData().find(m => m.id === id);
-                    const perCycleTotal = item.price * qty;
+                    const perCycleTotal = FLAT_ITEM_PRICE * qty;
                     let occurrences = 1;
                     let schedule = null;
 
@@ -3384,7 +3706,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     const total = isRecurring ? perCycleTotal * occurrences : perCycleTotal;
                     subtotal += total;
                     totalQty += qty;
-                    itemsList.push({ id, name: item.name, qty, price: item.price, perCycleTotal, occurrences, total, schedule });
+                    itemsList.push({ id, name: item.name, qty, price: FLAT_ITEM_PRICE, perCycleTotal, occurrences, total, schedule });
                 }
             });
 
@@ -3779,12 +4101,12 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                             <div class="menu-item-body">
                                 <div class="item-info">
                                     <h4>${item.name}${item.popular ? '<span class="badge-popular">★ Popular</span>' : ''}</h4>
-                                    <p>₹${item.price.toFixed(2)}</p>
+                                    <p>₹${FLAT_ITEM_PRICE} <span style="font-size:0.78em;opacity:0.7;font-weight:400;">per item</span></p>
                                 </div>
                                 <div class="qty-controls">
                                     <button class="qty-btn btn-down" data-id="${item.id}" aria-label="Decrease quantity of ${item.name}" ${isCategoryDisabled ? 'disabled' : ''}>−</button>
                                     <label class="sr-only" for="qty-${item.id}">Quantity of ${item.name}</label>
-                                    <input type="number" id="qty-${item.id}" class="qty-input" data-id="${item.id}" value="${currentQty}" min="0" aria-label="Quantity of ${item.name}, price ₹${item.price.toFixed(2)} each" ${isCategoryDisabled ? 'disabled' : ''}>
+                                    <input type="number" id="qty-${item.id}" class="qty-input" data-id="${item.id}" value="${currentQty}" min="0" aria-label="Quantity of ${item.name}, flat price ₹${FLAT_ITEM_PRICE} each" ${isCategoryDisabled ? 'disabled' : ''}>
                                     <button class="qty-btn btn-up" data-id="${item.id}" aria-label="Increase quantity of ${item.name}" ${isCategoryDisabled ? 'disabled' : ''}>+</button>
                                 </div>
                             </div>
@@ -3905,8 +4227,8 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 } else {
                     const qty = POSState.getCart()[itemId] || 0;
                     const cycleLabel = occurrences === 1 ? "cycle" : "cycles";
-                    const total = item.price * qty * occurrences;
-                    el.innerHTML = `₹${item.price.toFixed(2)} × ${qty} × ${occurrences} ${cycleLabel} = <strong>₹${total.toFixed(2)}</strong>`;
+                    const total = FLAT_ITEM_PRICE * qty * occurrences;
+                    el.innerHTML = `₹${FLAT_ITEM_PRICE.toFixed(2)} × ${qty} × ${occurrences} ${cycleLabel} = <strong>₹${total.toFixed(2)}</strong>`;
                 }
             },
 
@@ -4043,7 +4365,7 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                             <div class="cir-schedule">${formatItemSchedule(item.schedule)}</div>
                         `;
                     } else {
-                        li.innerHTML = `<span>${item.name} (x${item.qty})</span><strong>₹${item.total.toFixed(2)}</strong>`;
+                        li.innerHTML = `<span>${item.name}</span><strong>${item.qty} × ₹${FLAT_ITEM_PRICE} = ₹${item.total.toFixed(2)}</strong>`;
                     }
                     previewContainer.appendChild(li);
                 });
@@ -4429,8 +4751,8 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 });
 
                 const THEME_REGISTRY = [
-                    { id: "regular",         name: "Regular",         desc: "Bubblegum pink & Microsoft blue, clean & bright", mode: "light", a: "#0078D4", b: "#FF6FB5" },
-                    { id: "berry-mousse",    name: "Berry Mousse",    desc: "Playful deep berry, after dark", mode: "dark",  a: "#7A2E4D", b: "#E0A65E" }
+                    { id: "berry-mousse",    name: "Berry Mousse",    desc: "Playful deep berry, after dark", mode: "dark",  a: "#7A2E4D", b: "#E0A65E" },
+                    { id: "aurora-glass",    name: "Aurora",    desc: "Five auroras adrift behind living glass", mode: "dark",  a: "#8B5CF6", b: "#22D3EE" }
                 ];
 
                 function applyTheme(themeId, persist) {
@@ -4801,8 +5123,8 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 const body = document.getElementById("print-items-body");
                 body.innerHTML = invoice.itemsList.map(item => {
                     const qtyCell = invoice.isRecurring
-                        ? (item.occurrences > 0 ? `${item.qty} x ${item.price} x ${item.occurrences}` : `${item.qty} x ${item.price} x —`)
-                        : `${item.qty} x ${item.price}`;
+                        ? (item.occurrences > 0 ? `${item.qty} × ₹${FLAT_ITEM_PRICE} × ${item.occurrences}` : `${item.qty} × ₹${FLAT_ITEM_PRICE} × —`)
+                        : `${item.qty} × ₹${FLAT_ITEM_PRICE}`;
                     return `
                         <tr>
                             <td>${item.name}</td>
@@ -4871,19 +5193,16 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                 }
                 text += LINE;
 
-                text += `🍽️ *My Order:*\n\n`;
+                text += `🍽️ *My Order:* _(Flat ₹${FLAT_ITEM_PRICE} per item)_\n\n`;
                 invoice.itemsList.forEach((item, i) => {
                     if (isRecurring) {
                         const cycleLabel = item.occurrences === 1 ? "cycle" : "cycles";
                         text += item.occurrences > 0
-                            ? `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${item.price.toFixed(2)} × ${item.occurrences} ${cycleLabel} = *₹${item.total.toFixed(2)}*\n`
-                            : `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${item.price.toFixed(2)} — _schedule incomplete, total pending_\n`;
+                            ? `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${FLAT_ITEM_PRICE} × ${item.occurrences} ${cycleLabel} = *₹${item.total.toFixed(2)}*\n`
+                            : `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${FLAT_ITEM_PRICE} — _schedule incomplete, total pending_\n`;
                         text += `     ${formatItemSchedule(item.schedule)}\n`;
                     } else {
-                        // Keep item name and price on separate lines for readability,
-                        // but use exactly 2 spaces before number to allow parser
-                        // fallback (2+ spaces signals start of price sub-line).
-                        text += `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${item.price.toFixed(2)} = *₹${item.total.toFixed(2)}*\n`;
+                        text += `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${FLAT_ITEM_PRICE} = *₹${item.total.toFixed(2)}*\n`;
                     }
                     text += `\n`;
                 });
@@ -5184,6 +5503,47 @@ html.glass-enabled .glass-orbs { opacity: calc(1 * var(--glass-intensity)); }
                     e.preventDefault(); return;
                 }
             });
+        })();
+    </script>
+    <script>
+        /* ── Signature Glass: cursor-reactive specular highlight ─────────
+           Sets --sx/--sy (percentages) on whichever tracked glass surface
+           is under the pointer, so the CSS radial-gradient highlight
+           added above glints toward the actual cursor position instead
+           of sitting fixed in one corner. rAF-throttled so it costs at
+           most one style recalculation per animation frame no matter how
+           fast pointermove fires. Skipped entirely on touch devices
+           (no real hover, so there's nothing to track) and when the
+           person has asked for reduced motion. */
+        (function () {
+            try {
+                var canHover = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+                var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                if (!canHover || reduceMotion) return;
+
+                var TRACKED = ".category-card, .menu-item, .sidebar, .search-input";
+                var pending = null;
+
+                function applyHighlight(el, clientX, clientY) {
+                    var rect = el.getBoundingClientRect();
+                    if (rect.width === 0 || rect.height === 0) return;
+                    var x = ((clientX - rect.left) / rect.width) * 100;
+                    var y = ((clientY - rect.top) / rect.height) * 100;
+                    el.style.setProperty("--sx", x.toFixed(1) + "%");
+                    el.style.setProperty("--sy", y.toFixed(1) + "%");
+                }
+
+                document.addEventListener("pointermove", function (e) {
+                    if (e.pointerType && e.pointerType !== "mouse") return;
+                    var target = e.target.closest ? e.target.closest(TRACKED) : null;
+                    if (!target) return;
+                    if (pending) return;
+                    pending = requestAnimationFrame(function () {
+                        applyHighlight(target, e.clientX, e.clientY);
+                        pending = null;
+                    });
+                }, { passive: true });
+            } catch (e) { /* Purely decorative — fail silent, static bloom already covers this. */ }
         })();
     </script>
 </body>
