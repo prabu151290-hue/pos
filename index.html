@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="berry-mousse" data-theme-mode="dark" class="glass-enabled">
+<html lang="en" data-theme="aurora-glass" data-theme-mode="dark" class="glass-enabled">
 <head>
     <script>
         /* Applied synchronously, before first paint, to avoid a flash of the
@@ -16,7 +16,7 @@
                     // Regular (the only light-mode flavor) has been removed —
                     // both remaining flavors are dark, so there's no more
                     // light/dark branch here, just a fixed fallback.
-                    saved = "berry-mousse";
+                    saved = "aurora-glass";
                 }
                 document.documentElement.setAttribute("data-theme", saved);
                 document.documentElement.setAttribute("data-theme-mode", darkThemes.indexOf(saved) !== -1 ? "dark" : "light");
@@ -31,7 +31,7 @@
     <meta property="og:title" content="AMRUTHADHAARANAM — Order Fresh Vegetarian Snacks & Beverages">
     <meta property="og:description" content="Freshly crafted snacks & refreshing beverages, ordered straight to WhatsApp.">
     <meta property="og:type" content="website">
-    <meta name="theme-color" content="#A85C2E">
+    <meta name="theme-color" content="#8B5CF6">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2679,6 +2679,78 @@ html.glass-enabled[data-theme-mode="dark"] .theme-picker-panel,
     }
 }
 /* ═══════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   3D EMBOSS, NO GLARE — final pass, applies to every theme (not just
+   Aurora). Every bright animated "shine" effect on a card/panel/button
+   is switched off for good (not just dimmed), and every object gets a
+   consistent solid 3D emboss instead: a modest inset top highlight +
+   inset bottom shade for a raised bevel, plus an outer drop shadow for
+   lift. No moving sweeps, no cursor-tracking glint, no white blooms.
+   Comes last in the stylesheet so it wins ties without needing !important
+   except where an earlier rule already used one.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Kill every remaining shine/glint/sweep pseudo-element ── */
+.category-card::before, .category-card::after,
+.menu-item::before, .menu-item::after,
+.menu-item-img::before,
+html.glass-enabled .sidebar::before,
+html.glass-enabled .search-input::before,
+html.glass-enabled .modal-box::before {
+    display: none !important;
+}
+
+/* ── 2. Strip the cursor-reactive specular highlight layer — flat themed
+   gradients/tints only, no radial-gradient glint riding on --sx/--sy. ── */
+.category-card {
+    background: linear-gradient(155deg,
+        color-mix(in srgb, var(--card-accent-themed) 48%, var(--surface) 52%) 0%,
+        color-mix(in srgb, var(--card-accent-themed) 82%, var(--surface) 18%) 45%,
+        color-mix(in srgb, var(--card-accent-themed) 65%, var(--primary-deep) 35%) 100%
+    ) !important;
+}
+html.glass-enabled .menu-item {
+    background: color-mix(in srgb, var(--surface) 84%, var(--card-accent-themed, var(--card-accent, var(--primary))) 16%) !important;
+}
+html.glass-enabled .sidebar {
+    background: color-mix(in srgb, var(--surface) 78%, transparent) !important;
+}
+html.glass-enabled .search-input:not(:focus) {
+    background: color-mix(in srgb, var(--surface) 72%, transparent) !important;
+}
+
+/* ── 3. Solid 3D emboss — same modest raised-bevel recipe on every
+   object: thin light top edge, thin dark bottom edge, soft outer lift.
+   No high-opacity whites, no mix-blend-mode. ── */
+.category-card,
+.menu-item,
+html.glass-enabled .sidebar,
+html.glass-enabled .search-input,
+html.glass-enabled .modal-box,
+html.glass-enabled .theme-picker-panel,
+.pill,
+.btn,
+.qty-btn {
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.16) inset,
+        0 -1px 0 rgba(0,0,0,0.28) inset,
+        0 1px 2px rgba(0,0,0,0.16),
+        0 6px 16px rgba(0,0,0,0.22) !important;
+}
+.category-card:hover, .menu-item:hover {
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.20) inset,
+        0 -1px 0 rgba(0,0,0,0.30) inset,
+        0 2px 4px rgba(0,0,0,0.18),
+        0 10px 24px rgba(0,0,0,0.26) !important;
+}
+.pill:active, .btn:active, .qty-btn:active {
+    box-shadow:
+        0 1px 0 rgba(0,0,0,0.18) inset,
+        0 2px 4px rgba(0,0,0,0.30) inset !important;
+}
+/* ═══════════════════════════════════════════════════════════════════════ */
     </style>
 </head>
 <body>
@@ -4751,8 +4823,8 @@ html.glass-enabled[data-theme-mode="dark"] .theme-picker-panel,
                 });
 
                 const THEME_REGISTRY = [
-                    { id: "berry-mousse",    name: "Berry Mousse",    desc: "Playful deep berry, after dark", mode: "dark",  a: "#7A2E4D", b: "#E0A65E" },
-                    { id: "aurora-glass",    name: "Aurora",    desc: "Five auroras adrift behind living glass", mode: "dark",  a: "#8B5CF6", b: "#22D3EE" }
+                    { id: "aurora-glass",    name: "Aurora",    desc: "Five auroras adrift behind living glass", mode: "dark",  a: "#8B5CF6", b: "#22D3EE" },
+                    { id: "berry-mousse",    name: "Berry Mousse",    desc: "Playful deep berry, after dark", mode: "dark",  a: "#7A2E4D", b: "#E0A65E" }
                 ];
 
                 function applyTheme(themeId, persist) {
@@ -5505,46 +5577,10 @@ html.glass-enabled[data-theme-mode="dark"] .theme-picker-panel,
             });
         })();
     </script>
-    <script>
-        /* ── Signature Glass: cursor-reactive specular highlight ─────────
-           Sets --sx/--sy (percentages) on whichever tracked glass surface
-           is under the pointer, so the CSS radial-gradient highlight
-           added above glints toward the actual cursor position instead
-           of sitting fixed in one corner. rAF-throttled so it costs at
-           most one style recalculation per animation frame no matter how
-           fast pointermove fires. Skipped entirely on touch devices
-           (no real hover, so there's nothing to track) and when the
-           person has asked for reduced motion. */
-        (function () {
-            try {
-                var canHover = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-                var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-                if (!canHover || reduceMotion) return;
-
-                var TRACKED = ".category-card, .menu-item, .sidebar, .search-input";
-                var pending = null;
-
-                function applyHighlight(el, clientX, clientY) {
-                    var rect = el.getBoundingClientRect();
-                    if (rect.width === 0 || rect.height === 0) return;
-                    var x = ((clientX - rect.left) / rect.width) * 100;
-                    var y = ((clientY - rect.top) / rect.height) * 100;
-                    el.style.setProperty("--sx", x.toFixed(1) + "%");
-                    el.style.setProperty("--sy", y.toFixed(1) + "%");
-                }
-
-                document.addEventListener("pointermove", function (e) {
-                    if (e.pointerType && e.pointerType !== "mouse") return;
-                    var target = e.target.closest ? e.target.closest(TRACKED) : null;
-                    if (!target) return;
-                    if (pending) return;
-                    pending = requestAnimationFrame(function () {
-                        applyHighlight(target, e.clientX, e.clientY);
-                        pending = null;
-                    });
-                }, { passive: true });
-            } catch (e) { /* Purely decorative — fail silent, static bloom already covers this. */ }
-        })();
-    </script>
+    <!-- Cursor-reactive specular highlight script removed: the CSS glint
+         layer it powered (category-card/menu-item/sidebar/search-input
+         --sx/--sy radial-gradient) has been switched off for good as part
+         of the 3D-emboss-without-glare pass, so tracking the pointer for
+         it is no longer needed. -->
 </body>
 </html>
