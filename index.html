@@ -651,7 +651,7 @@
             will-change: transform; letter-spacing: -0.01em;
         }
         .mode-tab:hover { border-color: color-mix(in srgb, var(--primary) 40%, var(--border)); color: var(--text-main); transform: translateY(-2px); }
-        .mode-tab:active { transform: translateY(0) scale(0.97); transition: all 0.08s ease-out; }
+        .mode-tab:active { transform: translateY(0) scale(0.97); transition: transform 0.08s ease-out; }
         .mode-tab.active {
             background: linear-gradient(160deg, color-mix(in srgb, var(--primary) 80%, #fff 20%), var(--primary-deep));
             color: var(--gold-bright); border-color: var(--primary-deep);
@@ -3384,7 +3384,22 @@ html.glass-enabled .theme-picker-panel,
             async sync() {
                 if (!LIVE_TIME_SYNC_ENABLED) return false;
 
-                // Each source gets its own hard timeout via AbortController.
+                // Each source gets its own hard timeout. Deliberately NOT
+                // implemented via AbortController/AbortSignal: on some
+                // devices/browsers something in the stack (certain ad-
+                // blocker or security extensions, some in-app WebViews)
+                // intercepts window.fetch and relays the call via
+                // postMessage — and an AbortSignal can't be structured-
+                // cloned, so passing one makes *every* fetch on that device
+                // throw "DataCloneError: ... AbortSignal object could not
+                // be cloned", permanently breaking time-sync there instead
+                // of just timing out gracefully. Promise.race gets the same
+                // "give up after N ms" behavior without ever creating a
+                // signal, so it can't trip that failure mode. The only
+                // trade-off is the underlying request keeps running in the
+                // background after we stop waiting on it — a non-issue for
+                // a small GET we're about to discard anyway.
+                //
                 // Without this, a source that's dead at the network level
                 // (connection accepted then never responds, vs. a clean
                 // 404/500) can hang a fetch() for the browser's full
@@ -3397,25 +3412,37 @@ html.glass-enabled .theme-picker-panel,
                 // (or the raw device clock) far longer than the 5-minute
                 // resync interval implies.
                 const TIME_SOURCE_TIMEOUT_MS = 4000;
-                const fetchWithTimeout = async (url, opts = {}) => {
-                    const ctrl = new AbortController();
-                    const t = setTimeout(() => ctrl.abort(), TIME_SOURCE_TIMEOUT_MS);
-                    try {
-                        return await fetch(url, { ...opts, signal: ctrl.signal });
-                    } finally {
-                        clearTimeout(t);
-                    }
+                const fetchWithTimeout = (url, opts = {}) => {
+                    const timeout = new Promise((_, reject) => {
+                        setTimeout(() => reject(new Error("time source timed out")), TIME_SOURCE_TIMEOUT_MS);
+                    });
+                    return Promise.race([fetch(url, opts), timeout]);
                 };
 
                 // worldtimeapi.org (the previous primary source) was
                 // permanently sunset in 2026 — every call to it was
                 // guaranteed to fail, and did so slowly (dead host, not a
-                // fast error). Dropped in favor of two sources that are
-                // each independently sufficient: a dedicated time API,
-                // and — because relying on any single small free API is
-                // itself a single point of failure — the `Date` response
-                // header from a large, high-uptime CORS-enabled endpoint
-                // as a fully independent fallback.
+                // fast error). Its replacement below, worldclockapi.com,
+                // later suffered the same fate (now 403s on every request).
+                // Free time APIs have a real track record of quietly dying —
+                // treat this list as something to revisit periodically, not
+                // a fix-once-forever.
+                //
+                // The previous fallback here tried to read the `Date`
+                // response header from api.github.com instead of a second
+                // dedicated time API, on the theory that `Date` is always
+                // readable cross-origin. That's incorrect: `Date` is not on
+                // the browser's CORS-safelisted response-header list, so
+                // it's only readable if the server explicitly opts in via
+                // `Access-Control-Expose-Headers` — confirmed directly
+                // against api.github.com's real headers, which do not
+                // include it. That fallback could never succeed, on any
+                // device, regardless of network health — every timeapi.io
+                // hiccup was silently going straight to "all sources
+                // unreachable" instead of trying a working second source.
+                // Replaced with a second provider that returns the time in
+                // its JSON body, same as the primary — sidesteps this whole
+                // class of header-exposure problem rather than repeating it.
                 const sources = [
                     async () => {
                         const res = await fetchWithTimeout("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Kolkata", { cache: "no-store" });
@@ -3424,16 +3451,11 @@ html.glass-enabled .theme-picker-panel,
                         return Date.UTC(data.year, data.month - 1, data.day, data.hour, data.minute, data.seconds, data.milliSeconds || 0) - IST_OFFSET_MS;
                     },
                     async () => {
-                        // `Date` is on the CORS-safelisted response-header
-                        // list, so it's readable even without the server
-                        // opting in via Access-Control-Expose-Headers —
-                        // this works against almost any HTTPS endpoint.
-                        const res = await fetchWithTimeout("https://api.github.com/zen", { cache: "no-store", mode: "cors" });
-                        const dateHeader = res.headers.get("date");
-                        if (!dateHeader) throw new Error("no Date header");
-                        const serverMs = new Date(dateHeader).getTime();
-                        if (isNaN(serverMs)) throw new Error("unparseable Date header");
-                        return serverMs;
+                        const res = await fetchWithTimeout("https://time.now/developer/api/timezone/Asia/Kolkata", { cache: "no-store" });
+                        if (!res.ok) throw new Error("time.now not ok");
+                        const data = await res.json();
+                        if (!data.unixtime) throw new Error("no unixtime in response");
+                        return data.unixtime * 1000;
                     }
                 ];
 
@@ -3643,13 +3665,26 @@ html.glass-enabled .theme-picker-panel,
             const { hours, minutes } = LiveClock.istParts();
             const mins = hours * 60 + minutes;
 
+            // Before the first successful LiveClock.sync() of the session,
+            // istParts() is derived from the raw, unverified device clock —
+            // on a kiosk/tablet whose clock hasn't been corrected yet first
+            // thing in the morning, that can be off by enough to make a
+            // category look like it's ~60 minutes from closing when it
+            // isn't. isOpenNow/minutesToClose still use the best time we
+            // have (so ordering isn't blocked while we wait on the
+            // network), but the "closing soon" flair — purely informational,
+            // not needed to gate ordering — is held back until the clock
+            // has been verified at least once. It appears automatically a
+            // moment later via the existing LiveClock.sync().then(refreshAfterResync).
+            const timeVerified = LiveClock.synced;
+
             const win = CATEGORY_WINDOWS[categoryName];
             if (!win) {
                 const startMins = OPEN_HOUR * 60;
                 const endMins = CLOSE_HOUR * 60;
                 const isOpenNow = mins >= startMins && mins < endMins;
                 const minutesToClose = endMins - mins;
-                const isClosingSoon = isOpenNow && minutesToClose <= CATEGORY_CLOSING_SOON_MINUTES;
+                const isClosingSoon = timeVerified && isOpenNow && minutesToClose <= CATEGORY_CLOSING_SOON_MINUTES;
                 const startStr = `${String(OPEN_HOUR).padStart(2, '0')}:00`;
                 const endStr = `${String(CLOSE_HOUR).padStart(2, '0')}:00`;
                 return {
@@ -3666,7 +3701,7 @@ html.glass-enabled .theme-picker-panel,
             const startMins = sh * 60 + sm, endMins = eh * 60 + em;
             const isOpenNow = mins >= startMins && mins < endMins;
             const minutesToClose = endMins - mins;
-            const isClosingSoon = isOpenNow && minutesToClose <= CATEGORY_CLOSING_SOON_MINUTES;
+            const isClosingSoon = timeVerified && isOpenNow && minutesToClose <= CATEGORY_CLOSING_SOON_MINUTES;
 
             return {
                 label: `${formatHHMM(win.start)} – ${formatHHMM(win.end)}`,
@@ -3870,7 +3905,6 @@ html.glass-enabled .theme-picker-panel,
             init() {
                 this.renderCategories();
                 this.renderMenu();
-                this.updateTimestamp();
                 this.updateTodayDateBadge();
                 this.updateKitchenStatus();
                 this.renderAnnouncement();
@@ -3910,7 +3944,6 @@ html.glass-enabled .theme-picker-panel,
                 // elapsed monotonic time, not a frozen value), then verifies
                 // over the network afterward.
                 const refreshDisplayNow = () => {
-                    this.updateTimestamp();
                     this.updateTodayDateBadge();
                     this.updateKitchenStatus();
                     this.renderMenuIfChanged();
@@ -3927,7 +3960,7 @@ html.glass-enabled .theme-picker-panel,
                 // boundary). renderMenuIfChanged() does the same cheap
                 // status computation but only touches the DOM when the
                 // rendered output would actually differ.
-                setInterval(() => { this.updateTimestamp(); this.updateTodayDateBadge(); this.updateKitchenStatus(); this.renderMenuIfChanged(); updateWatermark(); }, 15000);
+                setInterval(() => { this.updateTodayDateBadge(); this.updateKitchenStatus(); this.renderMenuIfChanged(); updateWatermark(); }, 15000);
                 setInterval(() => { LiveClock.sync().then(refreshAfterResync); }, 5 * 60 * 1000);
 
                 document.addEventListener("visibilitychange", () => {
@@ -4497,11 +4530,6 @@ html.glass-enabled .theme-picker-panel,
                 bar.setAttribute("aria-label", `View your order summary. ${totalQty} items, total ₹${grandTotal.toFixed(2)}`);
 
                 return breakdown;
-            },
-
-            updateTimestamp() {
-                const el = document.getElementById("lbl-date-time");
-                if (el) el.innerText = new Date(LiveClock.nowMs()).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
             },
 
             updateTodayDateBadge() {
@@ -5452,9 +5480,11 @@ html.glass-enabled .theme-picker-panel,
                     function buildUpiHref(pa) {
                         let amount = 0;
                         try {
-                            const inv = POSState.buildInvoice();
+                            const inv = ExportEngine.compileInvoiceData();
                             amount = inv && inv.grandTotal > 0 ? inv.grandTotal : 0;
-                        } catch (_) {}
+                        } catch (err) {
+                            console.warn("Could not resolve cart total for UPI deep link:", err);
+                        }
                         const amtParam = amount > 0 ? `&am=${amount.toFixed(2)}&cu=INR` : "";
                         const tnParam  = `&tn=${encodeURIComponent("Order " + POSState.orderId)}`;
                         const pnParam  = `&pn=${encodeURIComponent("AMRUTHADHAARANAM")}`;
@@ -5527,28 +5557,42 @@ html.glass-enabled .theme-picker-panel,
         }
 
         (function copyProtection() {
-            // NOTE: previously form fields (input/textarea/contentEditable) were
-            // exempted from these restrictions. That exemption has been removed
-            // below — right-click, selection, copy, cut, and paste are now
-            // blocked everywhere, including inside textboxes.
+            // Form fields (input/textarea/contentEditable) are exempted from
+            // the selection/clipboard restrictions below — blocking those
+            // inside a textbox stops customers pasting their own phone
+            // number or address from Contacts/autofill, and also silently
+            // breaks this page's own "Copy order summary" fallback, which
+            // programmatically selects and copies from a hidden textarea.
+            // Right-click, dragging, and the devtools/view-source/save/print
+            // shortcuts stay blocked everywhere, since those are about
+            // protecting the menu content itself, not about typing.
+            function isFormField(el) {
+                if (!el) return false;
+                const tag = el.tagName;
+                return tag === "INPUT" || tag === "TEXTAREA" || el.isContentEditable;
+            }
 
             document.addEventListener("contextmenu", (e) => {
                 e.preventDefault();
             });
 
             document.addEventListener("selectstart", (e) => {
+                if (isFormField(e.target)) return;
                 e.preventDefault();
             });
 
             document.addEventListener("dragstart", (e) => e.preventDefault());
 
             document.addEventListener("copy", (e) => {
+                if (isFormField(e.target)) return;
                 e.preventDefault();
             });
             document.addEventListener("cut", (e) => {
+                if (isFormField(e.target)) return;
                 e.preventDefault();
             });
             document.addEventListener("paste", (e) => {
+                if (isFormField(e.target)) return;
                 e.preventDefault();
             });
 
@@ -5568,10 +5612,11 @@ html.glass-enabled .theme-picker-panel,
 
                 if (ctrlOrCmd && key === "P") { e.preventDefault(); return; }
 
-                // Block copy/cut/paste/select-all keyboard shortcuts too,
-                // since relying only on the clipboard events above can be
-                // bypassed in some browsers/extensions.
+                // Block copy/cut/paste/select-all keyboard shortcuts on the
+                // page content, but not while typing in a form field —
+                // same reasoning as the clipboard-event listeners above.
                 if (ctrlOrCmd && ["C", "X", "V", "A"].includes(key)) {
+                    if (isFormField(document.activeElement)) return;
                     e.preventDefault(); return;
                 }
             });
