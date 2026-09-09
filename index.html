@@ -705,6 +705,204 @@
             .mode-tab, .mode-tab-date { transition: var(--transition); }
         }
 
+        /* ════════════════════════════════════════════════════════════════
+           LUNCH TIME MENU — Order Window Status Radiator
+           A "radiator" in the Microsoft Systems architecture sense:
+           a single, prominent, always-visible panel that broadcasts
+           the current system state so any stakeholder can read it
+           at a glance without drilling into details.
+           ════════════════════════════════════════════════════════════════ */
+
+        .ltm-status-panel {
+            display: none;
+            margin-bottom: var(--space-5);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lift);
+            animation: toast-in 0.22s ease-out;
+        }
+        .ltm-status-panel.visible { display: block; }
+
+        /* ── Radiator header strip — full-width state indicator ── */
+        .ltm-radiator {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-5);
+            position: relative;
+        }
+        .ltm-radiator.state-open {
+            background: linear-gradient(135deg,
+                color-mix(in srgb, #22c55e 18%, var(--surface)),
+                color-mix(in srgb, #4ade80 8%, var(--surface)));
+            border: 1.5px solid color-mix(in srgb, #22c55e 40%, var(--border));
+            border-bottom: none;
+        }
+        .ltm-radiator.state-frozen {
+            background: linear-gradient(135deg,
+                color-mix(in srgb, #f97316 18%, var(--surface)),
+                color-mix(in srgb, #fb923c 8%, var(--surface)));
+            border: 1.5px solid color-mix(in srgb, #f97316 40%, var(--border));
+            border-bottom: none;
+        }
+        .ltm-radiator.state-closing {
+            background: linear-gradient(135deg,
+                color-mix(in srgb, #eab308 22%, var(--surface)),
+                color-mix(in srgb, #facc15 10%, var(--surface)));
+            border: 1.5px solid color-mix(in srgb, #eab308 40%, var(--border));
+            border-bottom: none;
+        }
+
+        .ltm-radiator-icon {
+            font-size: 1.9rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .ltm-radiator-icon.pulse-anim {
+            animation: ltm-pulse-icon 2.4s ease-in-out infinite;
+        }
+        @keyframes ltm-pulse-icon {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.12); opacity: 0.82; }
+        }
+
+        .ltm-radiator-text { flex: 1; min-width: 0; }
+        .ltm-radiator-headline {
+            font-family: var(--font-heading);
+            font-size: var(--text-title3);
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-bottom: 0.18rem;
+        }
+        .ltm-radiator-sub {
+            font-size: var(--text-footnote);
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* "For Date" pill — the most important datum: which meal is being booked */
+        .ltm-for-date-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: 0.3rem var(--space-3);
+            border-radius: var(--radius-xl);
+            font-family: var(--font-btn);
+            font-size: var(--text-caption1);
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .ltm-for-date-pill.for-today {
+            background: color-mix(in srgb, #22c55e 20%, var(--surface));
+            color: #166534;
+            border: 1.5px solid color-mix(in srgb, #22c55e 45%, transparent);
+        }
+        [data-theme-mode="dark"] .ltm-for-date-pill.for-today {
+            color: #86efac;
+            border-color: color-mix(in srgb, #22c55e 35%, transparent);
+        }
+        .ltm-for-date-pill.for-tomorrow {
+            background: color-mix(in srgb, #6366f1 18%, var(--surface));
+            color: #3730a3;
+            border: 1.5px solid color-mix(in srgb, #6366f1 38%, transparent);
+        }
+        [data-theme-mode="dark"] .ltm-for-date-pill.for-tomorrow {
+            color: #a5b4fc;
+            border-color: color-mix(in srgb, #6366f1 32%, transparent);
+        }
+        .ltm-for-date-pill.for-frozen {
+            background: color-mix(in srgb, #f97316 16%, var(--surface));
+            color: #9a3412;
+            border: 1.5px solid color-mix(in srgb, #f97316 35%, transparent);
+        }
+        [data-theme-mode="dark"] .ltm-for-date-pill.for-frozen {
+            color: #fdba74;
+            border-color: color-mix(in srgb, #f97316 30%, transparent);
+        }
+
+        /* ── Info body below the radiator strip ── */
+        .ltm-info-body {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            padding: var(--space-3) var(--space-5) var(--space-4);
+        }
+
+        /* Timeline: shows the three states as a track */
+        .ltm-timeline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-top: var(--space-3);
+            margin-bottom: var(--space-3);
+            font-size: var(--text-caption2);
+            font-family: var(--font-btn);
+            overflow-x: auto;
+        }
+        .ltm-tl-seg {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-md);
+            flex: 1;
+            min-width: 90px;
+            transition: var(--transition);
+            border: 1.5px solid transparent;
+        }
+        .ltm-tl-seg.tl-active {
+            border-color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+        }
+        .ltm-tl-seg-icon { font-size: 1.2rem; }
+        .ltm-tl-seg-label {
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+        .ltm-tl-seg-time {
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .ltm-tl-arrow {
+            font-size: 1rem;
+            color: var(--text-muted);
+            padding: 0 var(--space-1);
+            flex-shrink: 0;
+            margin-bottom: 10px; /* align with middle of segments */
+        }
+
+        .ltm-info-note {
+            font-size: var(--text-caption1);
+            color: var(--text-muted);
+            line-height: 1.55;
+            padding-top: var(--space-2);
+            border-top: 1px dashed var(--border);
+        }
+        .ltm-info-note strong { color: var(--text-main); }
+
+        /* frozen overlay — a translucent freeze badge on the category card */
+        .frozen-banner.ltm-frozen {
+            background: linear-gradient(135deg,
+                color-mix(in srgb, #f97316 22%, var(--surface)),
+                color-mix(in srgb, #fb923c 12%, var(--surface)));
+            border-left: 4px solid #f97316;
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+            margin-bottom: var(--space-3);
+            font-size: var(--text-subhead);
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ltm-status-panel { animation: none; }
+            .ltm-radiator-icon.pulse-anim { animation: none; }
+        }
+
         /* ---- PER-ITEM SUBSCRIPTION SCHEDULE PANEL (ported from Subscribe
            My Item) — rendered by renderMenu() as a sibling block below a
            menu item's row, only in Subscription mode once qty > 0. ---- */
@@ -2813,8 +3011,8 @@ html.glass-enabled .theme-picker-panel,
                 </div>
             </section>
 
-            <!-- Flat-price notice banner -->
-            <div style="
+            <!-- Lunch Time Menu tab callout — hidden once the customer is already on the Lunch Time Menu tab, since introducing it there is redundant -->
+            <div id="flat-pricing-banner" style="
                 background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
                 border: 1.5px solid #ffcc02;
                 border-radius: 16px;
@@ -2824,11 +3022,11 @@ html.glass-enabled .theme-picker-panel,
                 align-items: center;
                 gap: 14px;
                 box-shadow: 0 2px 10px rgba(255,180,0,0.12);
-            " role="note" aria-label="Flat pricing notice">
-                <span style="font-size:1.9rem;line-height:1;flex-shrink:0;">🏷️</span>
+            " role="note" aria-label="Lunch Time Menu tab notice">
+                <span style="font-size:1.9rem;line-height:1;flex-shrink:0;">🍽️</span>
                 <div>
-                    <strong style="font-size:1.05rem;color:#7a4a00;display:block;margin-bottom:2px;">Simple Flat Pricing — ₹99 per item</strong>
-                    <span style="font-size:0.9rem;color:#a06000;line-height:1.45;">Every item on our menu is priced at a flat <strong>₹99</strong> per piece — regardless of which item you choose. Pick your favourites and the total is simply <strong>₹99 × quantity</strong>. No complicated pricing, just great food!</span>
+                    <strong style="font-size:1.05rem;color:#7a4a00;display:block;margin-bottom:2px;">Introducing the Lunch Menu tab</strong>
+                    <span style="font-size:0.9rem;color:#a06000;line-height:1.45;">You can pre-order your lunch accordingly.</span>
                 </div>
             </div>
 
@@ -2840,12 +3038,54 @@ html.glass-enabled .theme-picker-panel,
                         <span id="today-date-text">…</span>
                     </span>
                 </button>
+                <button type="button" class="mode-tab" data-mode="LunchTimeMenu" aria-pressed="false">
+                    <span>🍽️ Lunch Time Menu</span>
+                </button>
             </div>
 
             <div class="schedule-card" id="subscription-schedule-card" style="display:none;">
                 <h3 class="schedule-card-title">🔁 Subscribe My Item</h3>
                 <p class="schedule-card-hint" style="margin-top:0;">Add any item below and a scheduling panel will appear under it — set its own repeat pattern, date range, and delivery time. Every item in your basket can run on a different schedule.</p>
                 <p class="schedule-card-hint">⏳ The kitchen needs at least <strong>36 hours' notice</strong> before a subscription's first delivery, so the calendar only opens starting 36 hours from now — and stays selectable for <strong>45 days</strong> from that point.</p>
+            </div>
+
+            <!-- ── Lunch Time Menu: Order Window Radiator Panel ──────────────
+                 Visible only in LunchTimeMenu mode. Renders three sub-regions:
+                 1. Radiator strip — coloured headline showing current state
+                 2. Timeline — three segments (Accept Today / Frozen / Accept Tomorrow)
+                 3. Info note — one-line contextual guidance for the customer
+            ─────────────────────────────────────────────────────────────────── -->
+            <div class="ltm-status-panel" id="ltm-status-panel" role="status" aria-live="polite" aria-label="Lunch Time Menu order window status">
+                <div class="ltm-radiator" id="ltm-radiator">
+                    <span class="ltm-radiator-icon" id="ltm-radiator-icon" aria-hidden="true">🟢</span>
+                    <div class="ltm-radiator-text">
+                        <div class="ltm-radiator-headline" id="ltm-radiator-headline">Checking order window…</div>
+                        <div class="ltm-radiator-sub" id="ltm-radiator-sub"></div>
+                    </div>
+                    <span class="ltm-for-date-pill" id="ltm-for-date-pill" aria-label="Order is for">…</span>
+                </div>
+                <div class="ltm-info-body">
+                    <div class="ltm-timeline" role="img" aria-label="Order window timeline">
+                        <div class="ltm-tl-seg" id="ltm-tl-accept-today" aria-label="Accept orders for today: yesterday 5 PM to today 10 AM">
+                            <span class="ltm-tl-seg-icon">🟢</span>
+                            <span class="ltm-tl-seg-label">Accept Today</span>
+                            <span class="ltm-tl-seg-time">Until 10:00 AM</span>
+                        </div>
+                        <span class="ltm-tl-arrow" aria-hidden="true">→</span>
+                        <div class="ltm-tl-seg" id="ltm-tl-frozen" aria-label="Frozen: 10 AM to 5 PM">
+                            <span class="ltm-tl-seg-icon">🔒</span>
+                            <span class="ltm-tl-seg-label">Frozen</span>
+                            <span class="ltm-tl-seg-time">10 AM – 5 PM</span>
+                        </div>
+                        <span class="ltm-tl-arrow" aria-hidden="true">→</span>
+                        <div class="ltm-tl-seg" id="ltm-tl-accept-tomorrow" aria-label="Accept orders for tomorrow: 5 PM onwards">
+                            <span class="ltm-tl-seg-icon">📅</span>
+                            <span class="ltm-tl-seg-label">Pre-book Tomorrow</span>
+                            <span class="ltm-tl-seg-time">From 5:00 PM</span>
+                        </div>
+                    </div>
+                    <p class="ltm-info-note" id="ltm-info-note">Lunch is served daily from <strong>12:30 PM – 2:00 PM</strong>. Pre-order by 10:00 AM for same-day lunch, or after 5:00 PM for next-day lunch.</p>
+                </div>
             </div>
 
             <div class="controls-row">
@@ -3131,11 +3371,25 @@ html.glass-enabled .theme-picker-panel,
         };
 
         const ANNOUNCEMENT = {
-            enabled: true,
+            // Disabled: the flat ₹99-per-item notice previously shown here
+            // has been removed from the announcement bar per updated
+            // messaging guidance. The object is left in place (rather than
+            // deleted) since ANNOUNCEMENT is a reusable slot — flip
+            // enabled back to true with new icon/text/hideOnModes to run
+            // a future notice (e.g. a holiday closure) without rebuilding
+            // this wiring.
+            enabled: false,
             type: "offer",
             icon: "🏷️",
-            text: "🎉 <strong>Flat ₹99 per item!</strong> — Every item on our menu is priced at a simple, flat ₹99 per piece. No surprises, just great food!",
-            blink: true
+            text: "",
+            blink: true,
+            // Which ordering-mode tabs this specific announcement should
+            // NOT show on — a generic opt-out, not a "flat pricing" special
+            // case, so a future announcement (e.g. a holiday closure notice)
+            // still shows on every tab by default. This one opts out of
+            // Lunch Time Menu because its text specifically claims flat
+            // ₹99 pricing, which isn't true there.
+            hideOnModes: ["LunchTimeMenu"]
         };
 
         // ── Scheduled store closure ─────────────────────────────────────
@@ -3323,6 +3577,14 @@ html.glass-enabled .theme-picker-panel,
            // { id: "sn1", category: "Snacks Special", title: "😋 Evening Snack Special", name: "Fruit Salad with Fresh Cream, Brown Sugar & Strawberry Chocolate Sauce", price: 99 },            
         ],
 
+        LunchTimeMenu: [
+            { id: "ltm1", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Mini Lunch Tray", desc: "White Rice, 2 Plain Rotis, Sambar, Dhal or Gravy, Fryams", price: 149 },
+            { id: "ltm2", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Soup of the Day 250ml", price: 99 },
+            { id: "ltm3", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Starter of the Day", price: 99 },
+            { id: "ltm4", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Onion Raita 250ml", price: 49 },
+            { id: "ltm5", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Mint Spicy Chutney Butter Milk 250ml", price: 49 }
+        ],
+
         Subscription: [
                       ]
 
@@ -3349,7 +3611,30 @@ html.glass-enabled .theme-picker-panel,
             perfAtSync: null,
             deviceMsAtSync: null,
             synced: false,
-            _resyncInFlight: null,
+            _syncInFlight: null,
+            _lastSyncAttemptMs: 0,
+            // Returning to the tab fires visibilitychange, focus, and
+            // pageshow together in most browsers, and each one used to call
+            // LiveClock.sync() independently — three duplicate rounds of
+            // the exact same (often-failing) network requests from a single
+            // "come back to the tab" moment. requestSync() is what every
+            // trigger site should call instead of sync() directly: it
+            // shares one in-flight attempt across simultaneous callers, and
+            // won't start a fresh one within SYNC_RETRY_COOLDOWN_MS of the
+            // last attempt finishing. sync() itself is unchanged and still
+            // available directly for anything that genuinely needs to force
+            // an attempt regardless of cooldown.
+            SYNC_RETRY_COOLDOWN_MS: 60000,
+
+            requestSync() {
+                if (this._syncInFlight) return this._syncInFlight;
+                if (this._lastSyncAttemptMs && (Date.now() - this._lastSyncAttemptMs) < this.SYNC_RETRY_COOLDOWN_MS) {
+                    return Promise.resolve(this.synced);
+                }
+                this._lastSyncAttemptMs = Date.now();
+                this._syncInFlight = this.sync().finally(() => { this._syncInFlight = null; });
+                return this._syncInFlight;
+            },
 
             nowMs() {
                 if (!this.synced) return Date.now();
@@ -3366,10 +3651,7 @@ html.glass-enabled .theme-picker-panel,
             },
 
             triggerBackgroundResync() {
-                if (this._resyncInFlight) return;
-                this._resyncInFlight = this.sync().finally(() => {
-                    this._resyncInFlight = null;
-                });
+                this.requestSync();
             },
 
             istParts() {
@@ -3407,7 +3689,7 @@ html.glass-enabled .theme-picker-panel,
                 // 404/500) can hang a fetch() for the browser's full
                 // default timeout — well over a minute in the worst case —
                 // which stalls every resync this page ever attempts
-                // (on load, every 5 min, and on every focus/visibility
+                // (on load, every 15 min, and on every focus/visibility
                 // change) behind that one dead call. That stall is what
                 // shows up as "closing time isn't syncing / lagging": the
                 // page silently keeps running on whatever time it had
@@ -3446,25 +3728,32 @@ html.glass-enabled .theme-picker-panel,
                 // its JSON body, same as the primary — sidesteps this whole
                 // class of header-exposure problem rather than repeating it.
                 const sources = [
-                    async () => {
-                        const res = await fetchWithTimeout("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Kolkata", { cache: "no-store" });
-                        if (!res.ok) throw new Error("timeapi.io not ok");
-                        const data = await res.json();
-                        return Date.UTC(data.year, data.month - 1, data.day, data.hour, data.minute, data.seconds, data.milliSeconds || 0) - IST_OFFSET_MS;
+                    {
+                        name: "timeapi.io",
+                        run: async () => {
+                            const res = await fetchWithTimeout("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Kolkata", { cache: "no-store" });
+                            if (!res.ok) throw new Error("timeapi.io not ok (HTTP " + res.status + ")");
+                            const data = await res.json();
+                            return Date.UTC(data.year, data.month - 1, data.day, data.hour, data.minute, data.seconds, data.milliSeconds || 0) - IST_OFFSET_MS;
+                        }
                     },
-                    async () => {
-                        const res = await fetchWithTimeout("https://time.now/developer/api/timezone/Asia/Kolkata", { cache: "no-store" });
-                        if (!res.ok) throw new Error("time.now not ok");
-                        const data = await res.json();
-                        if (!data.unixtime) throw new Error("no unixtime in response");
-                        return data.unixtime * 1000;
+                    {
+                        name: "time.now",
+                        run: async () => {
+                            const res = await fetchWithTimeout("https://time.now/developer/api/timezone/Asia/Kolkata", { cache: "no-store" });
+                            if (!res.ok) throw new Error("time.now not ok (HTTP " + res.status + ")");
+                            const data = await res.json();
+                            if (!data.unixtime) throw new Error("time.now response missing unixtime — response shape may have changed");
+                            return data.unixtime * 1000;
+                        }
                     }
                 ];
 
-                for (const getServerMs of sources) {
+                const failures = [];
+                for (const source of sources) {
                     try {
                         const t0 = performance.now();
-                        const serverMs = await getServerMs();
+                        const serverMs = await source.run();
                         const t1 = performance.now();
                         this.anchorMs = serverMs + (t1 - t0) / 2;
                         this.perfAtSync = t1;
@@ -3472,10 +3761,19 @@ html.glass-enabled .theme-picker-panel,
                         this.synced = true;
                         return true;
                     } catch (err) {
-                        console.warn("Live IST time source failed, trying next:", err);
+                        // "Failed to fetch" is the browser's one generic message
+                        // for "no HTTP response came back at all" — it covers no
+                        // internet connection, a DNS failure, a firewall/ad-
+                        // blocker/security-extension silently dropping the
+                        // request, and a genuine outage, all identically. Kept
+                        // per-source so a later summary line can still show which
+                        // host it was, without warning on every single source
+                        // individually — that's the noise this consolidation
+                        // removes.
+                        failures.push(`${source.name}: ${err.message || err}`);
                     }
                 }
-                console.warn("All live time sources unreachable — temporarily using device clock as fallback.");
+                console.warn(`All live time sources unreachable (navigator.onLine: ${navigator.onLine}) — temporarily using device clock as fallback. [${failures.join(" | ")}]`);
                 this.synced = false;
                 return false;
             }
@@ -3627,11 +3925,115 @@ html.glass-enabled .theme-picker-panel,
             "Breakfast":      { start: "07:00", end: "10:00" },
             "Lunch Special":  { start: "12:30", end: "14:00" },
             "Lunch":          { start: "12:30", end: "14:00" },
+            // LUNCH TIME MENU uses a dedicated state-machine (getLunchTimeMenuWindowState)
+            // instead of a simple open/close window — do NOT add it here.
             "Evening Snacks": { start: "06:00", end: "15:59", note: "Pre-order only — delivered/picked up between 4:00 PM & 5:30 PM", deliveryWindow: { start: "16:00", end: "17:30" } },
             "Snacks Special": { start: "06:00", end: "15:30", note: "Pre-order only — delivered/picked up between 4:00 PM & 5:30 PM", deliveryWindow: { start: "16:00", end: "17:30" } },
             "Dinner Special": { start: "06:00", end: "17:30", note: "Pre-order only — delivered between 7:00 PM & 10:00 PM", deliveryWindow: { start: "19:00", end: "22:00" } }
         };
         const ENFORCE_CATEGORY_WINDOW = true;
+
+        // ── Lunch Time Menu — Order Window State Machine ────────────────────
+        //
+        // Microsoft Systems Architect pattern: represent the booking lifecycle
+        // as an explicit finite state machine with clearly named states, each
+        // owning its own label, freeze flag, and "order is for" date, rather
+        // than scattered if/else comparisons on raw hours.
+        //
+        // States & transitions (all times IST):
+        //
+        //   ACCEPTING_TODAY  (yesterday 17:00 → today 09:59)
+        //     • Order window OPEN
+        //     • Order is FOR: today's lunch
+        //     • Entry condition: hours < 10
+        //
+        //   FROZEN           (today 10:00 → today 16:59)
+        //     • Order window CLOSED — kitchen is cooking, no new orders
+        //     • Entry condition: hours >= 10 && hours < 17
+        //
+        //   ACCEPTING_TOMORROW (today 17:00 → tomorrow 09:59)
+        //     • Order window OPEN
+        //     • Order is FOR: tomorrow's lunch
+        //     • Entry condition: hours >= 17
+        //
+        // The "order for" date is purely informational — it is shown to the
+        // customer and appended to the WhatsApp message.  No server-side date
+        // shifting is needed because the kitchen staff reads it from the order.
+        // ─────────────────────────────────────────────────────────────────────
+        function getLunchTimeMenuWindowState() {
+            const { hours, minutes, year, month, date } = LiveClock.istParts();
+            const totalMins = hours * 60 + minutes;
+
+            // ── Derive a display date for "order is for" ──────────────────
+            function istDateLabel(offsetDays) {
+                const base = new Date(Date.UTC(year, month, date + offsetDays));
+                return base.toLocaleDateString('en-IN', {
+                    weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'
+                });
+            }
+
+            const FREEZE_START = 10 * 60;   // 10:00 AM in minutes
+            const FREEZE_END   = 17 * 60;   // 5:00 PM  in minutes
+
+            if (totalMins < FREEZE_START) {
+                // Window open: accepting orders for TODAY's lunch
+                const minsUntilFreeze = FREEZE_START - totalMins;
+                const closingSoon = minsUntilFreeze <= 60;
+                return {
+                    state: "ACCEPTING_TODAY",
+                    isOpen: true,
+                    isFrozen: false,
+                    orderForLabel: `Today (${istDateLabel(0)})`,
+                    orderForDate: "today",
+                    windowLabel: "Open until 10:00 AM",
+                    minsUntilChange: minsUntilFreeze,
+                    isClosingSoon: closingSoon,
+                    statusIcon: closingSoon ? "⏳" : "🟢",
+                    statusText: closingSoon
+                        ? `Closing in ${minsUntilFreeze} min — order for today's lunch!`
+                        : `Order window open — ordering for today's lunch`,
+                    infoMessage: `Pre-order by 10:00 AM for today's lunch service (served 12:30 PM – 2:00 PM). After 10 AM the window freezes until 5 PM.`,
+                    bannerType: "open"
+                };
+            } else if (totalMins < FREEZE_END) {
+                // Window FROZEN: kitchen is actively preparing lunch
+                const minsUntilReopen = FREEZE_END - totalMins;
+                return {
+                    state: "FROZEN",
+                    isOpen: false,
+                    isFrozen: true,
+                    orderForLabel: `Tomorrow (${istDateLabel(1)})`,
+                    orderForDate: "tomorrow",
+                    windowLabel: "Frozen 10:00 AM – 5:00 PM",
+                    minsUntilChange: minsUntilReopen,
+                    isClosingSoon: false,
+                    statusIcon: "🔒",
+                    statusText: `Order window frozen — kitchen is preparing today's lunch. Reopens at 5:00 PM for tomorrow's orders.`,
+                    infoMessage: `Order window is frozen from 10:00 AM to 5:00 PM while the kitchen prepares today's lunch. Come back after 5:00 PM to pre-order for tomorrow.`,
+                    bannerType: "frozen"
+                };
+            } else {
+                // Window open: accepting orders for TOMORROW's lunch
+                const minsUntilMidnightFreeze = (24 * 60 + FREEZE_START) - totalMins; // minutes until 10 AM next day
+                const closingSoon = minsUntilMidnightFreeze <= 60;
+                return {
+                    state: "ACCEPTING_TOMORROW",
+                    isOpen: true,
+                    isFrozen: false,
+                    orderForLabel: `Tomorrow (${istDateLabel(1)})`,
+                    orderForDate: "tomorrow",
+                    windowLabel: "Open — pre-booking for tomorrow",
+                    minsUntilChange: minsUntilMidnightFreeze,
+                    isClosingSoon: closingSoon,
+                    statusIcon: closingSoon ? "⏳" : "🟢",
+                    statusText: closingSoon
+                        ? `Closing soon (${minsUntilMidnightFreeze} min) — last chance for tomorrow's lunch order!`
+                        : `Order window open — pre-ordering for tomorrow's lunch`,
+                    infoMessage: `Order window is open! You're pre-ordering for tomorrow's lunch (${istDateLabel(1)}). Window closes again at 10:00 AM tomorrow.`,
+                    bannerType: "open"
+                };
+            }
+        }
 
         function formatHHMM(hhmm) {
             const [h, m] = hhmm.split(":").map(Number);
@@ -3664,6 +4066,20 @@ html.glass-enabled .theme-picker-panel,
         const CATEGORY_CLOSING_SOON_MINUTES = 60;
 
         function getCategoryWindowStatus(categoryName) {
+            // Lunch Time Menu uses a dedicated state machine — delegate immediately.
+            if (categoryName === "LUNCH TIME MENU") {
+                const ltm = getLunchTimeMenuWindowState();
+                return {
+                    label: ltm.windowLabel,
+                    isOpenNow: ltm.isOpen,
+                    isAllDay: false,
+                    minutesToClose: ltm.minsUntilChange,
+                    isClosingSoon: ltm.isClosingSoon,
+                    note: ltm.infoMessage,
+                    ltmState: ltm  // carry the full state for rich rendering
+                };
+            }
+
             const { hours, minutes } = LiveClock.istParts();
             const mins = hours * 60 + minutes;
 
@@ -3803,7 +4219,8 @@ html.glass-enabled .theme-picker-panel,
                 const qty = cart[id];
                 if (qty > 0) {
                     const item = getMenuData().find(m => m.id === id);
-                    const perCycleTotal = FLAT_ITEM_PRICE * qty;
+                    const unitPrice = item.price;
+                    const perCycleTotal = unitPrice * qty;
                     let occurrences = 1;
                     let schedule = null;
 
@@ -3815,7 +4232,7 @@ html.glass-enabled .theme-picker-panel,
                     const total = isRecurring ? perCycleTotal * occurrences : perCycleTotal;
                     subtotal += total;
                     totalQty += qty;
-                    itemsList.push({ id, name: item.name, qty, price: FLAT_ITEM_PRICE, perCycleTotal, occurrences, total, schedule });
+                    itemsList.push({ id, name: item.name, qty, price: unitPrice, perCycleTotal, occurrences, total, schedule });
                 }
             });
 
@@ -3882,6 +4299,7 @@ html.glass-enabled .theme-picker-panel,
             itemSchedules: { Subscription: {} },
 
             getCart() {
+                if (!this.carts[this.orderMode]) this.carts[this.orderMode] = {};
                 return this.carts[this.orderMode];
             },
 
@@ -3928,31 +4346,21 @@ html.glass-enabled .theme-picker-panel,
                     DailyOrderLimiter.applyToUI();
                     POSState.generateOrderId();
                     this.syncTotals();
+                    this.updateLtmPanel();
                     updateWatermark();
                 };
 
                 // A lighter repaint with no network wait — used every time the
                 // tab regains visibility/focus, run *before* the resync below.
-                // Previously the countdown only repainted after LiveClock.sync()
-                // resolved, which is a network round trip (now up to ~4-8s with
-                // the timeout-guarded sources). Combined with browsers throttling
-                // timers heavily in backgrounded tabs — Chrome can drop a 15s
-                // interval to roughly one wake per minute once a tab has been
-                // hidden a few minutes — that left a real window where a
-                // freshly-refocused tab still showed however-long-ago-it-was-
-                // backgrounded numbers. This repaints immediately from whatever
-                // LiveClock.nowMs() can give right now (still accurate — it's
-                // either the live device clock or the last synced anchor plus
-                // elapsed monotonic time, not a frozen value), then verifies
-                // over the network afterward.
                 const refreshDisplayNow = () => {
                     this.updateTodayDateBadge();
                     this.updateKitchenStatus();
                     this.renderMenuIfChanged();
+                    this.updateLtmPanel();
                     updateWatermark();
                 };
 
-                LiveClock.sync().then(refreshAfterResync);
+                LiveClock.requestSync().then(refreshAfterResync);
 
                 // Was an unconditional renderMenu() every 15s — a full
                 // destroy-and-rebuild of every category card and item row,
@@ -3962,22 +4370,26 @@ html.glass-enabled .theme-picker-panel,
                 // boundary). renderMenuIfChanged() does the same cheap
                 // status computation but only touches the DOM when the
                 // rendered output would actually differ.
-                setInterval(() => { this.updateTodayDateBadge(); this.updateKitchenStatus(); this.renderMenuIfChanged(); updateWatermark(); }, 15000);
-                setInterval(() => { LiveClock.sync().then(refreshAfterResync); }, 5 * 60 * 1000);
+                setInterval(() => { this.updateTodayDateBadge(); this.updateKitchenStatus(); this.renderMenuIfChanged(); this.updateLtmPanel(); updateWatermark(); }, 15000);
+                // 15 min, not 5 — a successful sync corrects drift
+                // completely no matter how long the gap between checks, so
+                // a tighter interval only meant hitting already-flaky free
+                // time APIs more often for no real accuracy gain.
+                setInterval(() => { LiveClock.requestSync().then(refreshAfterResync); }, 15 * 60 * 1000);
 
                 document.addEventListener("visibilitychange", () => {
                     if (document.visibilityState === "visible") {
                         refreshDisplayNow();
-                        LiveClock.sync().then(refreshAfterResync);
+                        LiveClock.requestSync().then(refreshAfterResync);
                     }
                 });
                 window.addEventListener("focus", () => {
                     refreshDisplayNow();
-                    LiveClock.sync().then(refreshAfterResync);
+                    LiveClock.requestSync().then(refreshAfterResync);
                 });
                 window.addEventListener("pageshow", () => {
                     refreshDisplayNow();
-                    LiveClock.sync().then(refreshAfterResync);
+                    LiveClock.requestSync().then(refreshAfterResync);
                 });
 
                 document.getElementById("txt-search").focus();
@@ -4008,6 +4420,11 @@ html.glass-enabled .theme-picker-panel,
                 if (closeBtn) closeBtn.style.display = "";
 
                 if (!ANNOUNCEMENT || !ANNOUNCEMENT.enabled || !ANNOUNCEMENT.text) {
+                    bar.classList.remove("visible");
+                    return;
+                }
+
+                if (ANNOUNCEMENT.hideOnModes && ANNOUNCEMENT.hideOnModes.includes(POSState.orderMode)) {
                     bar.classList.remove("visible");
                     return;
                 }
@@ -4087,14 +4504,29 @@ html.glass-enabled .theme-picker-panel,
 
             renderCategories() {
                 const container = document.getElementById("category-pills-container");
-                const categories = ["ALL", ...new Set(getMenuData().map(item => item.category))];
+                const menu = getMenuData();
                 const cart = POSState.getCart();
 
+                // Single pass over the menu to get each category's cart
+                // quantity, instead of re-filtering the full menu array once
+                // per category (previously O(categories × items); this is
+                // O(items) regardless of category count). Same numbers out,
+                // just computed without the repeated getMenuData()/filter()
+                // work per pill.
+                const qtyByCategory = new Map();
+                let totalQty = 0;
+                for (const item of menu) {
+                    const q = cart[item.id] || 0;
+                    if (q > 0) {
+                        qtyByCategory.set(item.category, (qtyByCategory.get(item.category) || 0) + q);
+                        totalQty += q;
+                    }
+                }
+
+                const categories = ["ALL", ...new Set(menu.map(item => item.category))];
+
                 container.innerHTML = categories.map(cat => {
-                    const cartQty = cat === "ALL"
-                        ? Object.values(cart).reduce((a, b) => a + b, 0)
-                        : getMenuData().filter(i => i.category === cat)
-                                   .reduce((sum, i) => sum + (cart[i.id] || 0), 0);
+                    const cartQty = cat === "ALL" ? totalQty : (qtyByCategory.get(cat) || 0);
                     const badge = cartQty > 0 ? `<span class="pill-badge">${cartQty}</span>` : '';
                     const isActive = POSState.activeCategory === cat;
                     const srCount = cartQty > 0 ? `, ${cartQty} in cart` : '';
@@ -4137,6 +4569,13 @@ html.glass-enabled .theme-picker-panel,
                     groups[item.title].push(item);
                 });
 
+                // Hoisted out of the per-category loop below — the closure
+                // window doesn't change mid-render, so this was recomputing
+                // the same IST date math and string comparison once per
+                // category card for an identical result each time. Same
+                // fix pattern as the `isMobile` hoist above.
+                const closure = getStoreClosureStatus();
+
                 let cardIndex = 0;
                 for (const [title, items] of Object.entries(groups)) {
                     cardIndex++;
@@ -4144,7 +4583,6 @@ html.glass-enabled .theme-picker-panel,
                     const shouldCollapse = isMobile && !expandedTitles.has(title);
 
                     const windowStatus = getCategoryWindowStatus(items[0].category);
-                    const closure = getStoreClosureStatus();
                     const isCategoryDisabled = closure.active
                         || (ENFORCE_CATEGORY_WINDOW && !windowStatus.isOpenNow && POSState.orderMode !== "Subscription");
 
@@ -4164,11 +4602,17 @@ html.glass-enabled .theme-picker-panel,
                     const noteHTML = windowStatus.note
                         ? `<p class="category-window-note">ℹ️ ${windowStatus.note}</p>`
                         : '';
-                    const frozenBannerHTML = isCategoryDisabled
-                        ? (closure.active
-                            ? `<div class="frozen-banner">🔒 Temporarily closed (${closure.reason}) until ${closure.toDateLabel} — items shown for reference only</div>`
-                            : `<div class="frozen-banner">🔒 Ordering closed right now — items shown for reference only</div>`)
-                        : '';
+                    let frozenBannerHTML = '';
+                    if (isCategoryDisabled) {
+                        if (closure.active) {
+                            frozenBannerHTML = `<div class="frozen-banner">🔒 Temporarily closed (${closure.reason}) until ${closure.toDateLabel} — items shown for reference only</div>`;
+                        } else if (items[0].category === "LUNCH TIME MENU" && windowStatus.ltmState) {
+                            const ltm = windowStatus.ltmState;
+                            frozenBannerHTML = `<div class="frozen-banner ltm-frozen">🔒 Order window frozen (10:00 AM – 5:00 PM) — the kitchen is preparing today's lunch. Browse the menu and come back after <strong>5:00 PM</strong> to pre-order for tomorrow's lunch.</div>`;
+                        } else {
+                            frozenBannerHTML = `<div class="frozen-banner">🔒 Ordering closed right now — items shown for reference only</div>`;
+                        }
+                    }
 
                     const helpWhatsAppURL = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I need some help placing my order.")}`;
                     const helpNoteHTML = isCategoryDisabled ? `
@@ -4208,12 +4652,13 @@ html.glass-enabled .theme-picker-panel,
                             <div class="menu-item-body">
                                 <div class="item-info">
                                     <h4>${item.name}${item.popular ? '<span class="badge-popular">★ Popular</span>' : ''}</h4>
-                                    <p>₹${FLAT_ITEM_PRICE} <span style="font-size:0.78em;opacity:0.7;font-weight:400;">per item</span></p>
+                                    ${item.desc ? `<p class="menu-item-desc" style="font-size:0.82em;opacity:0.75;margin:2px 0 6px;line-height:1.4;">${item.desc}</p>` : ''}
+                                    <p>₹${item.price} <span style="font-size:0.78em;opacity:0.7;font-weight:400;">per item</span></p>
                                 </div>
                                 <div class="qty-controls">
                                     <button class="qty-btn btn-down" data-id="${item.id}" aria-label="Decrease quantity of ${item.name}" ${isCategoryDisabled ? 'disabled' : ''}>−</button>
                                     <label class="sr-only" for="qty-${item.id}">Quantity of ${item.name}</label>
-                                    <input type="number" id="qty-${item.id}" class="qty-input" data-id="${item.id}" value="${currentQty}" min="0" aria-label="Quantity of ${item.name}, flat price ₹${FLAT_ITEM_PRICE} each" ${isCategoryDisabled ? 'disabled' : ''}>
+                                    <input type="number" id="qty-${item.id}" class="qty-input" data-id="${item.id}" value="${currentQty}" min="0" aria-label="Quantity of ${item.name}, price ₹${item.price} each" ${isCategoryDisabled ? 'disabled' : ''}>
                                     <button class="qty-btn btn-up" data-id="${item.id}" aria-label="Increase quantity of ${item.name}" ${isCategoryDisabled ? 'disabled' : ''}>+</button>
                                 </div>
                             </div>
@@ -4239,7 +4684,8 @@ html.glass-enabled .theme-picker-panel,
             computeMenuSignature() {
                 const cats = [...new Set(getMenuData().map(i => i.category))];
                 const cart = POSState.getCart();
-                let sig = `${POSState.orderMode}|${POSState.activeCategory}|${POSState.searchQuery}|closure:${getStoreClosureStatus().active}`;
+                const ltmSig = POSState.orderMode === "LunchTimeMenu" ? `|ltm:${getLunchTimeMenuWindowState().state}` : "";
+                let sig = `${POSState.orderMode}|${POSState.activeCategory}|${POSState.searchQuery}|closure:${getStoreClosureStatus().active}${ltmSig}`;
                 for (const cat of cats) {
                     const ws = getCategoryWindowStatus(cat);
                     // minutesToClose only matters (and only ticks) while
@@ -4334,8 +4780,75 @@ html.glass-enabled .theme-picker-panel,
                 } else {
                     const qty = POSState.getCart()[itemId] || 0;
                     const cycleLabel = occurrences === 1 ? "cycle" : "cycles";
-                    const total = FLAT_ITEM_PRICE * qty * occurrences;
-                    el.innerHTML = `₹${FLAT_ITEM_PRICE.toFixed(2)} × ${qty} × ${occurrences} ${cycleLabel} = <strong>₹${total.toFixed(2)}</strong>`;
+                    const total = item.price * qty * occurrences;
+                    el.innerHTML = `₹${item.price.toFixed(2)} × ${qty} × ${occurrences} ${cycleLabel} = <strong>₹${total.toFixed(2)}</strong>`;
+                }
+            },
+
+            // ── Lunch Time Menu radiator update ───────────────────────────
+            // Reads the current LTM state-machine output and writes it
+            // into every DOM element that composes the status radiator.
+            // Called from applyOrderMode and on every 15s tick when in
+            // LunchTimeMenu mode.
+            updateLtmPanel() {
+                if (POSState.orderMode !== "LunchTimeMenu") return;
+                const ltm = getLunchTimeMenuWindowState();
+
+                const panel     = document.getElementById("ltm-status-panel");
+                const radiator  = document.getElementById("ltm-radiator");
+                const icon      = document.getElementById("ltm-radiator-icon");
+                const headline  = document.getElementById("ltm-radiator-headline");
+                const sub       = document.getElementById("ltm-radiator-sub");
+                const pill      = document.getElementById("ltm-for-date-pill");
+                const note      = document.getElementById("ltm-info-note");
+
+                const tlToday    = document.getElementById("ltm-tl-accept-today");
+                const tlFrozen   = document.getElementById("ltm-tl-frozen");
+                const tlTomorrow = document.getElementById("ltm-tl-accept-tomorrow");
+
+                if (!panel || !radiator || !icon) return;
+
+                // Radiator strip
+                radiator.className = "ltm-radiator " + (
+                    ltm.isFrozen ? "state-frozen" :
+                    ltm.isClosingSoon ? "state-closing" :
+                    "state-open"
+                );
+
+                icon.textContent = ltm.statusIcon;
+                icon.className = "ltm-radiator-icon" + ((!ltm.isFrozen) ? " pulse-anim" : "");
+
+                const headlineMap = {
+                    "ACCEPTING_TODAY":    "🍽️ Order window open — Pre-order for today's lunch",
+                    "FROZEN":             "🔒 Order window frozen — Kitchen is cooking",
+                    "ACCEPTING_TOMORROW": "📅 Order window open — Pre-order for tomorrow's lunch"
+                };
+                headline.textContent = headlineMap[ltm.state] || ltm.statusText;
+                sub.textContent = ltm.statusText;
+
+                // "Order for" pill
+                const pillClassMap = {
+                    "ACCEPTING_TODAY":    "for-today",
+                    "FROZEN":             "for-frozen",
+                    "ACCEPTING_TOMORROW": "for-tomorrow"
+                };
+                pill.className = "ltm-for-date-pill " + (pillClassMap[ltm.state] || "for-today");
+                const pillIcon = ltm.state === "ACCEPTING_TODAY" ? "📅" : ltm.state === "FROZEN" ? "🔒" : "📅";
+                pill.innerHTML = `${pillIcon} ${ltm.orderForLabel}`;
+
+                // Timeline: highlight active segment
+                [tlToday, tlFrozen, tlTomorrow].forEach(el => { if (el) el.classList.remove("tl-active"); });
+                const activeSegId = {
+                    "ACCEPTING_TODAY":    "ltm-tl-accept-today",
+                    "FROZEN":             "ltm-tl-frozen",
+                    "ACCEPTING_TOMORROW": "ltm-tl-accept-tomorrow"
+                }[ltm.state];
+                const activeSeg = document.getElementById(activeSegId);
+                if (activeSeg) activeSeg.classList.add("tl-active");
+
+                // Info note
+                if (note) {
+                    note.innerHTML = ltm.infoMessage.replace(/(\d{1,2}:\d{2} [AP]M)/g, "<strong>$1</strong>");
                 }
             },
 
@@ -4354,10 +4867,17 @@ html.glass-enabled .theme-picker-panel,
 
                 const subCard = document.getElementById("subscription-schedule-card");
                 const whatsappLabel = document.getElementById("whatsapp-btn-label");
+                const flatPricingBanner = document.getElementById("flat-pricing-banner");
+                const ltmPanel = document.getElementById("ltm-status-panel");
 
                 subCard.classList.toggle("visible", mode === "Subscription");
+                flatPricingBanner.style.display = (mode === "LunchTimeMenu") ? "none" : "flex";
+                if (ltmPanel) ltmPanel.classList.toggle("visible", mode === "LunchTimeMenu");
+                this.renderAnnouncement();
 
                 whatsappLabel.textContent = (mode === "Subscription") ? "Subscribe My Item" : "Place Order";
+
+                if (mode === "LunchTimeMenu") this.updateLtmPanel();
 
                 this.renderCategories();
                 this.renderMenu();
@@ -4472,7 +4992,7 @@ html.glass-enabled .theme-picker-panel,
                             <div class="cir-schedule">${formatItemSchedule(item.schedule)}</div>
                         `;
                     } else {
-                        li.innerHTML = `<span>${item.name}</span><strong>${item.qty} × ₹${FLAT_ITEM_PRICE} = ₹${item.total.toFixed(2)}</strong>`;
+                        li.innerHTML = `<span>${item.name}</span><strong>${item.qty} × ₹${item.price} = ₹${item.total.toFixed(2)}</strong>`;
                     }
                     previewContainer.appendChild(li);
                 });
@@ -4541,8 +5061,9 @@ html.glass-enabled .theme-picker-panel,
                 const d = new Date(LiveClock.nowMs());
                 const short = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' });
                 const full = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' });
-                textEl.textContent = short;
-                if (tabBtn) tabBtn.setAttribute("aria-label", `Today's Order Menu — ${full}`);
+                const time = d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' });
+                textEl.textContent = `${short} · ${time}`;
+                if (tabBtn) tabBtn.setAttribute("aria-label", `Today's Order Menu — ${full}, ${time}`);
             },
 
             showToast(message, type = "info") {
@@ -5217,7 +5738,9 @@ html.glass-enabled .theme-picker-panel,
                 document.getElementById("print-order-no").innerText = POSState.orderId;
                 document.getElementById("print-datetime").innerText = new Date(LiveClock.nowMs()).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
                 document.getElementById("print-order-type").innerText = POSState.orderType +
-                    (POSState.orderMode === "Subscription" ? " (Subscribe My Item)" : "");
+                    (POSState.orderMode === "Subscription" ? " (Subscribe My Item)"
+                        : POSState.orderMode === "LunchTimeMenu" ? " (Lunch Time Menu)"
+                        : "");
                 document.getElementById("print-cust-info").innerHTML = `<strong>${customer.name}</strong> (${customer.fullPhone})<br>
                        Flat/Door: ${customer.door}${customer.apart ? ', ' + customer.apart : ''}
                        ${isPickup ? `<br>Self Pickup at Counter` : ''}`;
@@ -5225,8 +5748,8 @@ html.glass-enabled .theme-picker-panel,
                 const body = document.getElementById("print-items-body");
                 body.innerHTML = invoice.itemsList.map(item => {
                     const qtyCell = invoice.isRecurring
-                        ? (item.occurrences > 0 ? `${item.qty} × ₹${FLAT_ITEM_PRICE} × ${item.occurrences}` : `${item.qty} × ₹${FLAT_ITEM_PRICE} × —`)
-                        : `${item.qty} × ₹${FLAT_ITEM_PRICE}`;
+                        ? (item.occurrences > 0 ? `${item.qty} × ₹${item.price} × ${item.occurrences}` : `${item.qty} × ₹${item.price} × —`)
+                        : `${item.qty} × ₹${item.price}`;
                     return `
                         <tr>
                             <td>${item.name}</td>
@@ -5295,16 +5818,21 @@ html.glass-enabled .theme-picker-panel,
                 }
                 text += LINE;
 
-                text += `🍽️ *My Order:* _(Flat ₹${FLAT_ITEM_PRICE} per item)_\n\n`;
+                if (POSState.orderMode === "LunchTimeMenu") {
+                    const ltmState = getLunchTimeMenuWindowState();
+                    text += `🍽️ *Lunch Order for: ${ltmState.orderForLabel}*\n   (Served 12:30 PM – 2:00 PM)\n\n`;
+                } else {
+                    text += `🍽️ *My Order:* _(Flat ₹${FLAT_ITEM_PRICE} per item)_\n\n`;
+                }
                 invoice.itemsList.forEach((item, i) => {
                     if (isRecurring) {
                         const cycleLabel = item.occurrences === 1 ? "cycle" : "cycles";
                         text += item.occurrences > 0
-                            ? `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${FLAT_ITEM_PRICE} × ${item.occurrences} ${cycleLabel} = *₹${item.total.toFixed(2)}*\n`
-                            : `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${FLAT_ITEM_PRICE} — _schedule incomplete, total pending_\n`;
+                            ? `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${item.price} × ${item.occurrences} ${cycleLabel} = *₹${item.total.toFixed(2)}*\n`
+                            : `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${item.price} — _schedule incomplete, total pending_\n`;
                         text += `     ${formatItemSchedule(item.schedule)}\n`;
                     } else {
-                        text += `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${FLAT_ITEM_PRICE} = *₹${item.total.toFixed(2)}*\n`;
+                        text += `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${item.price} = *₹${item.total.toFixed(2)}*\n`;
                     }
                     text += `\n`;
                 });
