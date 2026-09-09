@@ -898,6 +898,67 @@
             color: var(--text-main);
         }
 
+        /* ── Lunch Time Menu — mobile rework ──────────────────────────────
+           Apple HIG (Dynamic Type / touch-target clarity), Material Design
+           (responsive layout breakpoints) and Nielsen Norman (no hidden
+           horizontal scroll, single reading column) all converge on the
+           same fix here: this panel was a 3-across flex row (icon + text
+           + pill) sitting on top of a 3-across timeline row that could
+           only fit ~300px of segments — both silently overflowed or
+           got crushed below ~380px. On small screens we stack instead
+           of squeeze: the date pill drops to its own line under the
+           headline, and the timeline becomes a vertical stepper (a
+           pattern iOS and Android both use for status/progress at this
+           width) instead of a horizontally-scrolling strip. ── */
+        @media (max-width: 600px) {
+            .ltm-radiator {
+                flex-wrap: wrap;
+                row-gap: var(--space-2);
+                padding: var(--space-3) var(--space-4);
+            }
+            .ltm-radiator-icon { font-size: 1.5rem; }
+            .ltm-radiator-headline { font-size: var(--text-subhead); line-height: 1.3; }
+            .ltm-radiator-sub { font-size: var(--text-caption2); }
+            .ltm-for-date-pill {
+                flex-basis: 100%;
+                width: fit-content;
+                margin-left: calc(1.5rem + var(--space-3));
+            }
+            .ltm-info-body { padding: var(--space-3) var(--space-4) var(--space-4); }
+
+            .ltm-timeline {
+                flex-direction: column;
+                align-items: stretch;
+                overflow-x: visible;
+                gap: var(--space-2);
+            }
+            .ltm-tl-seg {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-areas: "icon label" "icon time";
+                column-gap: var(--space-3);
+                align-items: center;
+                flex: none;
+                min-width: 0;
+                width: 100%;
+                text-align: left;
+                padding: var(--space-3) var(--space-4);
+            }
+            .ltm-tl-seg-icon { grid-area: icon; font-size: 1.35rem; align-self: center; }
+            .ltm-tl-seg-label { grid-area: label; white-space: normal; }
+            .ltm-tl-seg-time { grid-area: time; white-space: normal; }
+            .ltm-tl-arrow {
+                align-self: center;
+                transform: rotate(90deg);
+                margin: -2px 0;
+                padding: 0;
+            }
+        }
+        @media (max-width: 380px) {
+            .ltm-radiator-icon { font-size: 1.3rem; }
+            .ltm-for-date-pill { margin-left: calc(1.3rem + var(--space-2)); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .ltm-status-panel { animation: none; }
             .ltm-radiator-icon.pulse-anim { animation: none; }
