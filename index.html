@@ -2106,7 +2106,32 @@
         }
         .btn-upi:hover { background: linear-gradient(135deg, #5B11D8, #7E22CE); }
 
-        .category-toggle-icon { display: none; font-size: var(--text-caption1); color: var(--text-muted); transition: transform 0.25s ease; flex-shrink: 0; padding: 4px; }
+        /* Disclosure chip — was a bare 12px muted-gray glyph that read
+           as decoration, not a control, especially against the vivid
+           per-category gradient card backgrounds where var(--text-muted)
+           has poor contrast. Now styled as the same dark frosted-glass
+           chip used for the status badges above (category-time-badge),
+           so it reliably reads as a tappable affordance regardless of
+           the card's hue/theme, matching the iOS/Material pattern of a
+           filled disclosure control rather than a plain chevron glyph. */
+        .category-toggle-icon {
+            display: none;
+            align-items: center; justify-content: center;
+            width: 30px; height: 30px;
+            font-size: 1rem; line-height: 1;
+            color: #fff;
+            background: rgba(0,0,0,0.30);
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+            box-shadow: 0 1px 5px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.12);
+            transition: transform 0.25s ease, background 0.15s ease, box-shadow 0.15s ease;
+            flex-shrink: 0;
+        }
+        .category-title-btn:active .category-toggle-icon { background: rgba(0,0,0,0.45); box-shadow: 0 1px 3px rgba(0,0,0,0.3) inset; }
+        @media (hover: hover) {
+            .category-title-btn:hover .category-toggle-icon { background: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.6); }
+        }
 
         .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(21,10,11,0.5); z-index: 900; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
         .mobile-overlay.active { display: block; }
@@ -2155,7 +2180,7 @@
             .menu-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
             .category-card { max-width: 100%; overflow: hidden; }
             .category-title { cursor: pointer; user-select: none; -webkit-user-select: none; display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
-            .category-toggle-icon { display: inline-block; }
+            .category-toggle-icon { display: inline-flex; }
             .category-card.collapsed .menu-items-body { display: none; }
             .category-card.collapsed .category-title { border-bottom-color: transparent; margin-bottom: 0; padding-bottom: 0; }
             .category-card.collapsed { padding-bottom: 0.75rem; }
