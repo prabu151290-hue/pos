@@ -3669,7 +3669,7 @@ html.glass-enabled .theme-picker-panel,
             { id: "ltm3", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Starter of the Day", price: 99 },
             { id: "ltm4", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Onion Raita 250ml", price: 49 },
             { id: "ltm5", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Mint Spicy Butter Milk 500ml", price: 49 },
-            { id: "ltm6", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Araichuvitta Sambar 250ml", price: 50 }
+            { id: "ltm6", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Araichuvitta Sambar 250ml", price: 50 },
             { id: "ltm7", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Ghee Rava Kesari 250ml", price: 99 }
             
         ],
@@ -3827,13 +3827,21 @@ html.glass-enabled .theme-picker-panel,
                         }
                     },
                     {
-                        name: "time.now",
+                        // ipapi.co — returns { utc_datetime: "2025-…T…Z", … }
+                        // in its JSON body with open CORS headers. Verified
+                        // as of 2025: no auth required, no header-exposure
+                        // problems (the datetime is in the body, not a
+                        // response header), and the endpoint is stable.
+                        name: "ipapi.co",
                         run: async () => {
-                            const res = await fetchWithTimeout("https://time.now/developer/api/timezone/Asia/Kolkata", { cache: "no-store" });
-                            if (!res.ok) throw new Error("time.now not ok (HTTP " + res.status + ")");
+                            const res = await fetchWithTimeout("https://ipapi.co/json/", { cache: "no-store" });
+                            if (!res.ok) throw new Error("ipapi.co not ok (HTTP " + res.status + ")");
                             const data = await res.json();
-                            if (!data.unixtime) throw new Error("time.now response missing unixtime — response shape may have changed");
-                            return data.unixtime * 1000;
+                            if (!data.utc_datetime) throw new Error("ipapi.co response missing utc_datetime — response shape may have changed");
+                            // utc_datetime is ISO-8601 UTC e.g. "2025-06-01T12:34:56.789012Z"
+                            const ms = Date.parse(data.utc_datetime);
+                            if (isNaN(ms)) throw new Error("ipapi.co utc_datetime could not be parsed: " + data.utc_datetime);
+                            return ms;
                         }
                     }
                 ];
