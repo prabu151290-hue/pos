@@ -3827,20 +3827,16 @@ html.glass-enabled .theme-picker-panel,
                         }
                     },
                     {
-                        // ipapi.co — returns { utc_datetime: "2025-…T…Z", … }
-                        // in its JSON body with open CORS headers. Verified
-                        // as of 2025: no auth required, no header-exposure
-                        // problems (the datetime is in the body, not a
-                        // response header), and the endpoint is stable.
+                        // ipapi.co — returns { utc_datetime: "…Z", … } in its
+                        // JSON body with open CORS headers; no auth required.
                         name: "ipapi.co",
                         run: async () => {
                             const res = await fetchWithTimeout("https://ipapi.co/json/", { cache: "no-store" });
                             if (!res.ok) throw new Error("ipapi.co not ok (HTTP " + res.status + ")");
                             const data = await res.json();
-                            if (!data.utc_datetime) throw new Error("ipapi.co response missing utc_datetime — response shape may have changed");
-                            // utc_datetime is ISO-8601 UTC e.g. "2025-06-01T12:34:56.789012Z"
+                            if (!data.utc_datetime) throw new Error("ipapi.co response missing utc_datetime");
                             const ms = Date.parse(data.utc_datetime);
-                            if (isNaN(ms)) throw new Error("ipapi.co utc_datetime could not be parsed: " + data.utc_datetime);
+                            if (isNaN(ms)) throw new Error("ipapi.co utc_datetime unparseable: " + data.utc_datetime);
                             return ms;
                         }
                     }
@@ -4459,21 +4455,63 @@ html.glass-enabled .theme-picker-panel,
 
                 LiveClock.requestSync().then(refreshAfterResync);
 
-                // Was an unconditional renderMenu() every 15s — a full
-                // destroy-and-rebuild of every category card and item row,
-                // 240x/hour, even though the only thing that ever actually
-                // changes on this tick is a category's open/closed/
-                // closing-soon label (and that only near a window
-                // boundary). renderMenuIfChanged() does the same cheap
-                // status computation but only touches the DOM when the
-                // rendered output would actually differ.
-                setInterval(() => { this.updateTodayDateBadge(); this.updateKitchenStatus(); this.renderMenuIfChanged(); this.updateLtmPanel(); updateWatermark(); }, 15000);
-                // 15 min, not 5 — a successful sync corrects drift
-                // completely no matter how long the gap between checks, so
-                // a tighter interval only meant hitting already-flaky free
-                // time APIs more often for no real accuracy gain.
+                // ── 1-second live display ticker ──────────────────────────
+                // Problem: the previous setInterval ran every 15 seconds —
+                // already coarse for a displayed clock — but browsers also
+                // throttle setInterval to ≥1 minute for backgrounded/hidden
+                // tabs. Coming back after a few minutes left the date badge
+                // and kitchen-status text showing a stale time until the
+                // next 15s tick happened to fire. The fix has three parts:
+                //
+                // 1. A self-scheduling setTimeout loop (not setInterval)
+                //    fires every ~1 second to update only the cheap display
+                //    elements: the date/time badge on the Today tab, the
+                //    kitchen-open/closed status text, and the LTM countdown.
+                //    These reads are pure JS arithmetic against LiveClock —
+                //    no network, no DOM query except a textContent write —
+                //    so the 1 s cadence adds negligible CPU cost.
+                //
+                // 2. The loop skips ticks while the tab is hidden (document
+                //    .visibilityState !== "visible"), scheduling its next
+                //    wakeup at the same 1 s interval. This keeps it
+                //    "running" without spending a timer slot on a hidden
+                //    tab, and avoids any browser penalty for high-frequency
+                //    hidden-tab timers.
+                //
+                // 3. On visibilitychange / focus / pageshow the loop fires
+                //    refreshDisplayNow() immediately — before the next 1 s
+                //    tick — so the clock snaps to current time the instant
+                //    the user switches back, with no perceptible lag.
+                //
+                // The heavier 15 s (menu re-render check) and 15 min
+                // (network resync) intervals are kept unchanged below.
+                let _tickHandle = null;
+                const tickDisplay = () => {
+                    if (document.visibilityState === "visible") {
+                        this.updateTodayDateBadge();
+                        this.updateKitchenStatus();
+                        this.updateLtmPanel();
+                    }
+                    _tickHandle = setTimeout(tickDisplay, 1000);
+                };
+                tickDisplay(); // start immediately
+
+                // 15 s: check whether the menu DOM needs a re-render (cheap
+                // signature diff; only touches the DOM when something changed).
+                setInterval(() => {
+                    if (document.visibilityState === "visible") {
+                        this.renderMenuIfChanged();
+                        updateWatermark();
+                    }
+                }, 15000);
+
+                // 15 min: re-sync the live clock against a time API so any
+                // accumulated device-clock drift is corrected.
                 setInterval(() => { LiveClock.requestSync().then(refreshAfterResync); }, 15 * 60 * 1000);
 
+                // On tab return: snap display immediately, then kick off a
+                // background resync (requestSync honours its own 60 s
+                // cooldown so rapid tab-switching doesn't hammer the API).
                 document.addEventListener("visibilitychange", () => {
                     if (document.visibilityState === "visible") {
                         refreshDisplayNow();
@@ -4488,6 +4526,7 @@ html.glass-enabled .theme-picker-panel,
                     refreshDisplayNow();
                     LiveClock.requestSync().then(refreshAfterResync);
                 });
+                // ── end live display ticker ───────────────────────────────
 
                 document.getElementById("txt-search").focus();
             },
