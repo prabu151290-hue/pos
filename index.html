@@ -705,264 +705,79 @@
             .mode-tab, .mode-tab-date { transition: var(--transition); }
         }
 
-        /* ════════════════════════════════════════════════════════════════
-           LUNCH TIME MENU — Order Window Status Radiator
-           A "radiator" in the Microsoft Systems architecture sense:
-           a single, prominent, always-visible panel that broadcasts
-           the current system state so any stakeholder can read it
-           at a glance without drilling into details.
-           ════════════════════════════════════════════════════════════════ */
-
-        .ltm-status-panel {
-            display: none;
-            margin-bottom: var(--space-5);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-lift);
-            animation: toast-in 0.22s ease-out;
-        }
-        .ltm-status-panel.visible { display: block; }
-
-        /* ── Radiator header strip — full-width state indicator ── */
-        .ltm-radiator {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            padding: var(--space-4) var(--space-5);
-            position: relative;
-        }
-        .ltm-radiator.state-open {
-            background: linear-gradient(135deg,
-                color-mix(in srgb, #22c55e 18%, var(--surface)),
-                color-mix(in srgb, #4ade80 8%, var(--surface)));
-            border: 1.5px solid color-mix(in srgb, #22c55e 40%, var(--border));
-            border-bottom: none;
-        }
-        .ltm-radiator.state-frozen {
-            background: linear-gradient(135deg,
-                color-mix(in srgb, #f97316 18%, var(--surface)),
-                color-mix(in srgb, #fb923c 8%, var(--surface)));
-            border: 1.5px solid color-mix(in srgb, #f97316 40%, var(--border));
-            border-bottom: none;
-        }
-        .ltm-radiator.state-closing {
-            background: linear-gradient(135deg,
-                color-mix(in srgb, #eab308 22%, var(--surface)),
-                color-mix(in srgb, #facc15 10%, var(--surface)));
-            border: 1.5px solid color-mix(in srgb, #eab308 40%, var(--border));
-            border-bottom: none;
+        /* ── Optional item description ─────────────────────────────────
+           Rendered only when an item has a `desc`. Deliberately a
+           different voice from the item name: serif italic, softer
+           tone, smaller size, and a thin accent rule picked up from the
+           card's own category colour — reads like a menu "tasting note". */
+        .item-info .item-desc {
+            font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: 0.84rem;
+            line-height: 1.5;
+            letter-spacing: 0.01em;
+            color: color-mix(in srgb, var(--text-main) 70%, transparent);
+            margin: 0.3rem 0 0.4rem;
+            padding-left: 0.65rem;
+            border-left: 2px solid color-mix(in srgb, var(--card-accent, var(--accent)) 70%, transparent);
+            max-width: 62ch;
+            text-wrap: pretty;
         }
 
-        .ltm-radiator-icon {
-            font-size: 1.9rem;
-            line-height: 1;
-            flex-shrink: 0;
+        /* ── Festive & Pooja's Prasadham Ordering ───────────────────────── */
+        .menu-items-body.pp-grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+        .pp-body { display: flex; flex-direction: column; gap: var(--space-3); }
+        .pp-fields { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3); }
+        .pp-field { display: flex; flex-direction: column; gap: 4px; }
+        .pp-field > label {
+            font-size: var(--text-caption2); font-weight: 700; letter-spacing: .06em;
+            text-transform: uppercase; color: var(--text-muted);
         }
-        .ltm-radiator-icon.pulse-anim {
-            animation: ltm-pulse-icon 2.4s ease-in-out infinite;
+        .pp-inline { display: flex; align-items: center; gap: 6px; }
+        input.pp-ro {
+            width: 4.6rem; height: 40px; text-align: center; font-weight: 800; font-size: 1rem;
+            color: var(--text-main); background: color-mix(in srgb, var(--text-main) 8%, transparent);
+            border: 1px dashed color-mix(in srgb, var(--text-main) 28%, transparent);
+            border-radius: var(--radius-sm); cursor: default; padding: 0 6px; box-shadow: none;
         }
-        @keyframes ltm-pulse-icon {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.12); opacity: 0.82; }
+        input.pp-ro.pp-ro-price { width: 5rem; color: var(--gold-bright); }
+        input.pp-ro.pp-ro-unit { width: 3.6rem; }
+        .pp-per { font-size: var(--text-footnote); font-weight: 700; opacity: .85; }
+        input.pp-qty {
+            width: 4.2rem; height: 40px; text-align: center; font-weight: 700; font-size: 16px;
+            background: transparent; color: var(--text-main);
+            border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 6px;
         }
+        input.pp-qty[aria-invalid="true"] { border-color: #ff6b6b; box-shadow: 0 0 0 2px rgba(255,107,107,.25); }
+        .pp-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+        .btn.pp-add { min-height: 40px; padding: 0 var(--space-4); font-size: var(--text-footnote); font-weight: 700; }
+        .pp-remove {
+            background: transparent; border: 0; color: var(--text-main); opacity: .8; cursor: pointer;
+            text-decoration: underline; font-size: var(--text-footnote); padding: 6px 4px; min-height: 40px;
+        }
+        .pp-remove[hidden] { display: none; }
+        .pp-incart { font-size: var(--text-footnote); font-weight: 700; color: var(--success); }
+        .pp-incart:empty { display: none; }
+        .pp-err { min-height: 0; margin: 0; font-size: var(--text-caption1); font-weight: 600; color: #ff8a8a; }
+        .pp-err:empty { display: none; }
+        .pp-range-hint { font-size: var(--text-caption2); opacity: .75; }
 
-        .ltm-radiator-text { flex: 1; min-width: 0; }
-        .ltm-radiator-headline {
-            font-family: var(--font-heading);
-            font-size: var(--text-title3);
-            font-weight: 700;
-            color: var(--heading-color);
-            margin-bottom: 0.18rem;
+        .pooja-form-card {
+            display: none; margin-bottom: var(--space-5); padding: var(--space-4) var(--space-5);
+            border-radius: var(--radius-lg); border: 1px solid color-mix(in srgb, #A61E3A 55%, transparent);
+            background: color-mix(in srgb, #A61E3A 14%, var(--surface) 86%); box-shadow: var(--shadow);
         }
-        .ltm-radiator-sub {
-            font-size: var(--text-footnote);
-            color: var(--text-muted);
-            line-height: 1.45;
-        }
-
-        /* "For Date" pill — the most important datum: which meal is being booked */
-        .ltm-for-date-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-1);
-            padding: 0.3rem var(--space-3);
-            border-radius: var(--radius-xl);
-            font-family: var(--font-btn);
-            font-size: var(--text-caption1);
-            font-weight: 700;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .ltm-for-date-pill.for-today {
-            background: color-mix(in srgb, #22c55e 20%, var(--surface));
-            color: #166534;
-            border: 1.5px solid color-mix(in srgb, #22c55e 45%, transparent);
-        }
-        [data-theme-mode="dark"] .ltm-for-date-pill.for-today {
-            color: #86efac;
-            border-color: color-mix(in srgb, #22c55e 35%, transparent);
-        }
-        .ltm-for-date-pill.for-tomorrow {
-            background: color-mix(in srgb, #6366f1 18%, var(--surface));
-            color: #3730a3;
-            border: 1.5px solid color-mix(in srgb, #6366f1 38%, transparent);
-        }
-        [data-theme-mode="dark"] .ltm-for-date-pill.for-tomorrow {
-            color: #a5b4fc;
-            border-color: color-mix(in srgb, #6366f1 32%, transparent);
-        }
-        .ltm-for-date-pill.for-frozen {
-            background: color-mix(in srgb, #f97316 16%, var(--surface));
-            color: #9a3412;
-            border: 1.5px solid color-mix(in srgb, #f97316 35%, transparent);
-        }
-        [data-theme-mode="dark"] .ltm-for-date-pill.for-frozen {
-            color: #fdba74;
-            border-color: color-mix(in srgb, #f97316 30%, transparent);
-        }
-
-        /* ── Info body below the radiator strip ── */
-        .ltm-info-body {
-            background: var(--surface);
-            border: 1.5px solid var(--border);
-            border-top: none;
-            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-            padding: var(--space-3) var(--space-5) var(--space-4);
-        }
-
-        /* Timeline: shows the three states as a track */
-        .ltm-timeline {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            margin-top: var(--space-3);
-            margin-bottom: var(--space-3);
-            font-size: var(--text-caption2);
-            font-family: var(--font-btn);
-            overflow-x: auto;
-        }
-        .ltm-tl-seg {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            padding: var(--space-2) var(--space-3);
-            border-radius: var(--radius-md);
-            flex: 1;
-            min-width: 90px;
-            transition: var(--transition);
-            border: 1.5px solid transparent;
-        }
-        .ltm-tl-seg.tl-active {
-            border-color: var(--accent);
-            background: color-mix(in srgb, var(--accent) 10%, var(--surface));
-        }
-        .ltm-tl-seg-icon { font-size: 1.2rem; }
-        .ltm-tl-seg-label {
-            font-weight: 700;
-            color: var(--text-main);
-            white-space: nowrap;
-        }
-        .ltm-tl-seg-time {
-            color: var(--text-muted);
-            white-space: nowrap;
-        }
-        .ltm-tl-arrow {
-            font-size: 1rem;
-            color: var(--text-muted);
-            padding: 0 var(--space-1);
-            flex-shrink: 0;
-            margin-bottom: 10px; /* align with middle of segments */
-        }
-
-        .ltm-info-note {
-            font-size: var(--text-caption1);
-            color: var(--text-muted);
-            line-height: 1.55;
-            padding-top: var(--space-2);
-            border-top: 1px dashed var(--border);
-        }
-        .ltm-info-note strong { color: var(--text-main); }
-
-        /* frozen overlay — a translucent freeze badge on the category card */
-        .frozen-banner.ltm-frozen {
-            background: linear-gradient(135deg,
-                color-mix(in srgb, #f97316 22%, var(--surface)),
-                color-mix(in srgb, #fb923c 12%, var(--surface)));
-            border-left: 4px solid #f97316;
-            border-radius: var(--radius-md);
-            padding: var(--space-3) var(--space-4);
-            margin-bottom: var(--space-3);
-            font-size: var(--text-subhead);
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        /* ── Lunch Time Menu — mobile rework ──────────────────────────────
-           Apple HIG (Dynamic Type / touch-target clarity), Material Design
-           (responsive layout breakpoints) and Nielsen Norman (no hidden
-           horizontal scroll, single reading column) all converge on the
-           same fix here: this panel was a 3-across flex row (icon + text
-           + pill) sitting on top of a 3-across timeline row that could
-           only fit ~300px of segments — both silently overflowed or
-           got crushed below ~380px. On small screens we stack instead
-           of squeeze: the date pill drops to its own line under the
-           headline, and the timeline becomes a vertical stepper (a
-           pattern iOS and Android both use for status/progress at this
-           width) instead of a horizontally-scrolling strip. ── */
-        @media (max-width: 600px) {
-            .ltm-radiator {
-                flex-wrap: wrap;
-                row-gap: var(--space-2);
-                padding: var(--space-3) var(--space-4);
-            }
-            .ltm-radiator-icon { font-size: 1.5rem; }
-            .ltm-radiator-headline { font-size: var(--text-subhead); line-height: 1.3; }
-            .ltm-radiator-sub { font-size: var(--text-caption2); }
-            .ltm-for-date-pill {
-                flex-basis: 100%;
-                width: fit-content;
-                margin-left: calc(1.5rem + var(--space-3));
-            }
-            .ltm-info-body { padding: var(--space-3) var(--space-4) var(--space-4); }
-
-            .ltm-timeline {
-                flex-direction: column;
-                align-items: stretch;
-                overflow-x: visible;
-                gap: var(--space-2);
-            }
-            .ltm-tl-seg {
-                display: grid;
-                grid-template-columns: auto 1fr;
-                grid-template-areas: "icon label" "icon time";
-                column-gap: var(--space-3);
-                align-items: center;
-                flex: none;
-                min-width: 0;
-                width: 100%;
-                text-align: left;
-                padding: var(--space-3) var(--space-4);
-            }
-            .ltm-tl-seg-icon { grid-area: icon; font-size: 1.35rem; align-self: center; }
-            .ltm-tl-seg-label { grid-area: label; white-space: normal; }
-            .ltm-tl-seg-time { grid-area: time; white-space: normal; }
-            .ltm-tl-arrow {
-                align-self: center;
-                transform: rotate(90deg);
-                margin: -2px 0;
-                padding: 0;
-            }
-        }
-        @media (max-width: 380px) {
-            .ltm-radiator-icon { font-size: 1.3rem; }
-            .ltm-for-date-pill { margin-left: calc(1.3rem + var(--space-2)); }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .ltm-status-panel { animation: none; }
-            .ltm-radiator-icon.pulse-anim { animation: none; }
-        }
+        .pooja-form-card.visible { display: block; }
+        .pooja-form-title { font-family: var(--font-display, "Playfair Display", serif); font-size: 1.2rem; margin: 0 0 4px; color: var(--text-main); }
+        .pooja-form-hint { font-size: var(--text-footnote); opacity: .85; margin: 0 0 var(--space-4); line-height: 1.5; }
+        .pooja-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3) var(--space-4); }
+        .pooja-form-grid .pf-full { grid-column: 1 / -1; }
+        .pooja-form-grid input.pf-readonly { font-weight: 700; cursor: default; background: color-mix(in srgb, var(--text-main) 8%, transparent); border-style: dashed; }
+        .pooja-form-grid .has-error input { border-color: #ff6b6b; box-shadow: 0 0 0 2px rgba(255,107,107,.22); }
+        .pf-err { font-size: var(--text-caption1); font-weight: 600; color: #ff8a8a; }
+        .pf-err:empty { display: none; }
+        @media (max-width: 560px) { .pooja-form-grid { grid-template-columns: 1fr; } .pooja-form-card { padding: var(--space-4); } }
 
         /* ---- PER-ITEM SUBSCRIPTION SCHEDULE PANEL (ported from Subscribe
            My Item) — rendered by renderMenu() as a sibling block below a
@@ -3048,7 +2863,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
     outline: 2px solid var(--gold-bright); outline-offset: 2px;
 }
 
-/* 2 ▸ Lunch-menu announcement: was a light cream slab on a dark theme.
+/* 2 ▸ Announcement bar: was a light cream slab on a dark theme.
        Now tinted glass that follows the theme and keeps AA contrast. */
 .announcement-bar {
     background: color-mix(in srgb, var(--gold-mid) 14%, var(--surface) 86%) !important;
@@ -3146,16 +2961,6 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
     .category-card:hover, .menu-item:hover { transform: none !important; }
 }
 
-/* 2b ▸ Lunch notice (inline-styled): theme-aware tint + readable text */
-[aria-label="Lunch Time Menu tab notice"] {
-    background: color-mix(in srgb, var(--gold-mid) 16%, var(--surface) 84%) !important;
-    border: 1px solid color-mix(in srgb, var(--gold-mid) 50%, transparent) !important;
-    border-radius: var(--radius-lg) !important;
-    box-shadow: var(--shadow) !important;
-}
-[aria-label="Lunch Time Menu tab notice"] strong { color: var(--gold-bright) !important; }
-[aria-label="Lunch Time Menu tab notice"] span:not(:first-child) { color: var(--text-main) !important; opacity: .9; }
-
 /* 2c ▸ Pure-veg mark: legible 16px badge instead of a speck */
 .status-board .veg-mark { width: 16px; height: 16px; flex-shrink: 0; }
     </style>
@@ -3220,25 +3025,6 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 </div>
             </section>
 
-            <!-- Lunch Time Menu tab callout — hidden once the customer is already on the Lunch Time Menu tab, since introducing it there is redundant -->
-            <div id="flat-pricing-banner" style="
-                background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
-                border: 1.5px solid #ffcc02;
-                border-radius: 16px;
-                padding: 14px 20px;
-                margin-bottom: 20px;
-                display: flex;
-                align-items: center;
-                gap: 14px;
-                box-shadow: 0 2px 10px rgba(255,180,0,0.12);
-            " role="note" aria-label="Lunch Time Menu tab notice">
-                <span style="font-size:1.9rem;line-height:1;flex-shrink:0;">🍽️</span>
-                <div>
-                    <strong style="font-size:1.05rem;color:#7a4a00;display:block;margin-bottom:2px;">Introducing the Lunch Menu tab</strong>
-                    <span style="font-size:0.9rem;color:#a06000;line-height:1.45;">You can pre-order your lunch accordingly.</span>
-                </div>
-            </div>
-
             <div class="mode-tabs" id="mode-tabs" role="group" aria-label="Ordering mode">
                 <button type="button" class="mode-tab active" data-mode="Instant" aria-pressed="true">
                     <span>⚡ Today's Order Menu</span>
@@ -3247,8 +3033,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                         <span id="today-date-text">…</span>
                     </span>
                 </button>
-                <button type="button" class="mode-tab" data-mode="LunchTimeMenu" aria-pressed="false">
-                    <span>🍽️ Lunch Time Menu</span>
+                <button type="button" class="mode-tab" data-mode="PoojaPrasadham" aria-pressed="false">
+                    <span>🪔 Festive &amp; Pooja's Prasadham Ordering</span>
                 </button>
             </div>
 
@@ -3256,45 +3042,6 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 <h3 class="schedule-card-title">🔁 Subscribe My Item</h3>
                 <p class="schedule-card-hint" style="margin-top:0;">Add any item below and a scheduling panel will appear under it — set its own repeat pattern, date range, and delivery time. Every item in your basket can run on a different schedule.</p>
                 <p class="schedule-card-hint">⏳ The kitchen needs at least <strong>36 hours' notice</strong> before a subscription's first delivery, so the calendar only opens starting 36 hours from now — and stays selectable for <strong>45 days</strong> from that point.</p>
-            </div>
-
-            <!-- ── Lunch Time Menu: Order Window Radiator Panel ──────────────
-                 Visible only in LunchTimeMenu mode. Renders three sub-regions:
-                 1. Radiator strip — coloured headline showing current state
-                 2. Timeline — three segments (Accept Today / Frozen / Accept Tomorrow)
-                 3. Info note — one-line contextual guidance for the customer
-            ─────────────────────────────────────────────────────────────────── -->
-            <div class="ltm-status-panel" id="ltm-status-panel" role="status" aria-live="polite" aria-label="Lunch Time Menu order window status">
-                <div class="ltm-radiator" id="ltm-radiator">
-                    <span class="ltm-radiator-icon" id="ltm-radiator-icon" aria-hidden="true">🟢</span>
-                    <div class="ltm-radiator-text">
-                        <div class="ltm-radiator-headline" id="ltm-radiator-headline">Checking order window…</div>
-                        <div class="ltm-radiator-sub" id="ltm-radiator-sub"></div>
-                    </div>
-                    <span class="ltm-for-date-pill" id="ltm-for-date-pill" aria-label="Order is for">…</span>
-                </div>
-                <div class="ltm-info-body">
-                    <div class="ltm-timeline" role="img" aria-label="Order window timeline">
-                        <div class="ltm-tl-seg" id="ltm-tl-accept-today" aria-label="Accept orders for today: yesterday 5 PM to today 10 AM">
-                            <span class="ltm-tl-seg-icon">🟢</span>
-                            <span class="ltm-tl-seg-label">Accept Today</span>
-                            <span class="ltm-tl-seg-time">Until 10:00 AM</span>
-                        </div>
-                        <span class="ltm-tl-arrow" aria-hidden="true">→</span>
-                        <div class="ltm-tl-seg" id="ltm-tl-frozen" aria-label="Frozen: 10 AM to 5 PM">
-                            <span class="ltm-tl-seg-icon">🔒</span>
-                            <span class="ltm-tl-seg-label">Frozen</span>
-                            <span class="ltm-tl-seg-time">10 AM – 5 PM</span>
-                        </div>
-                        <span class="ltm-tl-arrow" aria-hidden="true">→</span>
-                        <div class="ltm-tl-seg" id="ltm-tl-accept-tomorrow" aria-label="Accept orders for tomorrow: 5 PM onwards">
-                            <span class="ltm-tl-seg-icon">📅</span>
-                            <span class="ltm-tl-seg-label">Pre-book Tomorrow</span>
-                            <span class="ltm-tl-seg-time">From 5:00 PM</span>
-                        </div>
-                    </div>
-                    <p class="ltm-info-note" id="ltm-info-note">Lunch is served daily from <strong>12:30 PM – 2:00 PM</strong>. Pre-order by 10:00 AM for same-day lunch, or after 5:00 PM for next-day lunch.</p>
-                </div>
             </div>
 
             <div class="controls-row">
@@ -3316,6 +3063,38 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     </div>
                 </div>
             </div>
+
+            <section class="pooja-form-card" id="pooja-form-card" aria-labelledby="pooja-form-title">
+                <h3 class="pooja-form-title" id="pooja-form-title">🪔 Occasion Details</h3>
+                <p class="pooja-form-hint">Tell us about your pooja or celebration. Prasadham is freshly prepared, so please choose a delivery date &amp; time at least <strong id="pooja-lead-text">48 hours</strong> from now.</p>
+                <form id="form-occasion" class="pooja-form-grid" novalidate autocomplete="off">
+                    <div class="form-group pf-full">
+                        <label for="occ-name">Name of the Person *</label>
+                        <input type="text" id="occ-name" maxlength="60" placeholder="e.g., Lakshmi Narayanan" autocomplete="name" aria-describedby="occ-name-err" aria-required="true">
+                        <span class="pf-err" id="occ-name-err" role="alert"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="occ-order-date">Date of Ordering</label>
+                        <input type="text" id="occ-order-date" class="pf-readonly" readonly tabindex="-1" aria-readonly="true" aria-describedby="occ-order-date-err">
+                        <span class="pf-err" id="occ-order-date-err" role="alert"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="occ-delivery-date">Delivery Date *</label>
+                        <input type="date" id="occ-delivery-date" aria-describedby="occ-delivery-date-err" aria-required="true">
+                        <span class="pf-err" id="occ-delivery-date-err" role="alert"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="occ-delivery-time">Delivery Time *</label>
+                        <input type="time" id="occ-delivery-time" min="06:00" max="21:00" aria-describedby="occ-delivery-time-err" aria-required="true">
+                        <span class="pf-err" id="occ-delivery-time-err" role="alert"></span>
+                    </div>
+                    <div class="form-group pf-full">
+                        <label for="occ-purpose">Occasion Name / Purpose *</label>
+                        <input type="text" id="occ-purpose" maxlength="80" placeholder="e.g., Satyanarayana Pooja, Griha Pravesam, Varalakshmi Vratham" aria-describedby="occ-purpose-err" aria-required="true">
+                        <span class="pf-err" id="occ-purpose-err" role="alert"></span>
+                    </div>
+                </form>
+            </section>
 
             <div class="menu-grid" id="menu-container" aria-label="Menu items" aria-live="polite"></div>
 
@@ -3593,12 +3372,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             text: "",
             blink: true,
             // Which ordering-mode tabs this specific announcement should
-            // NOT show on — a generic opt-out, not a "flat pricing" special
-            // case, so a future announcement (e.g. a holiday closure notice)
-            // still shows on every tab by default. This one opts out of
-            // Lunch Time Menu because its text specifically claims flat
-            // ₹99 pricing, which isn't true there.
-            hideOnModes: ["LunchTimeMenu"]
+            // NOT show on (e.g. ["PoojaPrasadham"]). Empty = show on every tab.
+            hideOnModes: []
         };
 
         // ── Scheduled store closure ─────────────────────────────────────
@@ -3654,7 +3429,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 "Dinner Special": "🌙", "Sandwich": "🥪", "Premium Sandwich": "🥪",
                 "Maggi": "🍜", "Pasta": "🍝", "Juices": "🥤",
                 "Milkshakes": "🥛", "Combos": "🎁", "Evening Snacks": "🌆", "Xtra Delights": "✨", "Waffles": "🧇",
-                "Wraps": "🌯"
+                "Wraps": "🌯", "Pooja Prasadham": "🪔"
             };
             return icons[cat] || "🍽️";
         }
@@ -3688,7 +3463,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             "Waffles":           '#C9962C', // toasted amber  — crisp, buttery, dessert warmth (distinct from Maggi/Combos golds)
             "Xtra Delights":     '#7B2FF7', // royal violet   — premium, exclusive
             "Dinner Special":    '#5E5CE6', // deep indigo    — calm evening sophistication
-            "Wraps":             '#2EA85C'  // fresh green    — herby, veggie-forward, distinct from other warm hues
+            "Wraps":             '#2EA85C', // fresh green    — herby, veggie-forward, distinct from other warm hues
+            "Pooja Prasadham":   '#A61E3A'  // temple maroon  — kumkum red, sacred and festive
         };
         function hashStr(s) {
             let h = 0;
@@ -3698,6 +3474,15 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
         function categoryAccentColor(cat) {
             return CATEGORY_COLOR_MAP[cat] || QUALITATIVE_PALETTE[Math.abs(hashStr(cat)) % QUALITATIVE_PALETTE.length];
         }
+
+        // ── Festive & Pooja's Prasadham Ordering — business rules (edit here) ──
+        const PRASADHAM_PRICE_PER_UNIT = 400;   // ₹ per kg / ltr, same for every item
+        const PRASADHAM_QTY_MIN = 0;
+        const PRASADHAM_QTY_MAX = 15;           // kg / ltr per item
+        const POOJA_MIN_LEAD_HOURS = 48;        // earliest delivery = now + this many hours
+        const POOJA_MAX_ADVANCE_DAYS = 90;      // furthest-ahead delivery date allowed
+        const POOJA_TIME_MIN = "06:00";         // earliest delivery time of day
+        const POOJA_TIME_MAX = "21:00";         // latest delivery time of day
 
         const MENU_DATA_BY_MODE = {
 
@@ -3790,21 +3575,43 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
            // { id: "sn1", category: "Snacks Special", title: "😋 Evening Snack Special", name: "Fruit Salad with Fresh Cream, Brown Sugar & Strawberry Chocolate Sauce", price: 99 },            
         ],
 
-        LunchTimeMenu: [
-            { id: "ltm1", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Mini Lunch Tray", desc: "White Rice, 2 Plain Rotis, Sambar, Dhal or Gravy, Fryams", price: 149 },
-            { id: "ltm2", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Soup of the Day 250ml", price: 99 },
-            { id: "ltm3", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Starter of the Day", price: 99 },
-            { id: "ltm4", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Onion Raita 250ml", price: 49 },
-            { id: "ltm5", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Mint Spicy Butter Milk 500ml", price: 49 },
-            { id: "ltm6", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Araichuvitta Sambar 250ml", price: 50 },
-            { id: "ltm7", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Ghee Rava Kesari 250ml", price: 99 }
-            
+        // ── Festive & Pooja's Prasadham Ordering ──────────────────────────
+        // Sold by weight/volume: the customer picks a whole number from
+        // 0 to 15 (kg or ltr) and presses "Add to Cart". Price is per unit.
+        // `desc` stays optional here too — add `desc: "..."` to any item.
+        PoojaPrasadham: [
+            { id: "pp1", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Venpongal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp2", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Sakkarai Pongal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp3", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Akkaarai Vadisal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp4", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Rava Kesari", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp5", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Kalkandu Bath", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp6", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Channa Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp7", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Black Channa Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp8", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Pattaani Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp9", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Green Pattaani Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp10", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Kaaramani Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp11", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ver Kadalai Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp12", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Paasi Paruppu Paayasam", price: PRASADHAM_PRICE_PER_UNIT, unit: "ltr", weighted: true },
+            { id: "pp13", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Special Curd Rice", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp14", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ulundhu Vadai", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp15", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Puliyodharai", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp16", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Aval Paayasam", price: PRASADHAM_PRICE_PER_UNIT, unit: "ltr", weighted: true },
+            { id: "pp17", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Aval Thengai Paagam", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
+            { id: "pp18", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Thengai Paayasam", price: PRASADHAM_PRICE_PER_UNIT, unit: "ltr", weighted: true },
         ],
 
         Subscription: [
                       ]
 
         };
+
+        // Escapes an owner-supplied description so characters like < & " can't
+        // break the card markup.
+        function escapeDesc(str) {
+            return String(str).trim()
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
 
         function getMenuData() {
             return MENU_DATA_BY_MODE[POSState.orderMode] || MENU_DATA_BY_MODE.Instant;
@@ -4143,117 +3950,11 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
         const CATEGORY_WINDOWS = {
             "Breakfast":      { start: "07:00", end: "10:00" },
-            "Lunch Special":  { start: "12:30", end: "14:00" },
-            "Lunch":          { start: "12:30", end: "14:00" },
-            // LUNCH TIME MENU uses a dedicated state-machine (getLunchTimeMenuWindowState)
-            // instead of a simple open/close window — do NOT add it here.
             "Evening Snacks": { start: "06:00", end: "15:59", note: "Pre-order only — delivered/picked up between 4:00 PM & 5:30 PM", deliveryWindow: { start: "16:00", end: "17:30" } },
             "Snacks Special": { start: "06:00", end: "15:30", note: "Pre-order only — delivered/picked up between 4:00 PM & 5:30 PM", deliveryWindow: { start: "16:00", end: "17:30" } },
             "Dinner Special": { start: "06:00", end: "17:30", note: "Pre-order only — delivered between 7:00 PM & 10:00 PM", deliveryWindow: { start: "19:00", end: "22:00" } }
         };
         const ENFORCE_CATEGORY_WINDOW = true;
-
-        // ── Lunch Time Menu — Order Window State Machine ────────────────────
-        //
-        // Microsoft Systems Architect pattern: represent the booking lifecycle
-        // as an explicit finite state machine with clearly named states, each
-        // owning its own label, freeze flag, and "order is for" date, rather
-        // than scattered if/else comparisons on raw hours.
-        //
-        // States & transitions (all times IST):
-        //
-        //   ACCEPTING_TODAY  (yesterday 17:00 → today 09:59)
-        //     • Order window OPEN
-        //     • Order is FOR: today's lunch
-        //     • Entry condition: hours < 10
-        //
-        //   FROZEN           (today 10:00 → today 16:59)
-        //     • Order window CLOSED — kitchen is cooking, no new orders
-        //     • Entry condition: hours >= 10 && hours < 17
-        //
-        //   ACCEPTING_TOMORROW (today 17:00 → tomorrow 09:59)
-        //     • Order window OPEN
-        //     • Order is FOR: tomorrow's lunch
-        //     • Entry condition: hours >= 17
-        //
-        // The "order for" date is purely informational — it is shown to the
-        // customer and appended to the WhatsApp message.  No server-side date
-        // shifting is needed because the kitchen staff reads it from the order.
-        // ─────────────────────────────────────────────────────────────────────
-        function getLunchTimeMenuWindowState() {
-            const { hours, minutes, year, month, date } = LiveClock.istParts();
-            const totalMins = hours * 60 + minutes;
-
-            // ── Derive a display date for "order is for" ──────────────────
-            function istDateLabel(offsetDays) {
-                const base = new Date(Date.UTC(year, month, date + offsetDays));
-                return base.toLocaleDateString('en-IN', {
-                    weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'
-                });
-            }
-
-            const FREEZE_START = 10 * 60;   // 10:00 AM in minutes
-            const FREEZE_END   = 17 * 60;   // 5:00 PM  in minutes
-
-            if (totalMins < FREEZE_START) {
-                // Window open: accepting orders for TODAY's lunch
-                const minsUntilFreeze = FREEZE_START - totalMins;
-                const closingSoon = minsUntilFreeze <= 60;
-                return {
-                    state: "ACCEPTING_TODAY",
-                    isOpen: true,
-                    isFrozen: false,
-                    orderForLabel: `Today (${istDateLabel(0)})`,
-                    orderForDate: "today",
-                    windowLabel: "Open until 10:00 AM",
-                    minsUntilChange: minsUntilFreeze,
-                    isClosingSoon: closingSoon,
-                    statusIcon: closingSoon ? "⏳" : "🟢",
-                    statusText: closingSoon
-                        ? `Closing in ${minsUntilFreeze} min — order for today's lunch!`
-                        : `Order window open — ordering for today's lunch`,
-                    infoMessage: `Pre-order by 10:00 AM for today's lunch service (served 12:30 PM – 2:00 PM). After 10 AM the window freezes until 5 PM.`,
-                    bannerType: "open"
-                };
-            } else if (totalMins < FREEZE_END) {
-                // Window FROZEN: kitchen is actively preparing lunch
-                const minsUntilReopen = FREEZE_END - totalMins;
-                return {
-                    state: "FROZEN",
-                    isOpen: false,
-                    isFrozen: true,
-                    orderForLabel: `Tomorrow (${istDateLabel(1)})`,
-                    orderForDate: "tomorrow",
-                    windowLabel: "Frozen 10:00 AM – 5:00 PM",
-                    minsUntilChange: minsUntilReopen,
-                    isClosingSoon: false,
-                    statusIcon: "🔒",
-                    statusText: `Order window frozen — kitchen is preparing today's lunch. Reopens at 5:00 PM for tomorrow's orders.`,
-                    infoMessage: `Order window is frozen from 10:00 AM to 5:00 PM while the kitchen prepares today's lunch. Come back after 5:00 PM to pre-order for tomorrow.`,
-                    bannerType: "frozen"
-                };
-            } else {
-                // Window open: accepting orders for TOMORROW's lunch
-                const minsUntilMidnightFreeze = (24 * 60 + FREEZE_START) - totalMins; // minutes until 10 AM next day
-                const closingSoon = minsUntilMidnightFreeze <= 60;
-                return {
-                    state: "ACCEPTING_TOMORROW",
-                    isOpen: true,
-                    isFrozen: false,
-                    orderForLabel: `Tomorrow (${istDateLabel(1)})`,
-                    orderForDate: "tomorrow",
-                    windowLabel: "Open — pre-booking for tomorrow",
-                    minsUntilChange: minsUntilMidnightFreeze,
-                    isClosingSoon: closingSoon,
-                    statusIcon: closingSoon ? "⏳" : "🟢",
-                    statusText: closingSoon
-                        ? `Closing soon (${minsUntilMidnightFreeze} min) — last chance for tomorrow's lunch order!`
-                        : `Order window open — pre-ordering for tomorrow's lunch`,
-                    infoMessage: `Order window is open! You're pre-ordering for tomorrow's lunch (${istDateLabel(1)}). Window closes again at 10:00 AM tomorrow.`,
-                    bannerType: "open"
-                };
-            }
-        }
 
         function formatHHMM(hhmm) {
             const [h, m] = hhmm.split(":").map(Number);
@@ -4286,20 +3987,6 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
         const CATEGORY_CLOSING_SOON_MINUTES = 60;
 
         function getCategoryWindowStatus(categoryName) {
-            // Lunch Time Menu uses a dedicated state machine — delegate immediately.
-            if (categoryName === "LUNCH TIME MENU") {
-                const ltm = getLunchTimeMenuWindowState();
-                return {
-                    label: ltm.windowLabel,
-                    isOpenNow: ltm.isOpen,
-                    isAllDay: false,
-                    minutesToClose: ltm.minsUntilChange,
-                    isClosingSoon: ltm.isClosingSoon,
-                    note: ltm.infoMessage,
-                    ltmState: ltm  // carry the full state for rich rendering
-                };
-            }
-
             const { hours, minutes } = LiveClock.istParts();
             const mins = hours * 60 + minutes;
 
@@ -4452,7 +4139,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     const total = isRecurring ? perCycleTotal * occurrences : perCycleTotal;
                     subtotal += total;
                     totalQty += qty;
-                    itemsList.push({ id, name: item.name, qty, price: unitPrice, perCycleTotal, occurrences, total, schedule });
+                    itemsList.push({ id, name: item.name, qty, unit: item.unit || null, price: unitPrice, perCycleTotal, occurrences, total, schedule });
                 }
             });
 
@@ -4566,7 +4253,6 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     DailyOrderLimiter.applyToUI();
                     POSState.generateOrderId();
                     this.syncTotals();
-                    this.updateLtmPanel();
                     updateWatermark();
                 };
 
@@ -4576,7 +4262,6 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     this.updateTodayDateBadge();
                     this.updateKitchenStatus();
                     this.renderMenuIfChanged();
-                    this.updateLtmPanel();
                     updateWatermark();
                 };
 
@@ -4593,7 +4278,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 // 1. A self-scheduling setTimeout loop (not setInterval)
                 //    fires every ~1 second to update only the cheap display
                 //    elements: the date/time badge on the Today tab, the
-                //    kitchen-open/closed status text, and the LTM countdown.
+                //    and the kitchen-open/closed status text.
                 //    These reads are pure JS arithmetic against LiveClock —
                 //    no network, no DOM query except a textContent write —
                 //    so the 1 s cadence adds negligible CPU cost.
@@ -4617,8 +4302,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     if (document.visibilityState === "visible") {
                         this.updateTodayDateBadge();
                         this.updateKitchenStatus();
-                        this.updateLtmPanel();
-                    }
+                        }
                     _tickHandle = setTimeout(tickDisplay, 1000);
                 };
                 tickDisplay(); // start immediately
@@ -4815,6 +4499,14 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
                 container.innerHTML = "";
 
+                // A tab with no items yet (e.g. Festive & Pooja's Prasadham Ordering before the
+                // first dishes are added) gets a friendly note, not "no match".
+                if (getMenuData().length === 0) {
+                    container.innerHTML = `<div class="empty-results"><span class="empty-icon" aria-hidden="true">🪔</span>Our Festive &amp; Pooja's Prasadham Ordering menu is being prepared. For pooja or festival orders, please WhatsApp us and we'll arrange it for you.</div>`;
+                    this._lastMenuSignature = this.computeMenuSignature();
+                    return;
+                }
+
                 const filteredItems = getMenuData().filter(item => {
                     const matchCat = POSState.activeCategory === "ALL" || item.category === POSState.activeCategory;
                     const matchSearch = item.name.toLowerCase().includes(POSState.searchQuery.toLowerCase());
@@ -4843,7 +4535,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 for (const [title, items] of Object.entries(groups)) {
                     cardIndex++;
                     const card = document.createElement("div");
-                    const shouldCollapse = isMobile && !expandedTitles.has(title);
+                    // A tab with a single category (e.g. Festive Prasadham) stays open on mobile.
+                    const shouldCollapse = isMobile && Object.keys(groups).length > 1 && !expandedTitles.has(title);
 
                     const windowStatus = getCategoryWindowStatus(items[0].category);
                     const isCategoryDisabled = closure.active
@@ -4869,9 +4562,6 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     if (isCategoryDisabled) {
                         if (closure.active) {
                             frozenBannerHTML = `<div class="frozen-banner">🔒 Temporarily closed (${closure.reason}) until ${closure.toDateLabel} — items shown for reference only</div>`;
-                        } else if (items[0].category === "LUNCH TIME MENU" && windowStatus.ltmState) {
-                            const ltm = windowStatus.ltmState;
-                            frozenBannerHTML = `<div class="frozen-banner ltm-frozen">🔒 Order window frozen (10:00 AM – 5:00 PM) — the kitchen is preparing today's lunch. Browse the menu and come back after <strong>5:00 PM</strong> to pre-order for tomorrow's lunch.</div>`;
                         } else {
                             frozenBannerHTML = `<div class="frozen-banner">🔒 Ordering closed right now — items shown for reference only</div>`;
                         }
@@ -4900,7 +4590,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                         ${noteHTML}
                         ${frozenBannerHTML}
                         ${helpNoteHTML}
-                        <div class="menu-items-body" id="${panelId}"></div>
+                        <div class="menu-items-body${items[0].weighted ? ' pp-grid' : ''}" id="${panelId}"></div>
                     `;
                     const body = card.querySelector('.menu-items-body');
                     items.forEach(item => {
@@ -4911,11 +4601,11 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
                         const row = document.createElement("div");
                         row.className = `menu-item${currentQty > 0 ? ' in-cart' : ''}${isCategoryDisabled ? ' item-disabled' : ''}`;
-                        row.innerHTML = `
+                        row.innerHTML = item.weighted ? PoojaOrder.rowHTML(item, currentQty, isCategoryDisabled) : `
                             <div class="menu-item-body">
                                 <div class="item-info">
                                     <h4>${item.name}${item.popular ? '<span class="badge-popular">★ Popular</span>' : ''}</h4>
-                                    ${item.desc ? `<p class="menu-item-desc" style="font-size:0.82em;opacity:0.75;margin:2px 0 6px;line-height:1.4;">${item.desc}</p>` : ''}
+                                    ${(item.desc && String(item.desc).trim()) ? `<div class="item-desc">${escapeDesc(item.desc)}</div>` : ''}
                                     <p>₹${item.price} <span style="font-size:0.78em;opacity:0.7;font-weight:400;">per item</span></p>
                                 </div>
                                 <div class="qty-controls">
@@ -4947,8 +4637,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             computeMenuSignature() {
                 const cats = [...new Set(getMenuData().map(i => i.category))];
                 const cart = POSState.getCart();
-                const ltmSig = POSState.orderMode === "LunchTimeMenu" ? `|ltm:${getLunchTimeMenuWindowState().state}` : "";
-                let sig = `${POSState.orderMode}|${POSState.activeCategory}|${POSState.searchQuery}|closure:${getStoreClosureStatus().active}${ltmSig}`;
+                let sig = `${POSState.orderMode}|${POSState.activeCategory}|${POSState.searchQuery}|closure:${getStoreClosureStatus().active}`;
                 for (const cat of cats) {
                     const ws = getCategoryWindowStatus(cat);
                     // minutesToClose only matters (and only ticks) while
@@ -5048,73 +4737,6 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 }
             },
 
-            // ── Lunch Time Menu radiator update ───────────────────────────
-            // Reads the current LTM state-machine output and writes it
-            // into every DOM element that composes the status radiator.
-            // Called from applyOrderMode and on every 15s tick when in
-            // LunchTimeMenu mode.
-            updateLtmPanel() {
-                if (POSState.orderMode !== "LunchTimeMenu") return;
-                const ltm = getLunchTimeMenuWindowState();
-
-                const panel     = document.getElementById("ltm-status-panel");
-                const radiator  = document.getElementById("ltm-radiator");
-                const icon      = document.getElementById("ltm-radiator-icon");
-                const headline  = document.getElementById("ltm-radiator-headline");
-                const sub       = document.getElementById("ltm-radiator-sub");
-                const pill      = document.getElementById("ltm-for-date-pill");
-                const note      = document.getElementById("ltm-info-note");
-
-                const tlToday    = document.getElementById("ltm-tl-accept-today");
-                const tlFrozen   = document.getElementById("ltm-tl-frozen");
-                const tlTomorrow = document.getElementById("ltm-tl-accept-tomorrow");
-
-                if (!panel || !radiator || !icon) return;
-
-                // Radiator strip
-                radiator.className = "ltm-radiator " + (
-                    ltm.isFrozen ? "state-frozen" :
-                    ltm.isClosingSoon ? "state-closing" :
-                    "state-open"
-                );
-
-                icon.textContent = ltm.statusIcon;
-                icon.className = "ltm-radiator-icon" + ((!ltm.isFrozen) ? " pulse-anim" : "");
-
-                const headlineMap = {
-                    "ACCEPTING_TODAY":    "🍽️ Order window open — Pre-order for today's lunch",
-                    "FROZEN":             "🔒 Order window frozen — Kitchen is cooking",
-                    "ACCEPTING_TOMORROW": "📅 Order window open — Pre-order for tomorrow's lunch"
-                };
-                headline.textContent = headlineMap[ltm.state] || ltm.statusText;
-                sub.textContent = ltm.statusText;
-
-                // "Order for" pill
-                const pillClassMap = {
-                    "ACCEPTING_TODAY":    "for-today",
-                    "FROZEN":             "for-frozen",
-                    "ACCEPTING_TOMORROW": "for-tomorrow"
-                };
-                pill.className = "ltm-for-date-pill " + (pillClassMap[ltm.state] || "for-today");
-                const pillIcon = ltm.state === "ACCEPTING_TODAY" ? "📅" : ltm.state === "FROZEN" ? "🔒" : "📅";
-                pill.innerHTML = `${pillIcon} ${ltm.orderForLabel}`;
-
-                // Timeline: highlight active segment
-                [tlToday, tlFrozen, tlTomorrow].forEach(el => { if (el) el.classList.remove("tl-active"); });
-                const activeSegId = {
-                    "ACCEPTING_TODAY":    "ltm-tl-accept-today",
-                    "FROZEN":             "ltm-tl-frozen",
-                    "ACCEPTING_TOMORROW": "ltm-tl-accept-tomorrow"
-                }[ltm.state];
-                const activeSeg = document.getElementById(activeSegId);
-                if (activeSeg) activeSeg.classList.add("tl-active");
-
-                // Info note
-                if (note) {
-                    note.innerHTML = ltm.infoMessage.replace(/(\d{1,2}:\d{2} [AP]M)/g, "<strong>$1</strong>");
-                }
-            },
-
             applyOrderMode(mode) {
                 POSState.orderMode = mode;
 
@@ -5130,17 +4752,14 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
                 const subCard = document.getElementById("subscription-schedule-card");
                 const whatsappLabel = document.getElementById("whatsapp-btn-label");
-                const flatPricingBanner = document.getElementById("flat-pricing-banner");
-                const ltmPanel = document.getElementById("ltm-status-panel");
 
                 subCard.classList.toggle("visible", mode === "Subscription");
-                flatPricingBanner.style.display = (mode === "LunchTimeMenu") ? "none" : "flex";
-                if (ltmPanel) ltmPanel.classList.toggle("visible", mode === "LunchTimeMenu");
+                const poojaCard = document.getElementById("pooja-form-card");
+                if (poojaCard) poojaCard.classList.toggle("visible", mode === "PoojaPrasadham");
+                if (mode === "PoojaPrasadham") PoojaOrder.onShow();
                 this.renderAnnouncement();
 
                 whatsappLabel.textContent = (mode === "Subscription") ? "Subscribe My Item" : "Place Order";
-
-                if (mode === "LunchTimeMenu") this.updateLtmPanel();
 
                 this.renderCategories();
                 this.renderMenu();
@@ -5255,7 +4874,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                             <div class="cir-schedule">${formatItemSchedule(item.schedule)}</div>
                         `;
                     } else {
-                        li.innerHTML = `<span>${item.name}</span><strong>${item.qty} × ₹${item.price} = ₹${item.total.toFixed(2)}</strong>`;
+                        li.innerHTML = `<span>${item.name}</span><strong>${fmtQty(item)} × ₹${item.price} = ₹${item.total.toFixed(2)}</strong>`;
                     }
                     previewContainer.appendChild(li);
                 });
@@ -5417,6 +5036,9 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                         document.getElementById("txt-search").focus();
                     }
                 });
+
+                PoojaOrder.bindMenuHandlers();
+                PoojaOrder.bindFormHandlers();
 
                 document.getElementById("menu-container").addEventListener("click", (e) => {
                     const titleBtn = e.target.closest(".category-title-btn");
@@ -5874,6 +5496,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     POSState.activeCategory = "ALL";
                     POSState.discount = { code: "", type: null, value: 0, label: "" };
                     POSState.init();
+                    PoojaOrder.reset();
 
                     UIEngine.applyOrderMode("Instant");
                     UIEngine.setOrderType(ORDER_TYPE_CONFIG.pickupEnabled ? "Pickup" : "Delivery");
@@ -5922,6 +5545,290 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             }
         };
 
+        // ════════════════════════════════════════════════════════════════
+        //  Festive & Pooja's Prasadham Ordering — weight rows + occasion form
+        //  Everything specific to this tab lives here; the cart, totals,
+        //  coupon, delivery, WhatsApp and receipt flow are the shared ones.
+        // ════════════════════════════════════════════════════════════════
+        const PoojaOrder = {
+            MODE: "PoojaPrasadham",
+            drafts: {},
+            touched: {},
+            QTY_RE: /^(0|[1-9]|1[0-5])$/,
+            NAME_RE: /^[\p{L}\p{M}][\p{L}\p{M} .'’-]{1,59}$/u,
+            PURPOSE_RE: /^[\p{L}\p{M}\p{N}][\p{L}\p{M}\p{N} &,.'’\/()-]{2,79}$/u,
+
+            isActive() { return POSState.orderMode === this.MODE; },
+            $(id) { return document.getElementById(id); },
+            pad(n) { return String(n).padStart(2, "0"); },
+            esc(v) { return escapeDesc(v); },
+
+            // ── Row markup (called from renderMenu for items with `weighted`) ──
+            rowHTML(item, cartQty, disabled) {
+                const id = item.id, u = item.unit, dis = disabled ? "disabled" : "";
+                const shown = cartQty > 0 ? String(cartQty)
+                    : (this.drafts[id] !== undefined ? this.drafts[id] : "1");
+                const desc = (item.desc && String(item.desc).trim()) ? `<div class="item-desc">${escapeDesc(item.desc)}</div>` : "";
+                return `
+                    <div class="menu-item-body pp-body">
+                        <div class="item-info">
+                            <h4>${item.name}</h4>
+                            ${desc}
+                        </div>
+                        <div class="pp-fields">
+                            <div class="pp-field">
+                                <label for="ppp-${id}">Price</label>
+                                <div class="pp-inline">
+                                    <input type="text" id="ppp-${id}" class="pp-ro pp-ro-price" value="₹${item.price}" readonly tabindex="-1" aria-readonly="true" aria-label="Price: ${item.price} rupees per ${u}">
+                                    <span class="pp-per">per ${u}</span>
+                                </div>
+                            </div>
+                            <div class="pp-field">
+                                <label for="ppq-${id}">Quantity</label>
+                                <div class="pp-inline">
+                                    <input type="text" id="ppq-${id}" class="pp-qty" data-id="${id}" data-prev="${shown}" value="${shown}"
+                                           inputmode="numeric" maxlength="2" autocomplete="off" spellcheck="false"
+                                           pattern="(0|[1-9]|1[0-5])" aria-describedby="ppe-${id} pph-${id}" aria-label="Quantity of ${item.name} in ${u}, 0 to ${PRASADHAM_QTY_MAX}" ${dis}>
+                                    <input type="text" class="pp-ro pp-ro-unit" value="${u}" readonly tabindex="-1" aria-readonly="true" aria-label="Unit: ${u}">
+                                </div>
+                            </div>
+                        </div>
+                        <span class="pp-range-hint" id="pph-${id}">Whole numbers only, ${PRASADHAM_QTY_MIN}–${PRASADHAM_QTY_MAX} ${u}</span>
+                        <div class="pp-actions">
+                            <button type="button" class="btn btn-primary pp-add" data-id="${id}" ${dis}>${cartQty > 0 ? "Update Cart" : "Add to Cart"}</button>
+                            <button type="button" class="pp-remove" data-id="${id}" ${cartQty > 0 && !disabled ? "" : "hidden"}>Remove</button>
+                            <span class="pp-incart" id="ppi-${id}">${cartQty > 0 ? `✓ In cart: ${cartQty} ${u}` : ""}</span>
+                        </div>
+                        <p class="pp-err" id="ppe-${id}" role="alert"></p>
+                    </div>`;
+            },
+
+            setRowError(id, msg) {
+                const e = this.$(`ppe-${id}`), q = this.$(`ppq-${id}`);
+                if (e) e.textContent = msg || "";
+                if (q) q.setAttribute("aria-invalid", msg ? "true" : "false");
+            },
+
+            // Keeps only digits, max 2 chars, no leading zeros, value ≤ 15.
+            sanitizeQty(el) {
+                let v = el.value.replace(/[^0-9]/g, "").slice(0, 2).replace(/^0+(?=\d)/, "");
+                if (v !== "" && Number(v) > PRASADHAM_QTY_MAX) v = el.dataset.prev || "";
+                if (el.value !== v) el.value = v;
+                if (v !== "") el.dataset.prev = v;
+                this.drafts[el.dataset.id] = v;
+                this.setRowError(el.dataset.id, "");
+            },
+
+            addToCart(id) {
+                const item = getMenuData().find(m => m.id === id);
+                const el = this.$(`ppq-${id}`);
+                if (!item || !el) return;
+                const raw = el.value.trim();
+                if (!this.QTY_RE.test(raw)) {
+                    this.setRowError(id, `Enter a whole number from ${PRASADHAM_QTY_MIN} to ${PRASADHAM_QTY_MAX}.`);
+                    el.focus(); return;
+                }
+                const n = Number(raw), cart = POSState.getCart();
+                if (n === 0) {
+                    if (cart[id]) {
+                        delete cart[id];
+                        UIEngine.showToast(`${item.name} removed`, "info");
+                    } else {
+                        this.setRowError(id, `Enter 1 to ${PRASADHAM_QTY_MAX} ${item.unit} to add this item.`);
+                        el.focus(); return;
+                    }
+                } else {
+                    const wasIn = !!cart[id];
+                    cart[id] = n;
+                    UIEngine.showToast(`${item.name} — ${n} ${item.unit} ${wasIn ? "updated" : "added"}`, "success");
+                }
+                this.setRowError(id, "");
+                this.refreshRow(id);
+            },
+
+            removeFromCart(id) {
+                const item = getMenuData().find(m => m.id === id);
+                delete POSState.getCart()[id];
+                if (item) UIEngine.showToast(`${item.name} removed`, "info");
+                this.refreshRow(id);
+            },
+
+            refreshRow(id) {
+                const item = getMenuData().find(m => m.id === id);
+                const qty = POSState.getCart()[id] || 0;
+                const el = this.$(`ppq-${id}`);
+                if (el) {
+                    const shown = qty > 0 ? String(qty) : (this.drafts[id] || "1");
+                    el.value = shown; el.dataset.prev = shown; this.drafts[id] = shown;
+                    const row = el.closest(".menu-item");
+                    if (row) row.classList.toggle("in-cart", qty > 0);
+                    const add = row && row.querySelector(".pp-add"), rm = row && row.querySelector(".pp-remove");
+                    if (add) add.textContent = qty > 0 ? "Update Cart" : "Add to Cart";
+                    if (rm) rm.hidden = !(qty > 0);
+                    const inc = this.$(`ppi-${id}`);
+                    if (inc && item) inc.textContent = qty > 0 ? `✓ In cart: ${qty} ${item.unit}` : "";
+                }
+                UIEngine.renderCategories();
+                UIEngine.syncTotals();
+                UIEngine._lastMenuSignature = UIEngine.computeMenuSignature();
+            },
+
+            bindMenuHandlers() {
+                const menu = this.$("menu-container");
+                menu.addEventListener("keydown", (e) => {
+                    if (!e.target.classList.contains("pp-qty")) return;
+                    if (e.key === "Enter") { e.preventDefault(); this.addToCart(e.target.dataset.id); return; }
+                    if (e.key.length === 1 && !/[0-9]/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) e.preventDefault();
+                });
+                menu.addEventListener("input", (e) => {
+                    if (e.target.classList.contains("pp-qty")) this.sanitizeQty(e.target);
+                });
+                menu.addEventListener("focusout", (e) => {
+                    if (!e.target.classList.contains("pp-qty")) return;
+                    // Never leave the box empty ("null"): restore last valid value.
+                    if (e.target.value.trim() === "") {
+                        e.target.value = e.target.dataset.prev || "1";
+                        this.drafts[e.target.dataset.id] = e.target.value;
+                    }
+                });
+                menu.addEventListener("click", (e) => {
+                    const add = e.target.closest(".pp-add"), rm = e.target.closest(".pp-remove");
+                    if (add) this.addToCart(add.dataset.id);
+                    else if (rm) this.removeFromCart(rm.dataset.id);
+                });
+            },
+
+            // ── Occasion form ──
+            todayParts() { const p = LiveClock.istParts(); return { y: p.year, m: p.month + 1, d: p.date }; },
+            isoOf(ms) { const d = new Date(ms + IST_OFFSET_MS); return `${d.getUTCFullYear()}-${this.pad(d.getUTCMonth() + 1)}-${this.pad(d.getUTCDate())}`; },
+            todayISO() { return this.isoOf(LiveClock.nowMs()); },
+            fmtDate(iso) {
+                const [y, m, d] = iso.split("-").map(Number);
+                return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+            },
+            fmtTime(t) { const [h, m] = t.split(":").map(Number); return `${((h + 11) % 12) + 1}:${this.pad(m)} ${h >= 12 ? "PM" : "AM"}`; },
+            istEpoch(iso, t) { const [y, mo, d] = iso.split("-").map(Number), [h, mi] = t.split(":").map(Number); return Date.UTC(y, mo - 1, d, h, mi) - IST_OFFSET_MS; },
+
+            onShow() {
+                const today = this.todayISO();
+                this.$("occ-order-date").value = this.fmtDate(today);
+                this.$("occ-order-date").dataset.iso = today;
+                const earliestMs = LiveClock.nowMs() + POOJA_MIN_LEAD_HOURS * 3600e3;
+                const dd = this.$("occ-delivery-date");
+                dd.min = this.isoOf(earliestMs);
+                dd.max = this.isoOf(LiveClock.nowMs() + POOJA_MAX_ADVANCE_DAYS * 86400e3);
+                const t = this.$("occ-delivery-time"); t.min = POOJA_TIME_MIN; t.max = POOJA_TIME_MAX;
+                this.$("pooja-lead-text").textContent = `${POOJA_MIN_LEAD_HOURS} hours`;
+                const occ = this.$("occ-name"), cust = this.$("cust-name");
+                if (!occ.value.trim() && cust.value.trim()) occ.value = cust.value.trim();
+            },
+
+            clean(v) { return v.replace(/\s+/g, " ").trim(); },
+
+            fieldErrors() {
+                const err = {};
+                const name = this.clean(this.$("occ-name").value);
+                if (!name) err.name = "Please enter the name of the person.";
+                else if (!this.NAME_RE.test(name)) err.name = "Use 2–60 letters only (spaces, . ' - allowed). No digits or symbols.";
+
+                const od = this.$("occ-order-date").dataset.iso || "";
+                if (od !== this.todayISO()) { this.onShow(); }
+
+                const dISO = this.$("occ-delivery-date").value, dT = this.$("occ-delivery-time").value;
+                const earliestMs = LiveClock.nowMs() + POOJA_MIN_LEAD_HOURS * 3600e3;
+                const minISO = this.isoOf(earliestMs);
+                const maxISO = this.isoOf(LiveClock.nowMs() + POOJA_MAX_ADVANCE_DAYS * 86400e3);
+                const validISO = (v) => {
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+                    const [y, m, d] = v.split("-").map(Number), t = new Date(Date.UTC(y, m - 1, d));
+                    return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
+                };
+                if (!dISO) err.date = "Please choose a delivery date.";
+                else if (!validISO(dISO)) err.date = "That isn't a valid date.";
+                else if (dISO < minISO) err.date = `Delivery needs at least ${POOJA_MIN_LEAD_HOURS} hours' notice — earliest date is ${this.fmtDate(minISO)}.`;
+                else if (dISO > maxISO) err.date = `Please choose a date on or before ${this.fmtDate(maxISO)}.`;
+
+                if (!dT) err.time = "Please choose a delivery time.";
+                else if (!/^\d{2}:\d{2}$/.test(dT)) err.time = "That isn't a valid time.";
+                else if (dT < POOJA_TIME_MIN || dT > POOJA_TIME_MAX) err.time = `Delivery time must be between ${this.fmtTime(POOJA_TIME_MIN)} and ${this.fmtTime(POOJA_TIME_MAX)}.`;
+                else if (!err.date && this.istEpoch(dISO, dT) < earliestMs) {
+                    const e = new Date(earliestMs + IST_OFFSET_MS);
+                    err.time = `That's less than ${POOJA_MIN_LEAD_HOURS} hours away — earliest slot is ${this.fmtDate(minISO)}, ${this.fmtTime(this.pad(e.getUTCHours()) + ":" + this.pad(e.getUTCMinutes()))}.`;
+                }
+
+                const purpose = this.clean(this.$("occ-purpose").value);
+                if (!purpose) err.purpose = "Please enter the occasion name or purpose.";
+                else if (!this.PURPOSE_RE.test(purpose)) err.purpose = "Use 3–80 characters: letters, numbers, spaces and & , . ' / ( ) - only.";
+                return err;
+            },
+
+            showErrors(err, onlyTouched) {
+                const map = { name: "occ-name", date: "occ-delivery-date", time: "occ-delivery-time", purpose: "occ-purpose" };
+                for (const k in map) {
+                    const input = this.$(map[k]), out = this.$(map[k] + "-err");
+                    const show = err[k] && (!onlyTouched || this.touched[k]);
+                    out.textContent = show ? err[k] : "";
+                    input.setAttribute("aria-invalid", show ? "true" : "false");
+                    input.closest(".form-group").classList.toggle("has-error", !!show);
+                }
+            },
+
+            // Full validation. Returns {ok, firstMessage, firstFieldId}.
+            validate(showAll) {
+                this.onShow();
+                const err = this.fieldErrors();
+                if (showAll) { Object.keys({ name: 1, date: 1, time: 1, purpose: 1 }).forEach(k => this.touched[k] = true); }
+                this.showErrors(err, !showAll);
+                const order = [["name", "occ-name"], ["date", "occ-delivery-date"], ["time", "occ-delivery-time"], ["purpose", "occ-purpose"]];
+                const first = order.find(([k]) => err[k]);
+                if (!first) {
+                    // keep the shared customer name in step with the validated one
+                    this.$("cust-name").value = this.clean(this.$("occ-name").value);
+                    updateWatermark();
+                }
+                return { ok: !first, firstMessage: first ? err[first[0]] : "", firstFieldId: first ? first[1] : null };
+            },
+
+            getData() {
+                const dISO = this.$("occ-delivery-date").value, dT = this.$("occ-delivery-time").value;
+                return {
+                    name: this.clean(this.$("occ-name").value),
+                    orderDate: this.fmtDate(this.$("occ-order-date").dataset.iso || this.todayISO()),
+                    deliveryLabel: `${this.fmtDate(dISO)}, ${this.fmtTime(dT)}`,
+                    purpose: this.clean(this.$("occ-purpose").value)
+                };
+            },
+
+            bindFormHandlers() {
+                const fields = { "occ-name": "name", "occ-delivery-date": "date", "occ-delivery-time": "time", "occ-purpose": "purpose" };
+                const live = () => { this.showErrors(this.fieldErrors(), true); };
+                Object.keys(fields).forEach(id => {
+                    const el = this.$(id);
+                    el.addEventListener("blur", () => { this.touched[fields[id]] = true; live(); });
+                    el.addEventListener("input", live);
+                    el.addEventListener("change", () => { this.touched[fields[id]] = true; live(); });
+                });
+                // keep the sidebar "Customer Name" and this form's name in step
+                this.$("occ-name").addEventListener("input", () => {
+                    this.$("cust-name").value = this.clean(this.$("occ-name").value);
+                    updateWatermark();
+                });
+                this.$("cust-name").addEventListener("input", () => {
+                    if (this.isActive()) this.$("occ-name").value = this.$("cust-name").value;
+                });
+                this.$("form-occasion").addEventListener("submit", (e) => e.preventDefault());
+            },
+
+            reset() {
+                this.drafts = {}; this.touched = {};
+                this.$("form-occasion").reset();
+                this.showErrors({}, false);
+            }
+        };
+
+        // "2 kg" for weighted items, plain "2" otherwise.
+        function fmtQty(item) { return item.unit ? `${item.qty} ${item.unit}` : `${item.qty}`; }
+
         const ExportEngine = {
             validateInputs() {
                 const customerForm = document.getElementById("form-customer");
@@ -5930,6 +5837,17 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 if (invoice.itemsList.length === 0) {
                     UIEngine.alertModal("Your cart is empty", "Please add at least one item from the menu before sending, printing, or copying your order.");
                     return false;
+                }
+                if (POSState.orderMode === "PoojaPrasadham") {
+                    const occ = PoojaOrder.validate(true);
+                    if (!occ.ok) {
+                        UIEngine.alertModal("Occasion details needed", occ.firstMessage);
+                        const f = document.getElementById(occ.firstFieldId);
+                        const card = document.getElementById("pooja-form-card");
+                        if (card) card.scrollIntoView({ behavior: "smooth", block: "start" });
+                        if (f) setTimeout(() => f.focus({ preventScroll: true }), 50);
+                        return false;
+                    }
                 }
                 if (!customerForm.checkValidity()) {
                     customerForm.reportValidity();
@@ -6002,17 +5920,18 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 document.getElementById("print-datetime").innerText = new Date(LiveClock.nowMs()).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
                 document.getElementById("print-order-type").innerText = POSState.orderType +
                     (POSState.orderMode === "Subscription" ? " (Subscribe My Item)"
-                        : POSState.orderMode === "LunchTimeMenu" ? " (Lunch Time Menu)"
+                        : POSState.orderMode === "PoojaPrasadham" ? " (Festive & Pooja's Prasadham Ordering)"
                         : "");
                 document.getElementById("print-cust-info").innerHTML = `<strong>${customer.name}</strong> (${customer.fullPhone})<br>
                        Flat/Door: ${customer.door}${customer.apart ? ', ' + customer.apart : ''}
-                       ${isPickup ? `<br>Self Pickup at Counter` : ''}`;
+                       ${isPickup ? `<br>Self Pickup at Counter` : ''}`
+                    + (POSState.orderMode === "PoojaPrasadham" ? (() => { const o = PoojaOrder.getData(); return `<br>Occasion: ${PoojaOrder.esc(o.purpose)}<br>Delivery: ${PoojaOrder.esc(o.deliveryLabel)}`; })() : '');
 
                 const body = document.getElementById("print-items-body");
                 body.innerHTML = invoice.itemsList.map(item => {
                     const qtyCell = invoice.isRecurring
                         ? (item.occurrences > 0 ? `${item.qty} × ₹${item.price} × ${item.occurrences}` : `${item.qty} × ₹${item.price} × —`)
-                        : `${item.qty} × ₹${item.price}`;
+                        : `${fmtQty(item)} × ₹${item.price}`;
                     return `
                         <tr>
                             <td>${item.name}</td>
@@ -6069,6 +5988,12 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 if (isPickup) {
                     text += `   I will collect my order at your counter.\n`;
                 }
+                if (POSState.orderMode === "PoojaPrasadham") {
+                    const occ = PoojaOrder.getData();
+                    text += `🪔 *Occasion / Purpose:* ${occ.purpose}\n`;
+                    text += `📅 *Date of Ordering:* ${occ.orderDate}\n`;
+                    text += `🗓️ *Delivery Date & Time:* ${occ.deliveryLabel}\n`;
+                }
                 {
                     const notesParts = [];
                     if (customer.notes) notesParts.push(customer.notes);
@@ -6081,9 +6006,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 }
                 text += LINE;
 
-                if (POSState.orderMode === "LunchTimeMenu") {
-                    const ltmState = getLunchTimeMenuWindowState();
-                    text += `🍽️ *Lunch Order for: ${ltmState.orderForLabel}*\n   (Served 12:30 PM – 2:00 PM)\n\n`;
+                if (POSState.orderMode === "PoojaPrasadham") {
+                    text += `🪔 *Festive & Pooja's Prasadham Ordering Order*\n\n`;
                 } else {
                     text += `🍽️ *My Order:* _(Flat ₹${FLAT_ITEM_PRICE} per item)_\n\n`;
                 }
@@ -6095,7 +6019,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                             : `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${item.price} — _schedule incomplete, total pending_\n`;
                         text += `     ${formatItemSchedule(item.schedule)}\n`;
                     } else {
-                        text += `  ${i + 1}. ${item.name}\n     ${item.qty} × ₹${item.price} = *₹${item.total.toFixed(2)}*\n`;
+                        text += `  ${i + 1}. ${item.name}\n     ${fmtQty(item)} × ₹${item.price} = *₹${item.total.toFixed(2)}*\n`;
                     }
                     text += `\n`;
                 });
