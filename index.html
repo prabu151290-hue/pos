@@ -3582,8 +3582,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
         PoojaPrasadham: [
             { id: "pp1", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Venpongal", price: 500, unit: "kg", weighted: true },
             { id: "pp2", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Sakkarai Pongal", price: 600, unit: "kg", weighted: true },
-            { id: "pp3", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Akkaarai Vadisal", price: 800, unit: "kg", weighted: true },
-            { id: "pp4", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Rava Kesari", price: 500, unit: "kg", weighted: true },
+            { id: "pp3", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Akkaarai Vadisal", price: 800, unit: "kg", weighted: true },
+            { id: "pp4", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Rava Kesari", price: 500, unit: "kg", weighted: true },
             { id: "pp5", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Kalkandu Bath", price: 600, unit: "kg", weighted: true },
             { id: "pp6", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Channa Sundal", price: 400, unit: "kg", weighted: true },
             { id: "pp7", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Black Channa Sundal", price: 400, unit: "kg", weighted: true },
@@ -3593,11 +3593,13 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             { id: "pp11", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ver Kadalai Sundal", price: 400, unit: "kg", weighted: true },
             { id: "pp12", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Paasi Paruppu Paayasam", price: 600, unit: "ltr", weighted: true },
             { id: "pp13", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Special Curd Rice", price: 400, unit: "kg", weighted: true },
-            { id: "pp14", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Pure Ulundhu Vadai", price: 15, unit: "per pc", weighted: false },
+            { id: "pp14", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Pure Ulundhu Vadai", price: 15, unit: "pc", moq: 50, max: 1008, weighted: true },
             { id: "pp15", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Puliyodharai", price: 600, unit: "kg", weighted: true },
-            { id: "pp16", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Aval Paayasam", price: 500, unit: "ltr", weighted: true },
+            { id: "pp16", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Aval vellam Paayasam", price: 600, unit: "ltr", weighted: true },
             { id: "pp17", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Aval Thengai Paagam", price: 600, unit: "kg", weighted: true },
-          //  { id: "pp18", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Thengai Paayasam", price: 400, unit: "ltr", weighted: true },
+            { id: "pp18", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Neer Mor- Spicy Butter milk", price: 250, unit: "ltr", weighted: true },
+            { id: "pp19", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Paanagam", price: 250, unit: "ltr", weighted: true },
+            { id: "pp20", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Panchamirtham", price: 500, unit: "kg", weighted: true },
         ],
 
         Subscription: [
@@ -5554,9 +5556,17 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             MODE: "PoojaPrasadham",
             drafts: {},
             touched: {},
-            QTY_RE: /^(0|[1-9]|1[0-5])$/,
             NAME_RE: /^[\p{L}\p{M}][\p{L}\p{M} .'’-]{1,59}$/u,
             PURPOSE_RE: /^[\p{L}\p{M}\p{N}][\p{L}\p{M}\p{N} &,.'’\/()-]{2,79}$/u,
+
+            // Per-item order limits: `moq` (minimum order qty) and `max` override the defaults.
+            minOf(item) { return Math.max(1, Number(item && item.moq) || 1); },
+            maxOf(item) { return Number(item && item.max) || PRASADHAM_QTY_MAX; },
+            qtyOk(item, raw) { return /^[0-9]+$/.test(raw) && Number(raw) >= this.minOf(item) && Number(raw) <= this.maxOf(item); },
+            rangeText(item) {
+                const mn = this.minOf(item), mx = this.maxOf(item), u = item.unit;
+                return mn > 1 ? `Minimum order ${mn} ${u}, up to ${mx} ${u}` : `Whole numbers only, ${PRASADHAM_QTY_MIN}–${mx} ${u}`;
+            },
 
             isActive() { return POSState.orderMode === this.MODE; },
             $(id) { return document.getElementById(id); },
@@ -5567,7 +5577,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             rowHTML(item, cartQty, disabled) {
                 const id = item.id, u = item.unit, dis = disabled ? "disabled" : "";
                 const shown = cartQty > 0 ? String(cartQty)
-                    : (this.drafts[id] !== undefined ? this.drafts[id] : "1");
+                    : (this.drafts[id] !== undefined ? this.drafts[id] : String(this.minOf(item)));
+                const maxQ = this.maxOf(item), minQ = this.minOf(item);
                 const desc = (item.desc && String(item.desc).trim()) ? `<div class="item-desc">${escapeDesc(item.desc)}</div>` : "";
                 return `
                     <div class="menu-item-body pp-body">
@@ -5587,13 +5598,13 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                                 <label for="ppq-${id}">Quantity</label>
                                 <div class="pp-inline">
                                     <input type="text" id="ppq-${id}" class="pp-qty" data-id="${id}" data-prev="${shown}" value="${shown}"
-                                           inputmode="numeric" maxlength="2" autocomplete="off" spellcheck="false"
-                                           pattern="(0|[1-9]|1[0-5])" aria-describedby="ppe-${id} pph-${id}" aria-label="Quantity of ${item.name} in ${u}, 0 to ${PRASADHAM_QTY_MAX}" ${dis}>
+                                           inputmode="numeric" maxlength="${String(maxQ).length}" autocomplete="off" spellcheck="false"
+                                           pattern="[0-9]*" aria-describedby="ppe-${id} pph-${id}" aria-label="Quantity of ${item.name} in ${u}${minQ > 1 ? `, minimum ${minQ}` : ''}, up to ${maxQ}" ${dis}>
                                     <input type="text" class="pp-ro pp-ro-unit" value="${u}" readonly tabindex="-1" aria-readonly="true" aria-label="Unit: ${u}">
                                 </div>
                             </div>
                         </div>
-                        <span class="pp-range-hint" id="pph-${id}">Whole numbers only, ${PRASADHAM_QTY_MIN}–${PRASADHAM_QTY_MAX} ${u}</span>
+                        <span class="pp-range-hint" id="pph-${id}">${this.rangeText(item)}</span>
                         <div class="pp-actions">
                             <button type="button" class="btn btn-primary pp-add" data-id="${id}" ${dis}>${cartQty > 0 ? "Update Cart" : "Add to Cart"}</button>
                             <button type="button" class="pp-remove" data-id="${id}" ${cartQty > 0 && !disabled ? "" : "hidden"}>Remove</button>
@@ -5611,8 +5622,9 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
             // Keeps only digits, max 2 chars, no leading zeros, value ≤ 15.
             sanitizeQty(el) {
-                let v = el.value.replace(/[^0-9]/g, "").slice(0, 2).replace(/^0+(?=\d)/, "");
-                if (v !== "" && Number(v) > PRASADHAM_QTY_MAX) v = el.dataset.prev || "";
+                const it = getMenuData().find(m => m.id === el.dataset.id), maxQ = this.maxOf(it);
+                let v = el.value.replace(/[^0-9]/g, "").slice(0, String(maxQ).length).replace(/^0+(?=\d)/, "");
+                if (v !== "" && Number(v) > maxQ) v = el.dataset.prev || "";
                 if (el.value !== v) el.value = v;
                 if (v !== "") el.dataset.prev = v;
                 this.drafts[el.dataset.id] = v;
@@ -5624,8 +5636,11 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 const el = this.$(`ppq-${id}`);
                 if (!item || !el) return;
                 const raw = el.value.trim();
-                if (!this.QTY_RE.test(raw)) {
-                    this.setRowError(id, `Enter a whole number from ${PRASADHAM_QTY_MIN} to ${PRASADHAM_QTY_MAX}.`);
+                const minQ = this.minOf(item), maxQ = this.maxOf(item);
+                if (!/^[0-9]+$/.test(raw) || (Number(raw) !== 0 && !this.qtyOk(item, raw))) {
+                    this.setRowError(id, minQ > 1
+                        ? `Minimum order is ${minQ} ${item.unit} (up to ${maxQ} ${item.unit}).`
+                        : `Enter a whole number from ${PRASADHAM_QTY_MIN} to ${maxQ}.`);
                     el.focus(); return;
                 }
                 const n = Number(raw), cart = POSState.getCart();
@@ -5634,7 +5649,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                         delete cart[id];
                         UIEngine.showToast(`${item.name} removed`, "info");
                     } else {
-                        this.setRowError(id, `Enter 1 to ${PRASADHAM_QTY_MAX} ${item.unit} to add this item.`);
+                        this.setRowError(id, `Enter ${minQ} to ${maxQ} ${item.unit} to add this item.`);
                         el.focus(); return;
                     }
                 } else {
@@ -5658,7 +5673,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 const qty = POSState.getCart()[id] || 0;
                 const el = this.$(`ppq-${id}`);
                 if (el) {
-                    const shown = qty > 0 ? String(qty) : (this.drafts[id] || "1");
+                    const shown = qty > 0 ? String(qty) : (this.drafts[id] || String(this.minOf(item)));
                     el.value = shown; el.dataset.prev = shown; this.drafts[id] = shown;
                     const row = el.closest(".menu-item");
                     if (row) row.classList.toggle("in-cart", qty > 0);
@@ -5687,7 +5702,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     if (!e.target.classList.contains("pp-qty")) return;
                     // Never leave the box empty ("null"): restore last valid value.
                     if (e.target.value.trim() === "") {
-                        e.target.value = e.target.dataset.prev || "1";
+                        const it = getMenuData().find(m => m.id === e.target.dataset.id);
+                        e.target.value = e.target.dataset.prev || String(this.minOf(it));
                         this.drafts[e.target.dataset.id] = e.target.value;
                     }
                 });
