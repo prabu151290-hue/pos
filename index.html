@@ -3476,7 +3476,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
         }
 
         // ── Festive & Pooja's Prasadham Ordering — business rules (edit here) ──
-        const PRASADHAM_PRICE_PER_UNIT = 400;   // ₹ per kg / ltr, same for every item
+        // Prasadham prices are set per item — edit the `price:` of each item in MENU_DATA_BY_MODE.PoojaPrasadham (₹ per kg / ltr).
         const PRASADHAM_QTY_MIN = 0;
         const PRASADHAM_QTY_MAX = 15;           // kg / ltr per item
         const POOJA_MIN_LEAD_HOURS = 48;        // earliest delivery = now + this many hours
@@ -3580,24 +3580,24 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
         // 0 to 15 (kg or ltr) and presses "Add to Cart". Price is per unit.
         // `desc` stays optional here too — add `desc: "..."` to any item.
         PoojaPrasadham: [
-            { id: "pp1", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Venpongal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp2", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Sakkarai Pongal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp3", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Akkaarai Vadisal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp4", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Rava Kesari", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp5", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Kalkandu Bath", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp6", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Channa Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp7", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Black Channa Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp8", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Pattaani Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp9", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Green Pattaani Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp10", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Kaaramani Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp11", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ver Kadalai Sundal", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp12", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Paasi Paruppu Paayasam", price: PRASADHAM_PRICE_PER_UNIT, unit: "ltr", weighted: true },
-            { id: "pp13", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Special Curd Rice", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp14", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ulundhu Vadai", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp15", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Puliyodharai", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp16", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Aval Paayasam", price: PRASADHAM_PRICE_PER_UNIT, unit: "ltr", weighted: true },
-            { id: "pp17", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Aval Thengai Paagam", price: PRASADHAM_PRICE_PER_UNIT, unit: "kg", weighted: true },
-            { id: "pp18", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Thengai Paayasam", price: PRASADHAM_PRICE_PER_UNIT, unit: "ltr", weighted: true },
+            { id: "pp1", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Venpongal", price: 500, unit: "kg", weighted: true },
+            { id: "pp2", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Sakkarai Pongal", price: 600, unit: "kg", weighted: true },
+            { id: "pp3", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Akkaarai Vadisal", price: 800, unit: "kg", weighted: true },
+            { id: "pp4", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ghee Rava Kesari", price: 500, unit: "kg", weighted: true },
+            { id: "pp5", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Kalkandu Bath", price: 600, unit: "kg", weighted: true },
+            { id: "pp6", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Channa Sundal", price: 400, unit: "kg", weighted: true },
+            { id: "pp7", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Black Channa Sundal", price: 400, unit: "kg", weighted: true },
+            { id: "pp8", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Pattaani Sundal", price: 400, unit: "kg", weighted: true },
+            { id: "pp9", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Green Pattaani Sundal", price: 400, unit: "kg", weighted: true },
+            { id: "pp10", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "White Kaaramani Sundal", price: 400, unit: "kg", weighted: true },
+            { id: "pp11", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Ver Kadalai Sundal", price: 400, unit: "kg", weighted: true },
+            { id: "pp12", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Paasi Paruppu Paayasam", price: 600, unit: "ltr", weighted: true },
+            { id: "pp13", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Special Curd Rice", price: 400, unit: "kg", weighted: true },
+            { id: "pp14", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Pure Ulundhu Vadai", price: 15, unit: "per pc", weighted: false },
+            { id: "pp15", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Puliyodharai", price: 600, unit: "kg", weighted: true },
+            { id: "pp16", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Aval Paayasam", price: 500, unit: "ltr", weighted: true },
+            { id: "pp17", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Aval Thengai Paagam", price: 600, unit: "kg", weighted: true },
+          //  { id: "pp18", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Thengai Paayasam", price: 400, unit: "ltr", weighted: true },
         ],
 
         Subscription: [
