@@ -705,6 +705,265 @@
             .mode-tab, .mode-tab-date { transition: var(--transition); }
         }
 
+        /* ════════════════════════════════════════════════════════════════
+           LUNCH TIME MENU — Order Window Status Radiator
+           A "radiator" in the Microsoft Systems architecture sense:
+           a single, prominent, always-visible panel that broadcasts
+           the current system state so any stakeholder can read it
+           at a glance without drilling into details.
+           ════════════════════════════════════════════════════════════════ */
+
+        .ltm-status-panel {
+            display: none;
+            margin-bottom: var(--space-5);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lift);
+            animation: toast-in 0.22s ease-out;
+        }
+        .ltm-status-panel.visible { display: block; }
+
+        /* ── Radiator header strip — full-width state indicator ── */
+        .ltm-radiator {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-5);
+            position: relative;
+        }
+        .ltm-radiator.state-open {
+            background: linear-gradient(135deg,
+                color-mix(in srgb, #22c55e 18%, var(--surface)),
+                color-mix(in srgb, #4ade80 8%, var(--surface)));
+            border: 1.5px solid color-mix(in srgb, #22c55e 40%, var(--border));
+            border-bottom: none;
+        }
+        .ltm-radiator.state-frozen {
+            background: linear-gradient(135deg,
+                color-mix(in srgb, #f97316 18%, var(--surface)),
+                color-mix(in srgb, #fb923c 8%, var(--surface)));
+            border: 1.5px solid color-mix(in srgb, #f97316 40%, var(--border));
+            border-bottom: none;
+        }
+        .ltm-radiator.state-closing {
+            background: linear-gradient(135deg,
+                color-mix(in srgb, #eab308 22%, var(--surface)),
+                color-mix(in srgb, #facc15 10%, var(--surface)));
+            border: 1.5px solid color-mix(in srgb, #eab308 40%, var(--border));
+            border-bottom: none;
+        }
+
+        .ltm-radiator-icon {
+            font-size: 1.9rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .ltm-radiator-icon.pulse-anim {
+            animation: ltm-pulse-icon 2.4s ease-in-out infinite;
+        }
+        @keyframes ltm-pulse-icon {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.12); opacity: 0.82; }
+        }
+
+        .ltm-radiator-text { flex: 1; min-width: 0; }
+        .ltm-radiator-headline {
+            font-family: var(--font-heading);
+            font-size: var(--text-title3);
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-bottom: 0.18rem;
+        }
+        .ltm-radiator-sub {
+            font-size: var(--text-footnote);
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* "For Date" pill — the most important datum: which meal is being booked */
+        .ltm-for-date-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: 0.3rem var(--space-3);
+            border-radius: var(--radius-xl);
+            font-family: var(--font-btn);
+            font-size: var(--text-caption1);
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .ltm-for-date-pill.for-today {
+            background: color-mix(in srgb, #22c55e 20%, var(--surface));
+            color: #166534;
+            border: 1.5px solid color-mix(in srgb, #22c55e 45%, transparent);
+        }
+        [data-theme-mode="dark"] .ltm-for-date-pill.for-today {
+            color: #86efac;
+            border-color: color-mix(in srgb, #22c55e 35%, transparent);
+        }
+        .ltm-for-date-pill.for-tomorrow {
+            background: color-mix(in srgb, #6366f1 18%, var(--surface));
+            color: #3730a3;
+            border: 1.5px solid color-mix(in srgb, #6366f1 38%, transparent);
+        }
+        [data-theme-mode="dark"] .ltm-for-date-pill.for-tomorrow {
+            color: #a5b4fc;
+            border-color: color-mix(in srgb, #6366f1 32%, transparent);
+        }
+        .ltm-for-date-pill.for-frozen {
+            background: color-mix(in srgb, #f97316 16%, var(--surface));
+            color: #9a3412;
+            border: 1.5px solid color-mix(in srgb, #f97316 35%, transparent);
+        }
+        [data-theme-mode="dark"] .ltm-for-date-pill.for-frozen {
+            color: #fdba74;
+            border-color: color-mix(in srgb, #f97316 30%, transparent);
+        }
+
+        /* ── Info body below the radiator strip ── */
+        .ltm-info-body {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            padding: var(--space-3) var(--space-5) var(--space-4);
+        }
+
+        /* Timeline: shows the three states as a track */
+        .ltm-timeline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-top: var(--space-3);
+            margin-bottom: var(--space-3);
+            font-size: var(--text-caption2);
+            font-family: var(--font-btn);
+            overflow-x: auto;
+        }
+        .ltm-tl-seg {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-md);
+            flex: 1;
+            min-width: 90px;
+            transition: var(--transition);
+            border: 1.5px solid transparent;
+        }
+        .ltm-tl-seg.tl-active {
+            border-color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+        }
+        .ltm-tl-seg-icon { font-size: 1.2rem; }
+        .ltm-tl-seg-label {
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+        .ltm-tl-seg-time {
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .ltm-tl-arrow {
+            font-size: 1rem;
+            color: var(--text-muted);
+            padding: 0 var(--space-1);
+            flex-shrink: 0;
+            margin-bottom: 10px; /* align with middle of segments */
+        }
+
+        .ltm-info-note {
+            font-size: var(--text-caption1);
+            color: var(--text-muted);
+            line-height: 1.55;
+            padding-top: var(--space-2);
+            border-top: 1px dashed var(--border);
+        }
+        .ltm-info-note strong { color: var(--text-main); }
+
+        /* frozen overlay — a translucent freeze badge on the category card */
+        .frozen-banner.ltm-frozen {
+            background: linear-gradient(135deg,
+                color-mix(in srgb, #f97316 22%, var(--surface)),
+                color-mix(in srgb, #fb923c 12%, var(--surface)));
+            border-left: 4px solid #f97316;
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+            margin-bottom: var(--space-3);
+            font-size: var(--text-subhead);
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* ── Lunch Time Menu — mobile rework ──────────────────────────────
+           Apple HIG (Dynamic Type / touch-target clarity), Material Design
+           (responsive layout breakpoints) and Nielsen Norman (no hidden
+           horizontal scroll, single reading column) all converge on the
+           same fix here: this panel was a 3-across flex row (icon + text
+           + pill) sitting on top of a 3-across timeline row that could
+           only fit ~300px of segments — both silently overflowed or
+           got crushed below ~380px. On small screens we stack instead
+           of squeeze: the date pill drops to its own line under the
+           headline, and the timeline becomes a vertical stepper (a
+           pattern iOS and Android both use for status/progress at this
+           width) instead of a horizontally-scrolling strip. ── */
+        @media (max-width: 600px) {
+            .ltm-radiator {
+                flex-wrap: wrap;
+                row-gap: var(--space-2);
+                padding: var(--space-3) var(--space-4);
+            }
+            .ltm-radiator-icon { font-size: 1.5rem; }
+            .ltm-radiator-headline { font-size: var(--text-subhead); line-height: 1.3; }
+            .ltm-radiator-sub { font-size: var(--text-caption2); }
+            .ltm-for-date-pill {
+                flex-basis: 100%;
+                width: fit-content;
+                margin-left: calc(1.5rem + var(--space-3));
+            }
+            .ltm-info-body { padding: var(--space-3) var(--space-4) var(--space-4); }
+
+            .ltm-timeline {
+                flex-direction: column;
+                align-items: stretch;
+                overflow-x: visible;
+                gap: var(--space-2);
+            }
+            .ltm-tl-seg {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-areas: "icon label" "icon time";
+                column-gap: var(--space-3);
+                align-items: center;
+                flex: none;
+                min-width: 0;
+                width: 100%;
+                text-align: left;
+                padding: var(--space-3) var(--space-4);
+            }
+            .ltm-tl-seg-icon { grid-area: icon; font-size: 1.35rem; align-self: center; }
+            .ltm-tl-seg-label { grid-area: label; white-space: normal; }
+            .ltm-tl-seg-time { grid-area: time; white-space: normal; }
+            .ltm-tl-arrow {
+                align-self: center;
+                transform: rotate(90deg);
+                margin: -2px 0;
+                padding: 0;
+            }
+        }
+        @media (max-width: 380px) {
+            .ltm-radiator-icon { font-size: 1.3rem; }
+            .ltm-for-date-pill { margin-left: calc(1.3rem + var(--space-2)); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ltm-status-panel { animation: none; }
+            .ltm-radiator-icon.pulse-anim { animation: none; }
+        }
+
         /* ── Optional item description ─────────────────────────────────
            Rendered only when an item has a `desc`. Deliberately a
            different voice from the item name: serif italic, softer
@@ -2961,8 +3220,118 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
     .category-card:hover, .menu-item:hover { transform: none !important; }
 }
 
+/* 2b ▸ Lunch notice (inline-styled): theme-aware tint + readable text */
+[aria-label="Lunch Time Menu tab notice"] {
+    background: color-mix(in srgb, var(--gold-mid) 16%, var(--surface) 84%) !important;
+    border: 1px solid color-mix(in srgb, var(--gold-mid) 50%, transparent) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow) !important;
+}
+[aria-label="Lunch Time Menu tab notice"] strong { color: var(--gold-bright) !important; }
+[aria-label="Lunch Time Menu tab notice"] span:not(:first-child) { color: var(--text-main) !important; opacity: .9; }
+
 /* 2c ▸ Pure-veg mark: legible 16px badge instead of a speck */
 .status-board .veg-mark { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVE & USABILITY FIXES — audited at 320 / 360 / 390 / 768 /
+   1024 / 1440 px across all three ordering tabs. Kept as one block,
+   last in the cascade, so each fix is easy to find and to revert.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* 1 ▸ Ordering tabs: three equal tabs on one row; on phones the two
+       short tabs share a row and the long Prasadham tab spans full width
+       (previously 2 + 1 with an orphaned half-width tab and an empty slot). */
+.mode-tabs { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.mode-tab { min-width: 0; min-height: 56px; padding-inline: var(--space-3); line-height: 1.25; text-wrap: balance; }
+@media (max-width: 700px) {
+    .mode-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mode-tab:nth-child(3):last-child { grid-column: 1 / -1; }
+}
+
+/* 2 ▸ Status strip: the lone veg glyph read as a stray box and the strip
+       stacked into three lines on phones. Now a labelled badge in one
+       wrapping row. */
+.status-board .seg { display: inline-flex; align-items: center; gap: 6px; }
+.status-board .veg-mark { width: 14px; height: 14px; border: 2px solid #4CC76E; border-radius: 3px; }
+.status-board .veg-mark::after { width: 6px; height: 6px; background: #4CC76E; }
+@media (max-width: 768px) {
+    .status-board { flex-direction: row !important; flex-wrap: wrap; justify-content: center; gap: 2px 14px !important; }
+    .status-board .divider { display: none; }
+}
+
+/* 3 ▸ Header: the brand name pushed the card wider than a 320 px screen. */
+.pos-header, .header-center { min-width: 0; }
+@media (max-width: 480px) {
+    .pos-header { grid-template-columns: 84px minmax(0, 1fr); }
+    .header-center h1 { font-size: clamp(0.82rem, 4.6vw, 1.35rem); letter-spacing: 0.2px; overflow-wrap: anywhere; }
+}
+
+/* 4 ▸ Prasadham grid: a 290 px minimum column was wider than the card on
+       small screens and in 3-up layouts, so rows were clipped. */
+.menu-items-body.pp-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.pp-grid .menu-item-wrap, .pp-grid .menu-item, .pp-grid .pp-body { min-width: 0; max-width: 100%; }
+.pp-fields { row-gap: var(--space-2); }
+
+/* 5 ▸ Lunch order-window panel on phones: the date pill overflowed the
+       card, and the vertical stepper made the panel ~340 px tall. Now a
+       compact three-across strip. */
+.ltm-for-date-pill { white-space: normal; max-width: 100%; }
+@media (max-width: 600px) {
+    .ltm-radiator { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-3); row-gap: var(--space-2); align-items: center; }
+    .ltm-radiator-text { min-width: 0; }
+    .ltm-for-date-pill { grid-column: 2; justify-self: start; flex-basis: auto; margin-left: 0; max-width: 100%; }
+    .ltm-timeline { flex-direction: row; gap: 6px; overflow: visible; }
+    .ltm-tl-arrow { display: none; }
+    .ltm-tl-seg {
+        display: flex; flex-direction: column; align-items: center; text-align: center;
+        flex: 1 1 0; min-width: 0; width: auto; padding: var(--space-2) 4px; gap: 2px;
+    }
+    .ltm-tl-seg-label, .ltm-tl-seg-time { white-space: normal; line-height: 1.2; }
+    .ltm-tl-seg-label { font-size: var(--text-caption2); }
+}
+
+/* 6 ▸ "Call us for help": it covered Add-to-cart buttons and form fields.
+       Phones: a slim edge tab that sits clear of the controls.
+       Desktop: a round icon that expands to its label on hover/focus. */
+.btn-call-us .call-label { white-space: nowrap; }
+@media (max-width: 768px) {
+    .floating-actions { left: 0; }
+    .btn-call-us { width: 40px; height: 48px; border-radius: 0 24px 24px 0; }
+}
+@media (min-width: 769px) {
+    .btn-call-us { height: 48px; min-width: 48px; padding: 0 14px; justify-content: center; gap: 0; overflow: hidden; }
+    .btn-call-us .call-label { max-width: 0; opacity: 0; overflow: hidden; transition: max-width .2s ease, opacity .2s ease; }
+    .btn-call-us:hover, .btn-call-us:focus-visible { gap: var(--space-2); padding: 0 var(--space-4); }
+    .btn-call-us:hover .call-label, .btn-call-us:focus-visible .call-label { max-width: 12em; opacity: 1; }
+}
+
+/* 7 ▸ Tablet: the theme picker stretched across the whole row. */
+@media (min-width: 481px) and (max-width: 900px) {
+    .theme-picker { align-self: flex-end; }
+    .theme-picker > button { width: auto; min-width: 200px; }
+}
+
+/* 8 ▸ Touch targets: 44 px minimum wherever a finger is the pointer. */
+@media (pointer: coarse), (max-width: 768px) {
+    .pill, .category-title-btn, .theme-picker-trigger, .hero-cta,
+    #subscription-whatsapp-btn, .segmented button, .btn.pp-add { min-height: 44px; }
+    .qty-btn { min-width: 44px; min-height: 44px; }
+    .qty-input, input.pp-qty, input.pp-ro { height: 44px; }
+    #upi-mobile-link, #upi-id-link { display: inline-flex; align-items: center; min-height: 44px; }
+}
+
+/* 8b ▸ Small polish: date badge stays on one line on the narrowest phones,
+        the lunch status icon aligns with its headline, and the occasion
+        form's read-only date field matches the height of its neighbours. */
+@media (max-width: 380px) { .mode-tab-date { white-space: nowrap; font-size: 0.68rem; padding-inline: 8px; } }
+@media (max-width: 600px) { .ltm-radiator-icon { align-self: start; } }
+.pooja-form-grid input { min-height: 46px; }
+
+/* 9 ▸ Keyboard focus: visible ring wherever a component hasn't set its own. */
+:where(button, a, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+    outline: 2px solid var(--gold-bright, #E8C766); outline-offset: 2px;
+}
     </style>
 </head>
 <body>
@@ -2983,7 +3352,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
     <div class="status-board" id="status-board" role="status" aria-live="polite">
         <div class="seg"><span class="status-dot" id="kitchen-dot" aria-hidden="true"></span><span id="kitchen-status-text">Checking kitchen status…</span></div>
         <span class="divider" aria-hidden="true">•</span>
-        <div class="seg"><span class="veg-mark" role="img" aria-label="Pure Vegetarian"></span></div>
+        <div class="seg"><span class="veg-mark" role="img" aria-label="Pure Vegetarian"></span><span>Pure Veg</span></div>
         <span class="divider" aria-hidden="true">•</span>
         <div class="seg"><span>⏱ Serving Hours: 06:00 – 22:00</span></div>
     </div>
@@ -3025,6 +3394,25 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 </div>
             </section>
 
+            <!-- Lunch Time Menu tab callout — hidden once the customer is already on the Lunch Time Menu tab, since introducing it there is redundant -->
+            <div id="flat-pricing-banner" style="
+                background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
+                border: 1.5px solid #ffcc02;
+                border-radius: 16px;
+                padding: 14px 20px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                box-shadow: 0 2px 10px rgba(255,180,0,0.12);
+            " role="note" aria-label="Lunch Time Menu tab notice">
+                <span style="font-size:1.9rem;line-height:1;flex-shrink:0;">🍽️</span>
+                <div>
+                    <strong style="font-size:1.05rem;color:#7a4a00;display:block;margin-bottom:2px;">Introducing the Lunch Menu tab</strong>
+                    <span style="font-size:0.9rem;color:#a06000;line-height:1.45;">You can pre-order your lunch accordingly.</span>
+                </div>
+            </div>
+
             <div class="mode-tabs" id="mode-tabs" role="group" aria-label="Ordering mode">
                 <button type="button" class="mode-tab active" data-mode="Instant" aria-pressed="true">
                     <span>⚡ Today's Order Menu</span>
@@ -3032,6 +3420,9 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                         <span class="mode-tab-date__dot"></span>
                         <span id="today-date-text">…</span>
                     </span>
+                </button>
+                <button type="button" class="mode-tab" data-mode="LunchTimeMenu" aria-pressed="false">
+                    <span>🍽️ Lunch Time Menu</span>
                 </button>
                 <button type="button" class="mode-tab" data-mode="PoojaPrasadham" aria-pressed="false">
                     <span>🪔 Festive &amp; Pooja's Prasadham Ordering</span>
@@ -3047,7 +3438,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             <div class="controls-row">
                 <div class="search-wrapper">
                     <label for="txt-search" class="sr-only">Search menu items</label>
-                    <input type="text" id="txt-search" class="search-input" placeholder="Search menu items (e.g., Cake, Pastry, Idli, Maggi, Pasta)..." aria-label="Search menu items">
+                    <input type="text" id="txt-search" class="search-input" placeholder="Search idli, pasta, cake…" aria-label="Search menu items">
                     <span class="search-shortcut-hint" aria-hidden="true">/</span>
                 </div>
                 <div class="category-pills" id="category-pills-container" role="group" aria-label="Filter by category"></div>
@@ -3061,6 +3452,45 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                         <span class="theme-picker-label">Choose a flavor</span>
                         <div id="theme-options-list"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- ── Lunch Time Menu: Order Window Radiator Panel ──────────────
+                 Visible only in LunchTimeMenu mode. Renders three sub-regions:
+                 1. Radiator strip — coloured headline showing current state
+                 2. Timeline — three segments (Accept Today / Frozen / Accept Tomorrow)
+                 3. Info note — one-line contextual guidance for the customer
+            ─────────────────────────────────────────────────────────────────── -->
+            <div class="ltm-status-panel" id="ltm-status-panel" role="status" aria-live="polite" aria-label="Lunch Time Menu order window status">
+                <div class="ltm-radiator" id="ltm-radiator">
+                    <span class="ltm-radiator-icon" id="ltm-radiator-icon" aria-hidden="true">🟢</span>
+                    <div class="ltm-radiator-text">
+                        <div class="ltm-radiator-headline" id="ltm-radiator-headline">Checking order window…</div>
+                        <div class="ltm-radiator-sub" id="ltm-radiator-sub"></div>
+                    </div>
+                    <span class="ltm-for-date-pill" id="ltm-for-date-pill" aria-label="Order is for">…</span>
+                </div>
+                <div class="ltm-info-body">
+                    <div class="ltm-timeline" role="img" aria-label="Order window timeline">
+                        <div class="ltm-tl-seg" id="ltm-tl-accept-today" aria-label="Accept orders for today: yesterday 5 PM to today 10 AM">
+                            <span class="ltm-tl-seg-icon">🟢</span>
+                            <span class="ltm-tl-seg-label">Accept Today</span>
+                            <span class="ltm-tl-seg-time">Until 10:00 AM</span>
+                        </div>
+                        <span class="ltm-tl-arrow" aria-hidden="true">→</span>
+                        <div class="ltm-tl-seg" id="ltm-tl-frozen" aria-label="Frozen: 10 AM to 5 PM">
+                            <span class="ltm-tl-seg-icon">🔒</span>
+                            <span class="ltm-tl-seg-label">Frozen</span>
+                            <span class="ltm-tl-seg-time">10 AM – 5 PM</span>
+                        </div>
+                        <span class="ltm-tl-arrow" aria-hidden="true">→</span>
+                        <div class="ltm-tl-seg" id="ltm-tl-accept-tomorrow" aria-label="Accept orders for tomorrow: 5 PM onwards">
+                            <span class="ltm-tl-seg-icon">📅</span>
+                            <span class="ltm-tl-seg-label">Pre-book Tomorrow</span>
+                            <span class="ltm-tl-seg-time">From 5:00 PM</span>
+                        </div>
+                    </div>
+                    <p class="ltm-info-note" id="ltm-info-note">Lunch is served daily from <strong>12:30 PM – 2:00 PM</strong>. Pre-order by 10:00 AM for same-day lunch, or after 5:00 PM for next-day lunch.</p>
                 </div>
             </div>
 
@@ -3261,7 +3691,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
     <div class="floating-actions">
         <button id="btn-call-us" class="btn-call-us" title="Call us for help" aria-label="Call us for help">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.49a1 1 0 011 1 11.36 11.36 0 00.57 3.56 1 1 0 01-.25 1.01l-2.2 2.22z"/></svg>
-            Call us for help
+            <span class="call-label">Call us for help</span>
         </button>
     </div>
 
@@ -3487,27 +3917,27 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
         const MENU_DATA_BY_MODE = {
 
         Instant: [
-                  { id: "ds1", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti 4 pcs", price: 99 },
-                  { id: "ds2", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Gravy of the Day 250ml", price: 99 },             
-                  { id: "ds3", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Plain Roti 5pcs", price: 99 },
+                  { id: "ds1", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Roti  1 pc", price: 25 },
+                  { id: "ds2", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Gravy of the Day 250ml", price: 125 },             
+                  { id: "ds3", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Plain Roti 1 pc", price: 20 },
                   { id: "ds4", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Butter Naan 2pcs", price: 99 },
               //    { id: "ds6", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Gravy of the day 500ml OFFER PACK(Free 2 butter roti's) ", price: 199 },
               //  { id: "ds7", category: "Dinner Special", title: "🌙 My Dinner Specials", name: "Plain Roti (5pcs)", price: 99 },
             
                //   { id: "es1", category: "Evening Snacks", title: "🌆 Delightful Evening Snacks", name: "Crispy Aloo Bread Roll 4 pcs", price: 99 },
             
-            { id: "s1", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Chilli cheese with loaded veggies and paneer Sandwich", price: 99 },
-            { id: "s2", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Corn cheese Sandwich", price: 99 },
-            { id: "s3", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Veg Mayo Sandwich", price: 99 },
-            { id: "s4", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Choco Banana with Craneberry and Raisin Sandwich", price: 99 },
-            { id: "s5", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Death By Choclate Sandwich", price: 99 },
-            { id: "s6", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Whitechoclate Crush Berries & raisins Sandwich", price: 99 },
-            { id: "s7", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Butterscotch Strawberry Banana Sandwich", price: 99 },
-            { id: "s8", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Whitechoclate Banana - Blueberry crush Sandwich", price: 99 },
-            { id: "s9", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Corn cottage cheese Italian Herbs sandwich", price: 99 },
-            { id: "s10", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Triple Layer Butterscotch Caramel Banana Sandwich", price: 99 },
-            { id: "s11", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "PIZZAREA OLIVE TOAST with Exotic veggies and Cheesemelted with italian herbs", price: 99 },
-            { id: "s12", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Extra Cheese (Add-On)", price: 20 },
+            { id: "s1", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Chilli cheese with loaded veggies and paneer Sandwich", price: 85 },
+            { id: "s2", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Corn cheese Sandwich with italian herbs", price: 85 },
+            { id: "s3", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Veg Mayo Sandwich", price: 80 },
+            { id: "s4", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Choco Cheese Sandwich", price: 80 },
+            { id: "s5", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Death By Choclate Sandwich", price: 80 },
+            { id: "s6", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Whitechoclate Butterscotch Sandwich", price: 80 },
+            { id: "s7", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Butterscotch Strawberry Sandwich", price: 80 },
+            { id: "s8", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Whitechoclate cheese Sandwich", price: 80 },
+            { id: "s9", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Redvelvette sandwich", price: 80 },
+            { id: "s10", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Regular Butterscotch Caramel Sandwich", price: 80 },
+            //{ id: "s11", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "PIZZAREA OLIVE TOAST with Exotic veggies and Cheese melted with italian herbs", price: 99 },
+          //  { id: "s12", category: "Sandwich", title: "🥪 Signature Sandwiches", name: "Extra Cheese (Add-On)", price: 20 },
 
      //       { id: "sp1", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled MilkChocolate Strawberry Sandwich(Worth 175) ", price: 99 },
      //       { id: "sp2", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Deadly Chocolate with Cheese Sandwich(Worth 175)", price: 99 },
@@ -3521,18 +3951,18 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
      //       { id: "sp11", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Grilled Nutella Banana Sandwich(Worth 149)", price: 99 },
      //       { id: "sp12", category: "Premium Sandwich", title: "🥪 Premium Sandwiches", name: "Extra Cheese (Add-On)", price: 20 },
             
-            { id: "m1", category: "Maggi", title: "🍜 Maggi Corner", name: "Plain Maggi 500ml box", price: 99 },
-            { id: "m2", category: "Maggi", title: "🍜 Maggi Corner", name: "Mix Veg Maggi 500ml box", price: 99 },
-             { id: "m3", category: "Maggi", title: "🍜 Maggi Corner", name: "Mix Veg cheese Maggi 500ml box", price: 99 },
-            { id: "m4", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Strong Cheese Maggi with olives and jalapenos 500ml box", price: 99 },
+            { id: "m1", category: "Maggi", title: "🍜 Maggi Corner", name: "Plain Maggi 250ml box", price: 49 },
+            { id: "m2", category: "Maggi", title: "🍜 Maggi Corner", name: "Mix Veg Maggi 250ml box", price: 59 },
+             { id: "m3", category: "Maggi", title: "🍜 Maggi Corner", name: "Mix Veg cheese Maggi 250ml box", price: 75  },
+            { id: "m4", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Strong Cheese Maggi with olives and jalapenos 250ml box", price: 99 },
        //     { id: "m10", category: "Maggi", title: "🍜 Maggi Corner", name: "Veg Cheese Butter Maggi", price: 80 },
             
-            { id: "p1", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Cheesy Corn Penne Pasta", price: 99, popular: true },
-            { id: "p2", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Veg Fusilli Pasta", price: 99 },
-            { id: "p3", category: "Pasta", title: "🍝 Pasta Corner", name: "Veggy Sweet Spice Red Sauce Shell Pasta", price: 99 },
-            { id: "p4", category: "Pasta", title: "🍝 Pasta Corner", name: "Masala Macaroni Pasta", price: 99 },
-            { id: "p5", category: "Pasta", title: "🍝 Pasta Corner", name: "Mac & Cheese with Cheese layer on top Pasta", price: 99 },
-          //  { id: "p5", category: "Pasta", title: "🍝 Pasta Corner", name: "Cold Pasta (by choice of your pasta) Salad with Olives Jalapenos Paneer Tomato Onion Capsicum Cheese mayonaise tossed with olive oil and fresh lemon juice", price: 199 },
+            { id: "p1", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Cheesy Corn Penne Pasta 250ml", price: 75, popular: true },
+            { id: "p2", category: "Pasta", title: "🍝 Pasta Corner", name: "Creamy Veg Fusilli Pasta 250ml", price: 99 },
+            { id: "p3", category: "Pasta", title: "🍝 Pasta Corner", name: "Veggy Sweet Spice Red Sauce Shell Pasta 250ml", price: 99 },
+            { id: "p4", category: "Pasta", title: "🍝 Pasta Corner", name: "Masala Macaroni Pasta 250ml", price: 99 },
+          //{ id: "p5", category: "Pasta", title: "🍝 Pasta Corner", name: "Mac & Cheese with Cheese layer on top Pasta", price: 99 },
+          //{ id: "p5", category: "Pasta", title: "🍝 Pasta Corner", name: "Cold Pasta (by choice of your pasta) Salad with Olives Jalapenos Paneer Tomato Onion Capsicum Cheese mayonaise tossed with olive oil and fresh lemon juice", price: 199 },
 
             { id: "j1", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Watermelon Mint Cooler 500ml", price: 99 },
             { id: "j2", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Watermelon Juice 500ml", price: 99 },
@@ -3540,15 +3970,16 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             { id: "j4", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Sabja Mint Lime Juice 500ml", price: 99 },
             { id: "j5", category: "Juices", title: "🥤 Coolers & Fresh Juices", name: "Original & Natural Mint Mojito 500ml", price: 99, popular: true },
 
-            { id: "d1", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Lassi 500ml", price: 99 },
-            { id: "d2", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Regular Rosemilk 500ml", price: 99 },
-            { id: "d3", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Sabja Rosemilk 500ml", price: 99 },
-            { id: "d5", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Banana Milkshake 500ml", price: 99 },
-            { id: "d6", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Choco Banana Milkshake 500ml", price: 99, popular: true },
+            { id: "d1", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Lassi 250ml", price: 75 },
+            { id: "d2", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Regular Rosemilk 250ml", price: 60 },
+            { id: "d3", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Sabja Rosemilk 250ml", price: 60 },
+            { id: "d5", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Banana Milkshake 250ml", price: 60 },
+            { id: "d6", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Choco Banana Milkshake 250ml", price: 75, popular: true },
             { id: "d7", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Strawberry Banana Milkshake 250ml Offer Price", price: 75, popular: true },
             { id: "d8", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Blueberry Banana Milkshake 250ml Offer Price", price: 75, popular: true },
             { id: "d9", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Cherry Banana Milkshake 250ml Offer Price", price: 75, popular: true },
-            
+             //{ id: "d10", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Cold Coffee 250ml Offer Price", price: 99, popular: true },
+            // { id: "d9", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Hazelnut Banana Milkshake 250ml Offer Price", price: 99, popular: true },
           //  { id: "d8", category: "Milkshakes", title: "🥛 Milkshakes & Specials", name: "Fresh Coconut Milk (1 Ltr)", price: 125 },
             
         //     { id: "co1", category: "Combos", title: "🎁 Combos & Offers", name: "BUY 2 sets Premium Biscoff Cheese Butter grilled sandwich worth 350:", price: 150 },
@@ -3601,6 +4032,18 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             { id: "pp19", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Paanagam", price: 250, unit: "ltr", weighted: true },
             { id: "pp20", category: "Pooja Prasadham", title: "🪔 Festive & Pooja's Prasadham Ordering", name: "Panchamirtham", price: 500, unit: "kg", weighted: true },
         ],
+
+        LunchTimeMenu: [
+            { id: "ltm1", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Lunch Set", desc: "White Rice 500ml,Sambar 100ml, Rasam 100ml, Poriyal 100ml,Koottu 100ml,Curd 100ml ,Fryams", price: 225 },
+            { id: "ltm2", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Sambar 250ml", price: 50 },
+            { id: "ltm3", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Rasam 250ml", price: 50 },
+            { id: "ltm4", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Onion Raita 250ml", price: 50 },
+            { id: "ltm5", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Mint Spicy Butter Milk 500ml", price: 60 },
+            { id: "ltm6", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Poriyal of the day 250ml", price: 60 },
+            { id: "ltm7", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Koottu of the day 250ml", price: 60 },
+            { id: "ltm8", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Fryams 500ml", price: 60 },
+          //  { id: "ltm9", category: "LUNCH TIME MENU", title: "🍽️ Lunch Time Menu", name: "Koottu of the day 250ml", price: 60 },
+], 
 
         Subscription: [
                       ]
@@ -3952,11 +4395,117 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
         const CATEGORY_WINDOWS = {
             "Breakfast":      { start: "07:00", end: "10:00" },
+            "Lunch Special":  { start: "12:30", end: "14:00" },
+            "Lunch":          { start: "12:30", end: "14:00" },
+            // LUNCH TIME MENU uses a dedicated state-machine (getLunchTimeMenuWindowState)
+            // instead of a simple open/close window — do NOT add it here.
             "Evening Snacks": { start: "06:00", end: "15:59", note: "Pre-order only — delivered/picked up between 4:00 PM & 5:30 PM", deliveryWindow: { start: "16:00", end: "17:30" } },
             "Snacks Special": { start: "06:00", end: "15:30", note: "Pre-order only — delivered/picked up between 4:00 PM & 5:30 PM", deliveryWindow: { start: "16:00", end: "17:30" } },
             "Dinner Special": { start: "06:00", end: "17:30", note: "Pre-order only — delivered between 7:00 PM & 10:00 PM", deliveryWindow: { start: "19:00", end: "22:00" } }
         };
         const ENFORCE_CATEGORY_WINDOW = true;
+
+        // ── Lunch Time Menu — Order Window State Machine ────────────────────
+        //
+        // Microsoft Systems Architect pattern: represent the booking lifecycle
+        // as an explicit finite state machine with clearly named states, each
+        // owning its own label, freeze flag, and "order is for" date, rather
+        // than scattered if/else comparisons on raw hours.
+        //
+        // States & transitions (all times IST):
+        //
+        //   ACCEPTING_TODAY  (yesterday 17:00 → today 09:59)
+        //     • Order window OPEN
+        //     • Order is FOR: today's lunch
+        //     • Entry condition: hours < 10
+        //
+        //   FROZEN           (today 10:00 → today 16:59)
+        //     • Order window CLOSED — kitchen is cooking, no new orders
+        //     • Entry condition: hours >= 10 && hours < 17
+        //
+        //   ACCEPTING_TOMORROW (today 17:00 → tomorrow 09:59)
+        //     • Order window OPEN
+        //     • Order is FOR: tomorrow's lunch
+        //     • Entry condition: hours >= 17
+        //
+        // The "order for" date is purely informational — it is shown to the
+        // customer and appended to the WhatsApp message.  No server-side date
+        // shifting is needed because the kitchen staff reads it from the order.
+        // ─────────────────────────────────────────────────────────────────────
+        function getLunchTimeMenuWindowState() {
+            const { hours, minutes, year, month, date } = LiveClock.istParts();
+            const totalMins = hours * 60 + minutes;
+
+            // ── Derive a display date for "order is for" ──────────────────
+            function istDateLabel(offsetDays) {
+                const base = new Date(Date.UTC(year, month, date + offsetDays));
+                return base.toLocaleDateString('en-IN', {
+                    weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'
+                });
+            }
+
+            const FREEZE_START = 10 * 60;   // 10:00 AM in minutes
+            const FREEZE_END   = 17 * 60;   // 5:00 PM  in minutes
+
+            if (totalMins < FREEZE_START) {
+                // Window open: accepting orders for TODAY's lunch
+                const minsUntilFreeze = FREEZE_START - totalMins;
+                const closingSoon = minsUntilFreeze <= 60;
+                return {
+                    state: "ACCEPTING_TODAY",
+                    isOpen: true,
+                    isFrozen: false,
+                    orderForLabel: `Today (${istDateLabel(0)})`,
+                    orderForDate: "today",
+                    windowLabel: "Open until 10:00 AM",
+                    minsUntilChange: minsUntilFreeze,
+                    isClosingSoon: closingSoon,
+                    statusIcon: closingSoon ? "⏳" : "🟢",
+                    statusText: closingSoon
+                        ? `Closing in ${minsUntilFreeze} min — order for today's lunch!`
+                        : `Order window open — ordering for today's lunch`,
+                    infoMessage: `Pre-order by 10:00 AM for today's lunch service (served 12:30 PM – 2:00 PM). After 10 AM the window freezes until 5 PM.`,
+                    bannerType: "open"
+                };
+            } else if (totalMins < FREEZE_END) {
+                // Window FROZEN: kitchen is actively preparing lunch
+                const minsUntilReopen = FREEZE_END - totalMins;
+                return {
+                    state: "FROZEN",
+                    isOpen: false,
+                    isFrozen: true,
+                    orderForLabel: `Tomorrow (${istDateLabel(1)})`,
+                    orderForDate: "tomorrow",
+                    windowLabel: "Frozen 10:00 AM – 5:00 PM",
+                    minsUntilChange: minsUntilReopen,
+                    isClosingSoon: false,
+                    statusIcon: "🔒",
+                    statusText: `Order window frozen — kitchen is preparing today's lunch. Reopens at 5:00 PM for tomorrow's orders.`,
+                    infoMessage: `Order window is frozen from 10:00 AM to 5:00 PM while the kitchen prepares today's lunch. Come back after 5:00 PM to pre-order for tomorrow.`,
+                    bannerType: "frozen"
+                };
+            } else {
+                // Window open: accepting orders for TOMORROW's lunch
+                const minsUntilMidnightFreeze = (24 * 60 + FREEZE_START) - totalMins; // minutes until 10 AM next day
+                const closingSoon = minsUntilMidnightFreeze <= 60;
+                return {
+                    state: "ACCEPTING_TOMORROW",
+                    isOpen: true,
+                    isFrozen: false,
+                    orderForLabel: `Tomorrow (${istDateLabel(1)})`,
+                    orderForDate: "tomorrow",
+                    windowLabel: "Open — pre-booking for tomorrow",
+                    minsUntilChange: minsUntilMidnightFreeze,
+                    isClosingSoon: closingSoon,
+                    statusIcon: closingSoon ? "⏳" : "🟢",
+                    statusText: closingSoon
+                        ? `Closing soon (${minsUntilMidnightFreeze} min) — last chance for tomorrow's lunch order!`
+                        : `Order window open — pre-ordering for tomorrow's lunch`,
+                    infoMessage: `Order window is open! You're pre-ordering for tomorrow's lunch (${istDateLabel(1)}). Window closes again at 10:00 AM tomorrow.`,
+                    bannerType: "open"
+                };
+            }
+        }
 
         function formatHHMM(hhmm) {
             const [h, m] = hhmm.split(":").map(Number);
@@ -3989,6 +4538,20 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
         const CATEGORY_CLOSING_SOON_MINUTES = 60;
 
         function getCategoryWindowStatus(categoryName) {
+            // Lunch Time Menu uses a dedicated state machine — delegate immediately.
+            if (categoryName === "LUNCH TIME MENU") {
+                const ltm = getLunchTimeMenuWindowState();
+                return {
+                    label: ltm.windowLabel,
+                    isOpenNow: ltm.isOpen,
+                    isAllDay: false,
+                    minutesToClose: ltm.minsUntilChange,
+                    isClosingSoon: ltm.isClosingSoon,
+                    note: ltm.infoMessage,
+                    ltmState: ltm  // carry the full state for rich rendering
+                };
+            }
+
             const { hours, minutes } = LiveClock.istParts();
             const mins = hours * 60 + minutes;
 
@@ -4255,6 +4818,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     DailyOrderLimiter.applyToUI();
                     POSState.generateOrderId();
                     this.syncTotals();
+                    this.updateLtmPanel();
                     updateWatermark();
                 };
 
@@ -4264,6 +4828,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     this.updateTodayDateBadge();
                     this.updateKitchenStatus();
                     this.renderMenuIfChanged();
+                    this.updateLtmPanel();
                     updateWatermark();
                 };
 
@@ -4304,7 +4869,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     if (document.visibilityState === "visible") {
                         this.updateTodayDateBadge();
                         this.updateKitchenStatus();
-                        }
+                        this.updateLtmPanel();
+                    }
                     _tickHandle = setTimeout(tickDisplay, 1000);
                 };
                 tickDisplay(); // start immediately
@@ -4550,7 +5116,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     const timeBadgeHTML = windowStatus.isAllDay
                         ? `<span class="category-time-badge all-day">🕒 All Day (${windowStatus.label})</span>`
                         : windowStatus.note
-                            ? `<span class="category-time-badge ${windowStatus.isOpenNow ? 'open' : 'closed'}">🕒 Order by ${windowStatus.label}</span>`
+                            ? `<span class="category-time-badge ${windowStatus.isOpenNow ? 'open' : 'closed'}">🕒 ${windowStatus.ltmState ? '' : 'Order by '}${windowStatus.label}</span>`
                             : `<span class="category-time-badge ${windowStatus.isOpenNow ? 'open' : 'closed'}">🕒 ${windowStatus.label}</span>`;
                     const orderStatusHTML = windowStatus.isOpenNow
                         ? (windowStatus.isClosingSoon
@@ -4564,6 +5130,9 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                     if (isCategoryDisabled) {
                         if (closure.active) {
                             frozenBannerHTML = `<div class="frozen-banner">🔒 Temporarily closed (${closure.reason}) until ${closure.toDateLabel} — items shown for reference only</div>`;
+                        } else if (items[0].category === "LUNCH TIME MENU" && windowStatus.ltmState) {
+                            const ltm = windowStatus.ltmState;
+                            frozenBannerHTML = `<div class="frozen-banner ltm-frozen">🔒 Order window frozen (10:00 AM – 5:00 PM) — the kitchen is preparing today's lunch. Browse the menu and come back after <strong>5:00 PM</strong> to pre-order for tomorrow's lunch.</div>`;
                         } else {
                             frozenBannerHTML = `<div class="frozen-banner">🔒 Ordering closed right now — items shown for reference only</div>`;
                         }
@@ -4639,7 +5208,8 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
             computeMenuSignature() {
                 const cats = [...new Set(getMenuData().map(i => i.category))];
                 const cart = POSState.getCart();
-                let sig = `${POSState.orderMode}|${POSState.activeCategory}|${POSState.searchQuery}|closure:${getStoreClosureStatus().active}`;
+                const ltmSig = POSState.orderMode === "LunchTimeMenu" ? `|ltm:${getLunchTimeMenuWindowState().state}` : "";
+                let sig = `${POSState.orderMode}|${POSState.activeCategory}|${POSState.searchQuery}|closure:${getStoreClosureStatus().active}${ltmSig}`;
                 for (const cat of cats) {
                     const ws = getCategoryWindowStatus(cat);
                     // minutesToClose only matters (and only ticks) while
@@ -4739,6 +5309,73 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 }
             },
 
+            // ── Lunch Time Menu radiator update ───────────────────────────
+            // Reads the current LTM state-machine output and writes it
+            // into every DOM element that composes the status radiator.
+            // Called from applyOrderMode and on every 15s tick when in
+            // LunchTimeMenu mode.
+            updateLtmPanel() {
+                if (POSState.orderMode !== "LunchTimeMenu") return;
+                const ltm = getLunchTimeMenuWindowState();
+
+                const panel     = document.getElementById("ltm-status-panel");
+                const radiator  = document.getElementById("ltm-radiator");
+                const icon      = document.getElementById("ltm-radiator-icon");
+                const headline  = document.getElementById("ltm-radiator-headline");
+                const sub       = document.getElementById("ltm-radiator-sub");
+                const pill      = document.getElementById("ltm-for-date-pill");
+                const note      = document.getElementById("ltm-info-note");
+
+                const tlToday    = document.getElementById("ltm-tl-accept-today");
+                const tlFrozen   = document.getElementById("ltm-tl-frozen");
+                const tlTomorrow = document.getElementById("ltm-tl-accept-tomorrow");
+
+                if (!panel || !radiator || !icon) return;
+
+                // Radiator strip
+                radiator.className = "ltm-radiator " + (
+                    ltm.isFrozen ? "state-frozen" :
+                    ltm.isClosingSoon ? "state-closing" :
+                    "state-open"
+                );
+
+                icon.textContent = ltm.statusIcon;
+                icon.className = "ltm-radiator-icon" + ((!ltm.isFrozen) ? " pulse-anim" : "");
+
+                const headlineMap = {
+                    "ACCEPTING_TODAY":    "🍽️ Order window open — Pre-order for today's lunch",
+                    "FROZEN":             "🔒 Order window frozen — Kitchen is cooking",
+                    "ACCEPTING_TOMORROW": "📅 Order window open — Pre-order for tomorrow's lunch"
+                };
+                headline.textContent = headlineMap[ltm.state] || ltm.statusText;
+                sub.textContent = ltm.statusText;
+
+                // "Order for" pill
+                const pillClassMap = {
+                    "ACCEPTING_TODAY":    "for-today",
+                    "FROZEN":             "for-frozen",
+                    "ACCEPTING_TOMORROW": "for-tomorrow"
+                };
+                pill.className = "ltm-for-date-pill " + (pillClassMap[ltm.state] || "for-today");
+                const pillIcon = ltm.state === "ACCEPTING_TODAY" ? "📅" : ltm.state === "FROZEN" ? "🔒" : "📅";
+                pill.innerHTML = `${pillIcon} ${ltm.orderForLabel}`;
+
+                // Timeline: highlight active segment
+                [tlToday, tlFrozen, tlTomorrow].forEach(el => { if (el) el.classList.remove("tl-active"); });
+                const activeSegId = {
+                    "ACCEPTING_TODAY":    "ltm-tl-accept-today",
+                    "FROZEN":             "ltm-tl-frozen",
+                    "ACCEPTING_TOMORROW": "ltm-tl-accept-tomorrow"
+                }[ltm.state];
+                const activeSeg = document.getElementById(activeSegId);
+                if (activeSeg) activeSeg.classList.add("tl-active");
+
+                // Info note
+                if (note) {
+                    note.innerHTML = ltm.infoMessage.replace(/(\d{1,2}:\d{2} [AP]M)/g, "<strong>$1</strong>");
+                }
+            },
+
             applyOrderMode(mode) {
                 POSState.orderMode = mode;
 
@@ -4754,14 +5391,20 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
                 const subCard = document.getElementById("subscription-schedule-card");
                 const whatsappLabel = document.getElementById("whatsapp-btn-label");
+                const flatPricingBanner = document.getElementById("flat-pricing-banner");
+                const ltmPanel = document.getElementById("ltm-status-panel");
 
                 subCard.classList.toggle("visible", mode === "Subscription");
+                if (flatPricingBanner) flatPricingBanner.style.display = (mode === "LunchTimeMenu") ? "none" : "flex";
+                if (ltmPanel) ltmPanel.classList.toggle("visible", mode === "LunchTimeMenu");
                 const poojaCard = document.getElementById("pooja-form-card");
                 if (poojaCard) poojaCard.classList.toggle("visible", mode === "PoojaPrasadham");
                 if (mode === "PoojaPrasadham") PoojaOrder.onShow();
                 this.renderAnnouncement();
 
                 whatsappLabel.textContent = (mode === "Subscription") ? "Subscribe My Item" : "Place Order";
+
+                if (mode === "LunchTimeMenu") this.updateLtmPanel();
 
                 this.renderCategories();
                 this.renderMenu();
@@ -5936,6 +6579,7 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 document.getElementById("print-datetime").innerText = new Date(LiveClock.nowMs()).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
                 document.getElementById("print-order-type").innerText = POSState.orderType +
                     (POSState.orderMode === "Subscription" ? " (Subscribe My Item)"
+                        : POSState.orderMode === "LunchTimeMenu" ? " (Lunch Time Menu)"
                         : POSState.orderMode === "PoojaPrasadham" ? " (Festive & Pooja's Prasadham Ordering)"
                         : "");
                 document.getElementById("print-cust-info").innerHTML = `<strong>${customer.name}</strong> (${customer.fullPhone})<br>
@@ -6022,7 +6666,10 @@ body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
                 }
                 text += LINE;
 
-                if (POSState.orderMode === "PoojaPrasadham") {
+                if (POSState.orderMode === "LunchTimeMenu") {
+                    const ltmState = getLunchTimeMenuWindowState();
+                    text += `🍽️ *Lunch Order for: ${ltmState.orderForLabel}*\n   (Served 12:30 PM – 2:00 PM)\n\n`;
+                } else if (POSState.orderMode === "PoojaPrasadham") {
                     text += `🪔 *Festive & Pooja's Prasadham Ordering Order*\n\n`;
                 } else {
                     text += `🍽️ *My Order:* _(Flat ₹${FLAT_ITEM_PRICE} per item)_\n\n`;
